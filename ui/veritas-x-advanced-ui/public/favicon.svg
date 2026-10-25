@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <rect width="64" height="64" rx="14" fill="#FFFFFF" />
+  <rect width="64" height="64" rx="14" fill="none" stroke="#E1E3DD" stroke-width="2" />
+  <!-- Documentary tiers -->
+  <line x1="14" y1="16" x2="28" y2="16" stroke="#CBD5E1" stroke-width="2.5" stroke-linecap="round" />
+  <line x1="36" y1="16" x2="50" y2="16" stroke="#CBD5E1" stroke-width="2.5" stroke-linecap="round" />
+  <!-- Verification check & cross-examination vector -->
+  <path d="M16 28 L30 50 L34 50 L22 28 Z" fill="#176B5B" />
+  <path d="M28 50 L48 24 L44 21 L26 44 Z" fill="#176B5B" />
+  <!-- Precision Nexus & Focal Dots -->
+  <circle cx="32" cy="48" r="3.5" fill="#C47745" />
+  <circle cx="47" cy="22" r="2.5" fill="#C47745" />
+</svg>

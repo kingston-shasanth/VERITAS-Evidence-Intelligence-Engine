@@ -1,0 +1,16 @@
+# Node & Vite output
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# Environment & logs
+.env
+.env.local
+*.log
+
+# OS & Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

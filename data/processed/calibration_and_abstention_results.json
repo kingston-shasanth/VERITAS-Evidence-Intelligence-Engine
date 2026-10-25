@@ -1,0 +1,497 @@
+{
+  "dataset_split": "validation_only",
+  "split_size": 255,
+  "timestamp": 1792512578.9824693,
+  "logit_diagnostics": {
+    "all_finite": true,
+    "class_ordering": [
+      "VERIFIED_TRUE",
+      "VERIFIED_FALSE",
+      "CONFLICTING_OR_CHERRYPICKED",
+      "INSUFFICIENT_EVIDENCE"
+    ],
+    "min_logits": [
+      -11.003023508331898,
+      -8.81924268649891,
+      -5.0,
+      -17.85002011090468
+    ],
+    "max_logits": [
+      8.81924268649891,
+      11.003023508331898,
+      7.360662392893282,
+      3.0
+    ],
+    "mean_logits": [
+      -1.643901827201409,
+      1.5733135919072911,
+      -4.70825380923203,
+      -5.044983600889159
+    ],
+    "score_format_assessment": "Logits represent synthesized continuous evidence-mass log-odds mapped via softmax. Because they are real numbers spanning (-5.0, +3.0) with empirical multipliers, they exhibit uncalibrated overconfidence (ECE 19.21%). Post-hoc multiclass temperature scaling learns a global positive scalar T=4.1039, successfully softening the distribution to match validation empirical accuracy without altering class argmax."
+  },
+  "temperature_calibration": {
+    "method": "Multiclass Temperature Scaling (Guo et al., ICML 2017)",
+    "learned_temperature": 4.103875670709753,
+    "fit_duration_seconds": 0.002668142318725586,
+    "metrics": {
+      "uncalibrated_ece": 0.1920539464992827,
+      "calibrated_ece": 0.11826610998074319,
+      "ece_reduction_percent": 38.420169781367804,
+      "uncalibrated_nll": 1.7541881597621924,
+      "calibrated_nll": 0.9626803850992368,
+      "uncalibrated_brier": 0.5180512707006393,
+      "calibrated_brier": 0.4987878145342814
+    },
+    "reliability_diagram": {
+      "bin_boundaries": [
+        0.0,
+        0.1,
+        0.2,
+        0.30000000000000004,
+        0.4,
+        0.5,
+        0.6000000000000001,
+        0.7000000000000001,
+        0.8,
+        0.9,
+        1.0
+      ],
+      "bin_counts": [
+        0,
+        0,
+        0,
+        88,
+        15,
+        23,
+        51,
+        13,
+        29,
+        36
+      ],
+      "bin_accuracies": [
+        0.0,
+        0.0,
+        0.0,
+        0.2840909090909091,
+        0.5333333333333333,
+        0.7391304347826086,
+        0.8823529411764706,
+        0.6923076923076923,
+        0.7241379310344828,
+        0.8333333333333334
+      ],
+      "bin_confidences": [
+        0.05,
+        0.15000000000000002,
+        0.25,
+        0.3310226298847743,
+        0.469042312290938,
+        0.5640288553990879,
+        0.6440223196616514,
+        0.74822426372783,
+        0.8716023985321697,
+        0.9410532858506104
+      ]
+    },
+    "distinction_from_platt_scaling": "Temperature Scaling applies a single positive scalar T dividing all logits (z / T) before softmax. It strictly preserves class argmax and ranking. In contrast, Platt Scaling applies affine transformations W*z + b (logistic regression per class), which alters relative rankings and requires K*(K+1) parameters.",
+    "in_sample_validation_notice": "These calibration metrics are measured on the same validation split used for aggregator tuning (N=255) and serve as in-sample diagnostics. They do not constitute generalization claims."
+  },
+  "selective_abstention": {
+    "definition_and_insufficient_separation": "INSUFFICIENT_EVIDENCE is a substantive domain class predicted when evidence is uninformative. Selective Abstention is a meta-level deferral mechanism g(x) in {0, 1} applied to any prediction with low confidence or high entropy. These two concepts are evaluated separately: Coverage measures the percentage of predictions retained; Selective Risk measures the error rate among retained predictions.",
+    "no_abstention_baseline": {
+      "confidence_threshold": 0.0,
+      "entropy_threshold": 1.0,
+      "total_samples": 255,
+      "retained_count": 255,
+      "abstained_count": 0,
+      "coverage": 1.0,
+      "is_low_coverage": false,
+      "selective_accuracy": 0.592156862745098,
+      "selective_risk": 0.40784313725490196,
+      "macro_f1_retained": 0.4445852126025427,
+      "macro_precision_retained": 0.49908177905308465,
+      "macro_recall_retained": 0.5092337558903565,
+      "per_class_retained": {
+        "VERIFIED_TRUE": {
+          "precision": 0.6470588235294118,
+          "recall": 0.5409836065573771,
+          "f1": 0.5892857142857143,
+          "support": 61
+        },
+        "VERIFIED_FALSE": {
+          "precision": 0.8292682926829268,
+          "recall": 0.6538461538461539,
+          "f1": 0.7311827956989247,
+          "support": 156
+        },
+        "CONFLICTING_OR_CHERRYPICKED": {
+          "precision": 0.3333333333333333,
+          "recall": 0.10526315789473684,
+          "f1": 0.16,
+          "support": 19
+        },
+        "INSUFFICIENT_EVIDENCE": {
+          "precision": 0.18666666666666668,
+          "recall": 0.7368421052631579,
+          "f1": 0.2978723404255319,
+          "support": 19
+        }
+      },
+      "confusion_matrix_retained": [
+        [
+          33,
+          9,
+          0,
+          19
+        ],
+        [
+          15,
+          102,
+          3,
+          36
+        ],
+        [
+          3,
+          8,
+          2,
+          6
+        ],
+        [
+          0,
+          4,
+          1,
+          14
+        ]
+      ],
+      "abstained_support_by_true_class": {
+        "VERIFIED_TRUE": 0,
+        "VERIFIED_FALSE": 0,
+        "CONFLICTING_OR_CHERRYPICKED": 0,
+        "INSUFFICIENT_EVIDENCE": 0
+      },
+      "operational_fallback_4class": {
+        "accuracy": 0.592156862745098,
+        "macro_f1": 0.4445852126025427,
+        "per_class": {
+          "VERIFIED_TRUE": {
+            "precision": 0.6470588235294118,
+            "recall": 0.5409836065573771,
+            "f1": 0.5892857142857143,
+            "support": 61
+          },
+          "VERIFIED_FALSE": {
+            "precision": 0.8292682926829268,
+            "recall": 0.6538461538461539,
+            "f1": 0.7311827956989247,
+            "support": 156
+          },
+          "CONFLICTING_OR_CHERRYPICKED": {
+            "precision": 0.3333333333333333,
+            "recall": 0.10526315789473684,
+            "f1": 0.16,
+            "support": 19
+          },
+          "INSUFFICIENT_EVIDENCE": {
+            "precision": 0.18666666666666668,
+            "recall": 0.7368421052631579,
+            "f1": 0.2978723404255319,
+            "support": 19
+          }
+        }
+      }
+    },
+    "default_parameters_policy": {
+      "confidence_threshold": 0.45,
+      "entropy_threshold": 0.85,
+      "total_samples": 255,
+      "retained_count": 153,
+      "abstained_count": 102,
+      "coverage": 0.6,
+      "is_low_coverage": true,
+      "selective_accuracy": 0.7973856209150327,
+      "selective_risk": 0.20261437908496727,
+      "macro_f1_retained": 0.6167786608085116,
+      "macro_precision_retained": 0.7274252111453152,
+      "macro_recall_retained": 0.5790816326530612,
+      "per_class_retained": {
+        "VERIFIED_TRUE": {
+          "precision": 0.7317073170731707,
+          "recall": 0.8333333333333334,
+          "f1": 0.7792207792207793,
+          "support": 36
+        },
+        "VERIFIED_FALSE": {
+          "precision": 0.8446601941747572,
+          "recall": 0.8877551020408163,
+          "f1": 0.8656716417910447,
+          "support": 98
+        },
+        "CONFLICTING_OR_CHERRYPICKED": {
+          "precision": 0.3333333333333333,
+          "recall": 0.16666666666666666,
+          "f1": 0.2222222222222222,
+          "support": 12
+        },
+        "INSUFFICIENT_EVIDENCE": {
+          "precision": 1.0,
+          "recall": 0.42857142857142855,
+          "f1": 0.6,
+          "support": 7
+        }
+      },
+      "confusion_matrix_retained": [
+        [
+          30,
+          6,
+          0,
+          0
+        ],
+        [
+          8,
+          87,
+          3,
+          0
+        ],
+        [
+          3,
+          7,
+          2,
+          0
+        ],
+        [
+          0,
+          3,
+          1,
+          3
+        ]
+      ],
+      "abstained_support_by_true_class": {
+        "VERIFIED_TRUE": 25,
+        "VERIFIED_FALSE": 58,
+        "CONFLICTING_OR_CHERRYPICKED": 7,
+        "INSUFFICIENT_EVIDENCE": 12
+      },
+      "operational_fallback_4class": {
+        "accuracy": 0.5254901960784314,
+        "macro_f1": 0.41549636245082167,
+        "per_class": {
+          "VERIFIED_TRUE": {
+            "precision": 0.7317073170731707,
+            "recall": 0.4918032786885246,
+            "f1": 0.5882352941176471,
+            "support": 61
+          },
+          "VERIFIED_FALSE": {
+            "precision": 0.8446601941747572,
+            "recall": 0.5576923076923077,
+            "f1": 0.6718146718146718,
+            "support": 156
+          },
+          "CONFLICTING_OR_CHERRYPICKED": {
+            "precision": 0.3333333333333333,
+            "recall": 0.10526315789473684,
+            "f1": 0.16,
+            "support": 19
+          },
+          "INSUFFICIENT_EVIDENCE": {
+            "precision": 0.14285714285714285,
+            "recall": 0.7894736842105263,
+            "f1": 0.24193548387096775,
+            "support": 19
+          }
+        }
+      }
+    },
+    "selected_optimal_policy": {
+      "confidence_threshold": 0.32,
+      "entropy_threshold": 1.0,
+      "total_samples": 255,
+      "retained_count": 242,
+      "abstained_count": 13,
+      "coverage": 0.9490196078431372,
+      "is_low_coverage": false,
+      "selective_accuracy": 0.6157024793388429,
+      "selective_risk": 0.3842975206611571,
+      "macro_f1_retained": 0.46010616510589575,
+      "macro_precision_retained": 0.503652553917742,
+      "macro_recall_retained": 0.5192360277444311,
+      "per_class_retained": {
+        "VERIFIED_TRUE": {
+          "precision": 0.6470588235294118,
+          "recall": 0.55,
+          "f1": 0.5945945945945946,
+          "support": 60
+        },
+        "VERIFIED_FALSE": {
+          "precision": 0.8278688524590164,
+          "recall": 0.6870748299319728,
+          "f1": 0.7509293680297398,
+          "support": 147
+        },
+        "CONFLICTING_OR_CHERRYPICKED": {
+          "precision": 0.3333333333333333,
+          "recall": 0.11764705882352941,
+          "f1": 0.17391304347826086,
+          "support": 17
+        },
+        "INSUFFICIENT_EVIDENCE": {
+          "precision": 0.20634920634920634,
+          "recall": 0.7222222222222222,
+          "f1": 0.32098765432098764,
+          "support": 18
+        }
+      },
+      "confusion_matrix_retained": [
+        [
+          33,
+          9,
+          0,
+          18
+        ],
+        [
+          15,
+          101,
+          3,
+          28
+        ],
+        [
+          3,
+          8,
+          2,
+          4
+        ],
+        [
+          0,
+          4,
+          1,
+          13
+        ]
+      ],
+      "abstained_support_by_true_class": {
+        "VERIFIED_TRUE": 1,
+        "VERIFIED_FALSE": 9,
+        "CONFLICTING_OR_CHERRYPICKED": 2,
+        "INSUFFICIENT_EVIDENCE": 1
+      },
+      "operational_fallback_4class": {
+        "accuracy": 0.5882352941176471,
+        "macro_f1": 0.44266031535673717,
+        "per_class": {
+          "VERIFIED_TRUE": {
+            "precision": 0.6470588235294118,
+            "recall": 0.5409836065573771,
+            "f1": 0.5892857142857143,
+            "support": 61
+          },
+          "VERIFIED_FALSE": {
+            "precision": 0.8278688524590164,
+            "recall": 0.6474358974358975,
+            "f1": 0.7266187050359713,
+            "support": 156
+          },
+          "CONFLICTING_OR_CHERRYPICKED": {
+            "precision": 0.3333333333333333,
+            "recall": 0.10526315789473684,
+            "f1": 0.16,
+            "support": 19
+          },
+          "INSUFFICIENT_EVIDENCE": {
+            "precision": 0.18421052631578946,
+            "recall": 0.7368421052631579,
+            "f1": 0.29473684210526313,
+            "support": 19
+          }
+        }
+      }
+    },
+    "coverage_risk_curve": [
+      {
+        "confidence_threshold": 0.0,
+        "entropy_threshold": 1.0,
+        "coverage": 1.0,
+        "retained_count": 255,
+        "is_low_coverage": false,
+        "selective_accuracy": 0.592156862745098,
+        "selective_risk": 0.40784313725490196,
+        "macro_f1_retained": 0.4445852126025427,
+        "conflicting_recall_retained": 0.10526315789473684,
+        "conflicting_support_retained": 19
+      },
+      {
+        "confidence_threshold": 0.32,
+        "entropy_threshold": 0.94,
+        "coverage": 0.9490196078431372,
+        "retained_count": 242,
+        "is_low_coverage": false,
+        "selective_accuracy": 0.6157024793388429,
+        "selective_risk": 0.3842975206611571,
+        "macro_f1_retained": 0.46010616510589575,
+        "conflicting_recall_retained": 0.11764705882352941,
+        "conflicting_support_retained": 17
+      },
+      {
+        "confidence_threshold": 0.35,
+        "entropy_threshold": 0.9,
+        "coverage": 0.6431372549019608,
+        "retained_count": 164,
+        "is_low_coverage": true,
+        "selective_accuracy": 0.7804878048780488,
+        "selective_risk": 0.2195121951219512,
+        "macro_f1_retained": 0.5909825685178702,
+        "conflicting_recall_retained": 0.15384615384615385,
+        "conflicting_support_retained": 13
+      },
+      {
+        "confidence_threshold": 0.4,
+        "entropy_threshold": 0.85,
+        "coverage": 0.6,
+        "retained_count": 153,
+        "is_low_coverage": true,
+        "selective_accuracy": 0.7973856209150327,
+        "selective_risk": 0.20261437908496727,
+        "macro_f1_retained": 0.6167786608085116,
+        "conflicting_recall_retained": 0.16666666666666666,
+        "conflicting_support_retained": 12
+      },
+      {
+        "confidence_threshold": 0.45,
+        "entropy_threshold": 0.85,
+        "coverage": 0.6,
+        "retained_count": 153,
+        "is_low_coverage": true,
+        "selective_accuracy": 0.7973856209150327,
+        "selective_risk": 0.20261437908496727,
+        "macro_f1_retained": 0.6167786608085116,
+        "conflicting_recall_retained": 0.16666666666666666,
+        "conflicting_support_retained": 12
+      },
+      {
+        "confidence_threshold": 0.5,
+        "entropy_threshold": 0.8,
+        "coverage": 0.5372549019607843,
+        "retained_count": 137,
+        "is_low_coverage": true,
+        "selective_accuracy": 0.8102189781021898,
+        "selective_risk": 0.1897810218978102,
+        "macro_f1_retained": 0.4832130832130832,
+        "conflicting_recall_retained": 0.2,
+        "conflicting_support_retained": 10
+      },
+      {
+        "confidence_threshold": 0.55,
+        "entropy_threshold": 0.75,
+        "coverage": 0.4235294117647059,
+        "retained_count": 108,
+        "is_low_coverage": true,
+        "selective_accuracy": 0.8148148148148148,
+        "selective_risk": 0.18518518518518523,
+        "macro_f1_retained": 0.4889182547410395,
+        "conflicting_recall_retained": 0.2222222222222222,
+        "conflicting_support_retained": 9
+      }
+    ],
+    "total_policies_tested": 99,
+    "policies_meeting_coverage_85": 16
+  }
+}

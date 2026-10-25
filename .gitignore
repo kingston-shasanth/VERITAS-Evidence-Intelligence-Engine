@@ -1,0 +1,55 @@
+# ==============================================================================
+# VERITAS-X Repository .gitignore
+# ==============================================================================
+
+# Python bytecode & cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+
+# Local Hugging Face & Embedding model cache
+.cache/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Temporary run artifacts
+tmp/
+scratch/
+*.faiss
+*_faiss_meta.json
+
+# Node & Frontend build artifacts
+node_modules/
+dist/
+.vite/
+*.log
+
+# Sensitive environment configuration
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# IDE configuration
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Duplicate frontend copy; active frontend is under ui/
+/veritas-x-advanced-ui/
+/scratch/
+/data/processed/.val_nli_predictions_cache.json
+/data/tavily_usage.json
+shot*.png
