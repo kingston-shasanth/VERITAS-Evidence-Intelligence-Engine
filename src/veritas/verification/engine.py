@@ -12,7 +12,12 @@ import numpy as np
 from veritas.data.schema import CanonicalVeracity
 from veritas.retrieval.hybrid_retriever import HybridRetriever
 from veritas.retrieval.tokenizer import MultilingualTokenizer
-from .nli_model import CrossEncoderNLI, _is_local_storage_scope_mismatch, _is_ip_hiding_scope_mismatch
+from .nli_model import (
+    CrossEncoderNLI,
+    _is_local_storage_scope_mismatch,
+    _is_ip_hiding_scope_mismatch,
+    _is_generalized_scope_mismatch,
+)
 from .evidence_aggregator import EvidenceAggregator, AggregatedEvidenceVerdict
 from .temporal_analyzer import TemporalAnalyzer, TemporalReport, TemporalStatus
 from .calibrator import TemperatureCalibrator, SelectiveAbstainer
@@ -447,6 +452,9 @@ class ForensicVerdict:
     raw_prediction: Optional[str] = None
     has_meaningful_evidence: bool = True
     claim_components: List[Dict[str, Any]] = field(default_factory=list)
+    canonical_reason: Optional[str] = None
+    evidence_counts: Dict[str, int] = field(default_factory=dict)
+    pipeline_trace: Dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -468,6 +476,9 @@ class ForensicVerdict:
             "raw_prediction": self.raw_prediction,
             "has_meaningful_evidence": self.has_meaningful_evidence,
             "claim_components": self.claim_components,
+            "canonical_reason": self.canonical_reason,
+            "evidence_counts": self.evidence_counts,
+            "pipeline_trace": self.pipeline_trace,
         }
 
 
@@ -555,7 +566,7 @@ class VerificationEngine:
         if not claim_text or not passage_text:
             return nli_pred
 
-        if not _is_local_storage_scope_mismatch(claim_text, passage_text) and not _is_ip_hiding_scope_mismatch(claim_text, passage_text):
+        if not _is_generalized_scope_mismatch(claim_text, passage_text):
             return nli_pred
 
         c_prob = float(nli_pred.get("contradiction", 0.0))
@@ -1120,33 +1131,28 @@ class VerificationEngine:
         # Extract structured claim components for compound claim coverage assessment
         claim_components = self.decompose_claim_components(claim_text)
 
-        # Tag topical relevance, informativeness, claim-relation alignment, figurative nature, and decision eligibility
-        for p in candidate_passages:
-            t = p.get("text", "")
-            if "is_figurative" not in p:
-                p["is_figurative"] = self.is_figurative_or_lexical_definition(t)
-            if "is_relevant" not in p:
-                p["is_relevant"] = self.is_topically_relevant(claim_text, t)
-            if "is_informative" not in p:
-                is_inf, _ = self.is_passage_informative(t, claim_text)
-                p["is_informative"] = is_inf
-            if "is_claim_aligned" not in p:
-                p["is_claim_aligned"] = self.has_claim_relation_alignment(claim_text, t)
-            if "claim_coverage" not in p or "claim_components_covered" not in p:
-                cov_level, cov_labels = self.assess_claim_coverage(claim_components, t)
-                p["claim_coverage"] = cov_level
-                p["claim_components_covered"] = cov_labels
-            if "is_decision_eligible" not in p:
-                p["is_decision_eligible"] = bool(
-                    p["is_relevant"]
-                    and p["is_informative"]
-                    and p["is_claim_aligned"]
-                    and not p.get("is_figurative", False)
-                )
+        # Stage 1: Evidence Eligibility Assessment
+        candidate_passages = self.stage1_assess_eligibility(claim_text, candidate_passages, claim_components)
+        pipeline_trace = {
+            "execution_order": [
+                "stage1_assess_eligibility",
+                "stage2_classify_stance",
+                "stage3_aggregate_consensus",
+                "stage4_resolve_verdict_policy",
+                "stage5_synthesize_canonical_verdict",
+            ],
+            "stage1_eligibility": {
+                "total_candidates": len(candidate_passages),
+                "eligible_count": sum(1 for p in candidate_passages if p.get("is_decision_eligible")),
+                "off_topic_count": sum(1 for p in candidate_passages if not p.get("is_relevant")),
+                "uninformative_count": sum(1 for p in candidate_passages if not p.get("is_informative")),
+                "unaligned_count": sum(1 for p in candidate_passages if not p.get("is_claim_aligned")),
+                "scope_mismatch_count": sum(1 for p in candidate_passages if p.get("is_scope_mismatch")),
+            },
+        }
 
-        # 2. Multi-Evidence Pairwise and Joint NLI
-        pairs = [(p.get("text", ""), claim_text) for p in candidate_passages]
-        joint_pred = None
+        # Multi-evidence complementary joint premise formulation
+        joint_premise = None
         if len(candidate_passages) > 1:
             seen_texts = set()
             unique_premises = []
@@ -1163,36 +1169,168 @@ class VerificationEngine:
                     unique_premises.append(t)
             if len(unique_premises) > 1:
                 joint_premise = " ".join(unique_premises)
-                pairs.append((joint_premise, claim_text))
+
+        # Stage 2: Stance Classification & Semantic Polarity
+        nli_predictions, joint_pred = self.stage2_classify_stance(claim_text, candidate_passages, joint_premise)
+        pipeline_trace["stage2_stance"] = {
+            "support_count": sum(1 for p in candidate_passages if p.get("stance") == "support"),
+            "refute_count": sum(1 for p in candidate_passages if p.get("stance") == "refute"),
+            "neutral_count": sum(1 for p in candidate_passages if p.get("stance") == "neutral"),
+            "joint_evaluated": joint_pred is not None,
+        }
+
+        # Stage 3: Evidence Consensus Aggregation
+        agg_verdict = self.stage3_aggregate_consensus(candidate_passages, nli_predictions, joint_pred)
+        pipeline_trace["stage3_consensus"] = {
+            "unique_passages_used": agg_verdict.unique_passages_used,
+            "duplicates_filtered": agg_verdict.duplicates_filtered,
+            "has_cross_passage_disparity": agg_verdict.has_cross_passage_disparity,
+            "raw_verdict": agg_verdict.canonical_verdict.value,
+            "raw_confidence": round(agg_verdict.confidence, 4),
+        }
+
+        # Temporal Consistency Analysis
+        temporal_report = self.temporal_analyzer.analyze(claim_date, candidate_passages)
+
+        # Stage 4: Verdict Policy Resolution
+        policy_resolution = self.stage4_resolve_verdict_policy(
+            claim_text=claim_text,
+            agg_verdict=agg_verdict,
+            candidate_passages=candidate_passages,
+            nli_predictions=nli_predictions,
+            joint_pred=joint_pred,
+            claim_components=claim_components,
+            joint_premise=joint_premise,
+        )
+        pol_verd = policy_resolution["verdict"]
+        pipeline_trace["stage4_verdict_policy"] = {
+            "triggered_axiom": policy_resolution["triggered_axiom"],
+            "policy_verdict": pol_verd.value if hasattr(pol_verd, "value") else str(pol_verd),
+            "was_abstained": policy_resolution["was_abstained"],
+            "abstention_reason": policy_resolution["abstention_reason"],
+        }
+
+        # Stage 5: Confidence Calibration, Selective Abstention & Canonical Synthesis
+        raw_logits_np = np.array([agg_verdict.raw_logits], dtype=np.float32)
+        return self.stage5_synthesize_canonical_verdict(
+            claim_id=claim_id,
+            claim_text=claim_text,
+            claim_date=claim_date,
+            candidate_passages=candidate_passages,
+            agg_verdict=agg_verdict,
+            policy_resolution=policy_resolution,
+            temporal_report=temporal_report,
+            claim_components=claim_components,
+            joint_pred=joint_pred,
+            raw_logits_np=raw_logits_np,
+            pipeline_trace=pipeline_trace,
+        )
+
+    def stage1_assess_eligibility(
+        self,
+        claim_text: str,
+        candidate_passages: List[Dict[str, Any]],
+        claim_components: List[Dict[str, Any]],
+    ) -> List[Dict[str, Any]]:
+        """
+        Stage 1: Evidence Eligibility Assessment.
+        Evaluates candidate passages for topical subject relevance, informativeness,
+        claim-relation alignment, figurative idiom check, and generalized threat-boundary/scope mismatch.
+        Tags every candidate with explicit eligibility metadata and ineligibility reasons.
+        """
+        for p in candidate_passages:
+            t = (p.get("text") or "").strip()
+            if "is_figurative" not in p:
+                p["is_figurative"] = self.is_figurative_or_lexical_definition(t)
+            if "is_relevant" not in p:
+                p["is_relevant"] = self.is_topically_relevant(claim_text, t)
+            if "is_informative" not in p:
+                is_inf, inf_reason = self.is_passage_informative(t, claim_text)
+                p["is_informative"] = is_inf
+                p["informative_reason"] = inf_reason
+            if "is_claim_aligned" not in p:
+                p["is_claim_aligned"] = self.has_claim_relation_alignment(claim_text, t)
+            if "claim_coverage" not in p or "claim_components_covered" not in p:
+                cov_level, cov_labels = self.assess_claim_coverage(claim_components, t)
+                p["claim_coverage"] = cov_level
+                p["claim_components_covered"] = cov_labels
+            if "is_scope_mismatch" not in p:
+                p["is_scope_mismatch"] = _is_generalized_scope_mismatch(claim_text, t)
+
+            # Ineligibility reason determination
+            ineligibility_reason = None
+            if not p["is_relevant"]:
+                ineligibility_reason = "off_topic"
+            elif not p["is_informative"]:
+                ineligibility_reason = p.get("informative_reason") or "uninformative_fragment"
+            elif p.get("is_figurative", False):
+                ineligibility_reason = "figurative_or_lexical_definition"
+            elif not p["is_claim_aligned"]:
+                ineligibility_reason = "unaligned_claim_relation"
+            elif p.get("is_scope_mismatch", False):
+                ineligibility_reason = "scope_boundary_mismatch"
+
+            p["ineligibility_reason"] = ineligibility_reason
+
+            if "is_decision_eligible" not in p:
+                p["is_decision_eligible"] = bool(
+                    p["is_relevant"]
+                    and p["is_informative"]
+                    and p["is_claim_aligned"]
+                    and not p.get("is_figurative", False)
+                )
+
+        return candidate_passages
+
+    def stage2_classify_stance(
+        self,
+        claim_text: str,
+        candidate_passages: List[Dict[str, Any]],
+        joint_premise: Optional[str] = None,
+    ) -> Tuple[List[Dict[str, Any]], Optional[Dict[str, Any]]]:
+        """
+        Stage 2: Stance Classification & Semantic Polarity.
+        Executes NLI batch predictions, applies causal adjustment, generalized threat-boundary
+        scope mismatch normalization, and epistemic absence-of-evidence normalization.
+        Sets canonical stance ('support', 'refute', 'neutral') on each candidate.
+        """
+        pairs = [(p.get("text", ""), claim_text) for p in candidate_passages]
+        if joint_premise:
+            pairs.append((joint_premise, claim_text))
 
         all_predictions = self.nli.predict_batch(pairs)
 
-        if len(pairs) > len(candidate_passages):
-            nli_predictions = all_predictions[:-1]
+        if joint_premise and len(all_predictions) > len(candidate_passages):
+            nli_predictions = list(all_predictions[:-1])
             joint_pred = all_predictions[-1]
         else:
-            nli_predictions = all_predictions
+            nli_predictions = list(all_predictions[:len(candidate_passages)])
+            joint_pred = None
 
-        # Apply causal vs correlational and scope mismatch adjustment across candidate passages and joint premise
+        while len(nli_predictions) < len(candidate_passages):
+            nli_predictions.append({
+                "contradiction": 0.0,
+                "entailment": 0.0,
+                "neutral": 1.0,
+                "logits": [-5.0, -5.0, 5.0],
+                "predicted_label": "NEUTRAL",
+            })
+
+        # Apply causal adjustment & scope mismatch adjustment
         for i, p in enumerate(candidate_passages):
-            nli_predictions[i] = self.adjust_causal_nli_prediction(
-                claim_text, p.get("text", ""), nli_predictions[i]
-            )
-            nli_predictions[i] = self.adjust_scope_mismatch_nli_prediction(
-                claim_text, p.get("text", ""), nli_predictions[i]
-            )
-        if joint_pred is not None and "joint_premise" in locals() and joint_premise:
+            pt = p.get("text", "")
+            nli_predictions[i] = self.adjust_causal_nli_prediction(claim_text, pt, nli_predictions[i])
+            nli_predictions[i] = self.adjust_scope_mismatch_nli_prediction(claim_text, pt, nli_predictions[i])
+
+        if joint_pred is not None and joint_premise:
             joint_pred = self.adjust_causal_nli_prediction(claim_text, joint_premise, joint_pred)
             joint_pred = self.adjust_scope_mismatch_nli_prediction(claim_text, joint_premise, joint_pred)
 
-        # Idiom / figurative definitions of phrases and epistemic absence-of-evidence passages
-        # cannot establish literal scientific facts or definitive factual contradictions:
-        # Override NLI stance to NEUTRAL for figurative/idiomatic and absence-of-evidence entries
         claim_asserts_absence = bool(re.search(r"\b(?:no evidence|not found|unproven|unconfirmed|never)\b", claim_text, re.IGNORECASE))
         for i, p in enumerate(candidate_passages):
-            t = p.get("text", "")
+            pt = p.get("text", "")
             is_fig = bool(p.get("is_figurative", False))
-            is_absence = self.is_absence_of_evidence(t)
+            is_absence = self.is_absence_of_evidence(pt)
             if is_absence:
                 p["is_absence_of_evidence"] = True
 
@@ -1205,9 +1343,6 @@ class VerificationEngine:
                     "predicted_label": "NEUTRAL",
                 }
             elif is_absence and not claim_asserts_absence:
-                # When evaluating an affirmative factual proposition against an absence-of-evidence premise,
-                # DeBERTa's high contradiction probability is an epistemic artifact. Absence of evidence
-                # is epistemic uncertainty (NEUTRAL), not affirmative proof that the claim is false.
                 orig_pred = nli_predictions[i]
                 if float(orig_pred.get("contradiction", 0.0)) > float(orig_pred.get("entailment", 0.0)):
                     nli_predictions[i] = {
@@ -1218,46 +1353,79 @@ class VerificationEngine:
                         "predicted_label": "NEUTRAL",
                     }
 
-        # 3. Multi-Evidence Stance Aggregation
-        agg_verdict: AggregatedEvidenceVerdict = self.aggregator.aggregate(
+            pred = nli_predictions[i]
+            ep = float(pred.get("entailment", 0.0))
+            cp = float(pred.get("contradiction", 0.0))
+            np_ = float(pred.get("neutral", 0.0))
+
+            # Canonical stance assignment
+            if p.get("is_scope_mismatch"):
+                if cp > ep and cp >= 0.40 and cp >= np_:
+                    stance = "refute"
+                else:
+                    stance = "neutral"
+            elif ep >= cp and (ep >= np_ or ep >= 0.45):
+                stance = "support"
+            elif cp > ep and cp >= 0.40 and cp >= np_:
+                stance = "refute"
+            else:
+                stance = "neutral"
+
+            p["stance"] = stance
+            p["entailment_prob"] = ep
+            p["contradiction_prob"] = cp
+            p["neutral_prob"] = np_
+
+        return nli_predictions, joint_pred
+
+    def stage3_aggregate_consensus(
+        self,
+        candidate_passages: List[Dict[str, Any]],
+        nli_predictions: List[Dict[str, Any]],
+        joint_nli_prediction: Optional[Dict[str, Any]] = None,
+    ) -> AggregatedEvidenceVerdict:
+        """
+        Stage 3: Evidence Consensus Aggregation.
+        Executes multi-evidence consensus aggregation, deduplication, and cross-passage
+        stance disparity detection.
+        """
+        return self.aggregator.aggregate(
             candidate_passages=candidate_passages,
             nli_predictions=nli_predictions,
-            joint_nli_prediction=joint_pred,
+            joint_nli_prediction=joint_nli_prediction,
         )
 
-        # 4. Temporal Consistency Analysis
-        temporal_report = self.temporal_analyzer.analyze(claim_date, candidate_passages)
-
-        # 5. Temperature Calibration
-        raw_logits_np = np.array([agg_verdict.raw_logits], dtype=np.float32)
-        calibrated_probs = self.calibrator.calibrate(raw_logits_np)[0]
-
-        # Normalized class probabilities
-        prob_dict = {
-            self.LABEL_NAMES[i]: float(calibrated_probs[i])
-            for i in range(len(self.LABEL_NAMES))
-        }
-
-        # 6. Check Evidence Grounding & Calibrated Selective Abstention
-        has_meaningful_ev = self.check_evidence_grounding(
-            agg_verdict.evidence_breakdown, joint_pred
-        )
-        should_abstain, abstain_reason = self.abstainer.should_abstain(
-            calibrated_probs, has_meaningful_evidence=has_meaningful_ev
-        )
-
-        raw_pred_val = agg_verdict.canonical_verdict.value
-        uncalib_conf = agg_verdict.confidence
-        final_conf = float(np.max(calibrated_probs))
-
-        # Apply slight temporal penalty if temporal drift detected
-        if temporal_report.confidence_penalty > 0:
-            final_conf = max(0.1, final_conf - temporal_report.confidence_penalty)
-
-        # Deconstruct compound claim into constituent subclaims
+    def stage4_resolve_verdict_policy(
+        self,
+        claim_text: str,
+        agg_verdict: AggregatedEvidenceVerdict,
+        candidate_passages: List[Dict[str, Any]],
+        nli_predictions: List[Dict[str, Any]],
+        joint_pred: Optional[Dict[str, Any]],
+        claim_components: List[Dict[str, Any]],
+        joint_premise: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """
+        Stage 4: Verdict Policy Resolution.
+        Applies explicit decision axioms:
+        - Axiom 1: Constituent Refutation (refuted subclaim -> VERIFIED_FALSE)
+        - Axiom 2: Constituent Conflict (conflicting subclaim -> CONFLICTING)
+        - Axiom 3: Compound Completeness (all subclaims supported -> VERIFIED_TRUE)
+        - Axiom 4: Constituent Insufficiency (unresolved subclaim -> INSUFFICIENT)
+        - Axiom 5: Stance Disparity / Cross-passage conflict -> CONFLICTING
+        - Axiom 6: Affirmative Grounding Guard (VERIFIED_TRUE requires >= 1 eligible supporter or joint support)
+        - Axiom 7: Negative Refutation Guard (VERIFIED_FALSE requires >= 1 eligible refuter or constituent refutation)
+        - Axiom 8: Essential Component Coverage (missing essential components -> INSUFFICIENT)
+        - Axiom 9: Default Consensus Policy
+        """
         subclaims = self.decomposer.decompose(claim_text)
+        triggered_axiom = "Axiom 9: Default Consensus Policy"
+        final_verdict = agg_verdict.canonical_verdict
+        was_abstained = False
+        abstain_reason = ""
+        subclaim_evals: List[Dict[str, Any]] = []
+
         if len(subclaims) > 1:
-            subclaim_evals = []
             subclaim_pairs = []
             subclaim_pairs_meta = []
 
@@ -1330,26 +1498,28 @@ class VerificationEngine:
                 final_verdict = CanonicalVeracity.VERIFIED_FALSE
                 was_abstained = False
                 abstain_reason = f"Constituent proposition '{refuted_scs[0]['subclaim'].text}' is refuted by documentary evidence."
+                triggered_axiom = "Axiom 1: Constituent Refutation"
             elif conflicting_scs:
                 final_verdict = CanonicalVeracity.CONFLICTING_OR_CHERRYPICKED
                 was_abstained = False
                 abstain_reason = f"Constituent proposition '{conflicting_scs[0]['subclaim'].text}' has conflicting documentary evidence."
-            elif len(supported_scs) == len(subclaims) and not should_abstain:
+                triggered_axiom = "Axiom 2: Constituent Stance Conflict"
+            elif len(supported_scs) == len(subclaims):
                 final_verdict = CanonicalVeracity.VERIFIED_TRUE
                 was_abstained = False
+                triggered_axiom = "Axiom 3: Compound Completeness Supported"
             elif unresolved_scs:
                 final_verdict = CanonicalVeracity.INSUFFICIENT_EVIDENCE
                 was_abstained = True
                 abstain_reason = f"Constituent proposition '{unresolved_scs[0]['subclaim'].text}' lacks documentary evidence. Partial evidence for other components does not validate the complete compound claim."
+                triggered_axiom = "Axiom 4: Constituent Insufficiency"
             else:
                 final_verdict = CanonicalVeracity.INSUFFICIENT_EVIDENCE
                 was_abstained = True
                 abstain_reason = "Constituent propositions lack documentary evidence in retrieved passages."
-        elif should_abstain:
-            final_verdict = CanonicalVeracity.INSUFFICIENT_EVIDENCE
-            was_abstained = True
+                triggered_axiom = "Axiom 4: Constituent Insufficiency"
+
         elif agg_verdict.canonical_verdict == CanonicalVeracity.VERIFIED_TRUE and len(claim_components) >= 2:
-            # Check whether essential material components of the compound claim are covered across supporting evidence
             supported_component_labels = set()
             for item in agg_verdict.evidence_breakdown:
                 if item.get("is_decision_eligible") and item.get("stance") == "support":
@@ -1362,10 +1532,8 @@ class VerificationEngine:
                 ):
                     supported_component_labels.update(item.get("claim_components_covered", []))
 
-            # If multi-hop joint evidence provided active supporting signal across complementary passages,
-            # incorporate components covered across the combined joint premise text
             if joint_pred is not None and float(joint_pred.get("entailment", 0.0)) > float(joint_pred.get("contradiction", 0.0)):
-                if "joint_premise" in locals() and joint_premise:
+                if joint_premise:
                     _, j_cov_labels = self.assess_claim_coverage(claim_components, joint_premise)
                     supported_component_labels.update(j_cov_labels)
 
@@ -1378,15 +1546,17 @@ class VerificationEngine:
                 final_verdict = CanonicalVeracity.INSUFFICIENT_EVIDENCE
                 was_abstained = True
                 abstain_reason = f"Essential claim components remain unresolved: missing documentary evidence for {', '.join(missing_essential)}."
+                triggered_axiom = "Axiom 8: Essential Component Missing"
             else:
                 final_verdict = CanonicalVeracity.VERIFIED_TRUE
                 was_abstained = False
+                triggered_axiom = "Axiom 9: Consensus Verified True"
         else:
             final_verdict = agg_verdict.canonical_verdict
-            was_abstained = False
+            was_abstained = (final_verdict == CanonicalVeracity.INSUFFICIENT_EVIDENCE)
+            triggered_axiom = f"Axiom 9: Default Consensus ({agg_verdict.canonical_verdict.value})"
 
-        # Guard: Ensure a VERIFIED_TRUE verdict is not justified by an evidence summary containing
-        # zero eligible supporting passages unless joint evidence provides affirmative support.
+        # Affirmative Grounding Guard
         if final_verdict == CanonicalVeracity.VERIFIED_TRUE:
             has_eligible_support = any(
                 item.get("stance") == "support"
@@ -1394,8 +1564,13 @@ class VerificationEngine:
                 and not item.get("is_joint", False)
                 for item in agg_verdict.evidence_breakdown
             )
+            has_complementary_coverage = (
+                len([p for p in candidate_passages if p.get("is_decision_eligible", False)]) >= 2
+                and any(p.get("claim_coverage") == "partial" for p in candidate_passages if p.get("is_decision_eligible", False))
+            )
             has_joint_support = (
                 joint_pred is not None
+                and has_complementary_coverage
                 and float(joint_pred.get("entailment", 0.0)) > float(joint_pred.get("contradiction", 0.0))
                 and float(joint_pred.get("entailment", 0.0)) >= 0.50
             )
@@ -1409,9 +1584,9 @@ class VerificationEngine:
                 abstain_reason = (
                     f"Insufficient affirmative evidence retrieved: available passages do not contain documentary support for this proposition ({neut_count} neutral passage(s))."
                 )
+                triggered_axiom = "Axiom 6: Affirmative Grounding Guard"
 
-        # Guard: Ensure a VERIFIED_FALSE verdict is not justified by an evidence summary containing
-        # zero eligible contradictions unless a separate, explicit constituent-level refutation supports that verdict.
+        # Refutation Grounding Guard
         if final_verdict == CanonicalVeracity.VERIFIED_FALSE:
             has_eligible_contradiction = any(
                 item.get("stance") == "refute"
@@ -1419,7 +1594,7 @@ class VerificationEngine:
                 and not item.get("is_joint", False)
                 for item in agg_verdict.evidence_breakdown
             )
-            has_constituent_refutation = bool("refuted_scs" in locals() and refuted_scs)
+            has_constituent_refutation = bool([e for e in subclaim_evals if e["status"] == "refuted"])
 
             if not has_eligible_contradiction and not has_constituent_refutation:
                 final_verdict = CanonicalVeracity.INSUFFICIENT_EVIDENCE
@@ -1431,8 +1606,136 @@ class VerificationEngine:
                 abstain_reason = (
                     f"Insufficient informative evidence retrieved: available passages do not contain documentary refutation or support for this proposition ({neut_count} neutral passage(s))."
                 )
+                triggered_axiom = "Axiom 7: Negative Refutation Guard"
             elif has_constituent_refutation and not abstain_reason:
-                abstain_reason = f"Constituent proposition '{refuted_scs[0]['subclaim'].text}' is refuted by documentary evidence."
+                refuted_item = [e for e in subclaim_evals if e["status"] == "refuted"][0]
+                abstain_reason = f"Constituent proposition '{refuted_item['subclaim'].text}' is refuted by documentary evidence."
+
+        if final_verdict == CanonicalVeracity.INSUFFICIENT_EVIDENCE:
+            was_abstained = True
+            if not abstain_reason:
+                neut_count = len([
+                    e for e in agg_verdict.evidence_breakdown
+                    if e.get("stance") == "neutral" and not e.get("is_joint", False)
+                ])
+                abstain_reason = (
+                    f"Insufficient informative evidence retrieved: available passages do not contain documentary refutation or support for this proposition ({neut_count} neutral passage(s))."
+                )
+
+        return {
+            "verdict": final_verdict,
+            "was_abstained": was_abstained,
+            "abstention_reason": abstain_reason,
+            "triggered_axiom": triggered_axiom,
+            "subclaim_evals": subclaim_evals,
+        }
+
+    def stage5_synthesize_canonical_verdict(
+        self,
+        claim_id: Optional[str],
+        claim_text: str,
+        claim_date: Optional[str],
+        candidate_passages: List[Dict[str, Any]],
+        agg_verdict: AggregatedEvidenceVerdict,
+        policy_resolution: Dict[str, Any],
+        temporal_report: TemporalReport,
+        claim_components: List[Dict[str, Any]],
+        joint_pred: Optional[Dict[str, Any]],
+        raw_logits_np: np.ndarray,
+        pipeline_trace: Dict[str, Any],
+    ) -> ForensicVerdict:
+        """
+        Stage 5: Confidence Calibration, Selective Abstention & Canonical Synthesis.
+        Applies temperature calibration, evaluates selective abstention, constructs canonical
+        evidence counts and deterministic reasoning, and assembles the ForensicVerdict.
+        """
+        calibrated_probs = self.calibrator.calibrate(raw_logits_np)[0]
+        prob_dict = {
+            self.LABEL_NAMES[i]: float(calibrated_probs[i])
+            for i in range(len(self.LABEL_NAMES))
+        }
+
+        has_meaningful_ev = self.check_evidence_grounding(
+            agg_verdict.evidence_breakdown, joint_pred
+        )
+        should_abstain, abst_reason = self.abstainer.should_abstain(
+            calibrated_probs, has_meaningful_evidence=has_meaningful_ev
+        )
+
+        final_verdict = policy_resolution["verdict"]
+        was_abstained = policy_resolution["was_abstained"]
+        final_abstain_reason = policy_resolution["abstention_reason"]
+
+        if should_abstain:
+            final_verdict = CanonicalVeracity.INSUFFICIENT_EVIDENCE
+            was_abstained = True
+            if not final_abstain_reason or "Constituent proposition" not in final_abstain_reason:
+                if abst_reason:
+                    final_abstain_reason = abst_reason
+        elif final_verdict == CanonicalVeracity.INSUFFICIENT_EVIDENCE:
+            was_abstained = True
+            if not final_abstain_reason:
+                final_abstain_reason = "Insufficient informative evidence mass retrieved to adjudicate this claim."
+
+        uncalib_conf = agg_verdict.confidence
+        final_conf = float(np.max(calibrated_probs))
+
+        if temporal_report.confidence_penalty > 0:
+            final_conf = max(0.1, final_conf - temporal_report.confidence_penalty)
+
+        # Build canonical evidence counts
+        total_ev = len(candidate_passages)
+        sup_count = len([p for p in candidate_passages if p.get("is_decision_eligible", False) and p.get("stance") == "support"])
+        ref_count = len([p for p in candidate_passages if p.get("is_decision_eligible", False) and p.get("stance") == "refute"])
+        neut_count = len([p for p in candidate_passages if p.get("is_relevant", True) and p.get("stance") == "neutral"])
+        partial_count = len([p for p in candidate_passages if p.get("is_relevant", True) and p.get("claim_coverage") == "partial"])
+        off_topic_count = len([p for p in candidate_passages if not p.get("is_relevant", True)])
+
+        evidence_counts = {
+            "total": total_ev,
+            "eligible_supporting": sup_count,
+            "eligible_refuting": ref_count,
+            "relevant_neutral": neut_count,
+            "relevant_partial": partial_count,
+            "off_topic": off_topic_count,
+            "duplicates": agg_verdict.duplicates_filtered,
+        }
+
+        conf_pct = final_conf * 100.0
+
+        # Construct canonical reasoning
+        if final_verdict == CanonicalVeracity.CONFLICTING_OR_CHERRYPICKED:
+            if sup_count > 0 and ref_count > 0:
+                canonical_reason = f"Cross-passage stance disparity detected: {sup_count} supporting passage(s) and {ref_count} refuting passage(s) present contradictory documentary evidence (calibrated confidence {conf_pct:.1f}%)."
+            else:
+                canonical_reason = f"Cross-passage stance disparity detected: opposing evidence positions were documented across retrieved passages (calibrated confidence {conf_pct:.1f}%)."
+        elif final_verdict == CanonicalVeracity.INSUFFICIENT_EVIDENCE:
+            if off_topic_count == total_ev and total_ev > 0:
+                canonical_reason = f"No relevant evidence was found in the corpus ({off_topic_count} off-topic passage(s) excluded). No factual conclusion was established."
+            elif not has_meaningful_ev:
+                canonical_reason = f"Abstained — Insufficient Evidentiary Grounding ({final_abstain_reason}). Retrieved passages lack supporting or refuting evidence for the asserted proposition."
+            else:
+                canonical_reason = final_abstain_reason or f"Insufficient informative evidence mass retrieved to adjudicate this claim ({neut_count} of {total_ev} passage(s) neutral or uninformative)."
+        elif final_verdict == CanonicalVeracity.VERIFIED_TRUE:
+            canonical_reason = f"Evidence supports the claim with {sup_count} supporting passage(s) (calibrated confidence {conf_pct:.1f}%)."
+        elif final_verdict == CanonicalVeracity.VERIFIED_FALSE:
+            if ref_count > 0:
+                canonical_reason = f"Evidence refutes the claim with {ref_count} refuting passage(s) (calibrated confidence {conf_pct:.1f}%)."
+            elif final_abstain_reason and "Constituent proposition" in final_abstain_reason:
+                canonical_reason = f"{final_abstain_reason} (calibrated confidence {conf_pct:.1f}%)."
+            else:
+                canonical_reason = f"Evidence refutes the claim (calibrated confidence {conf_pct:.1f}%)."
+        else:
+            canonical_reason = "Adjudication completed by VERITAS-X verification pipeline."
+
+        # Finalize pipeline trace
+        pipeline_trace["stage5_synthesis"] = {
+            "final_verdict": final_verdict.value,
+            "calibrated_confidence": round(final_conf, 4),
+            "was_abstained": was_abstained,
+            "canonical_reason": canonical_reason,
+            "evidence_counts": evidence_counts,
+        }
 
         return ForensicVerdict(
             claim_id=claim_id,
@@ -1441,14 +1744,17 @@ class VerificationEngine:
             confidence=final_conf,
             uncalibrated_confidence=uncalib_conf,
             was_abstained=was_abstained,
-            abstention_reason=abstain_reason,
+            abstention_reason=final_abstain_reason,
             class_probabilities=prob_dict,
             temporal_report=temporal_report,
             evidence_used_count=agg_verdict.unique_passages_used,
             duplicates_filtered=agg_verdict.duplicates_filtered,
             irrelevant_passages_filtered=agg_verdict.irrelevant_passages_filtered,
             evidence_breakdown=agg_verdict.evidence_breakdown,
-            raw_prediction=raw_pred_val,
+            raw_prediction=agg_verdict.canonical_verdict.value,
             has_meaningful_evidence=has_meaningful_ev,
             claim_components=claim_components,
+            canonical_reason=canonical_reason,
+            evidence_counts=evidence_counts,
+            pipeline_trace=pipeline_trace,
         )

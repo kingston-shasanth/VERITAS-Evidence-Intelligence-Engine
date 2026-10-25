@@ -231,6 +231,74 @@ def _is_ip_hiding_scope_mismatch(claim: str, passage: str) -> bool:
     return False
 
 
+_HTTPS_SECURITY_CLAIM_REGEX = re.compile(
+    r"\b(https|ssl|tls|padlock|encryption|encrypted\s+connection)\b.*?"
+    r"\b(prevents?|stops?|blocks?|protects?\s+against|immune\s+to|safeguards?\s+against|guarantees?\s+safety\s+from)\b.*?"
+    r"\b(phishing|scam|scams|fraud|fake\s+website|malicious\s+site|credential\s+theft|identity\s+theft)\b|"
+    r"\b(phishing|scam|scams|fraud|fake\s+website|malicious\s+site|credential\s+theft|identity\s+theft)\b.*?"
+    r"\b(prevented|stopped|blocked|protected)\s+by\s+(?:https|ssl|tls|encryption)\b",
+    re.IGNORECASE | re.DOTALL,
+)
+
+_TRANSPORT_LAYER_ONLY_REGEX = re.compile(
+    r"\b(in[- ]transit|transit\s+encryption|encrypt(?:s|ed)?\s+(?:data|traffic|communications?|connection)|"
+    r"eavesdropping|interception|man[- ]in[- ]the[- ]middle|tampering)\b",
+    re.IGNORECASE,
+)
+
+_AFFIRMATIVE_PHISHING_PROOF_REGEX = re.compile(
+    r"\b(prevents?\s+phishing|stops?\s+phishing|blocks?\s+phishing\s+sites?|detects?\s+fake\s+websites?)\b",
+    re.IGNORECASE,
+)
+
+def _is_https_phishing_scope_mismatch(claim: str, passage: str) -> bool:
+    """Detects when HTTPS transport encryption is conflated with application phishing protection."""
+    if not claim or not passage:
+        return False
+    if not _HTTPS_SECURITY_CLAIM_REGEX.search(claim):
+        return False
+    return bool(_TRANSPORT_LAYER_ONLY_REGEX.search(passage)) and not bool(_AFFIRMATIVE_PHISHING_PROOF_REGEX.search(passage))
+
+
+_FILE_DELETION_CLAIM_REGEX = re.compile(
+    r"\b(recycle\s+bin|trash|trash\s+can|delet(?:e|ing|ed)|empty(?:ing)?\s+(?:the\s+)?recycle\s+bin)\b.*?"
+    r"\b(permanently\s+(?:destroys?|erases?|wipes?|removes?|deletes?)|beyond\s+(?:recovery|forensic)|unrecoverable|physically\s+erased)\b|"
+    r"\b(permanently\s+(?:destroys?|erases?|wipes?|removes?|deletes?)|beyond\s+(?:recovery|forensic)|unrecoverable|physically\s+erased)\b.*?"
+    r"\b(recycle\s+bin|trash|deleting\s+a\s+file)\b",
+    re.IGNORECASE | re.DOTALL,
+)
+
+_POINTER_DELETION_ONLY_REGEX = re.compile(
+    r"\b(marked\s+as\s+free|file\s+(?:pointer|table|record|reference|index)|until\s+overwritten|"
+    r"can\s+still\s+be\s+recovered|recovery\s+software|does\s+not\s+(?:immediately\s+)?erase|"
+    r"moves?\s+(?:it\s+)?to\s+(?:the\s+)?(?:recycle\s+bin|trash)|space\s+is\s+reallocated)\b",
+    re.IGNORECASE,
+)
+
+_AFFIRMATIVE_PERMANENT_ERASURE_REGEX = re.compile(
+    r"\b(zero[- ]fill|secure\s+erase|gutmann|dod\s+5220|overwrit(?:es?|ing|ten)\s+with\s+(?:zeroes|random)|shred(?:ded)?|degauss)\b",
+    re.IGNORECASE,
+)
+
+def _is_file_deletion_scope_mismatch(claim: str, passage: str) -> bool:
+    """Detects when moving to recycle bin or directory deletion is conflated with permanent disk erasure."""
+    if not claim or not passage:
+        return False
+    if not _FILE_DELETION_CLAIM_REGEX.search(claim):
+        return False
+    return bool(_POINTER_DELETION_ONLY_REGEX.search(passage)) and not bool(_AFFIRMATIVE_PERMANENT_ERASURE_REGEX.search(passage))
+
+
+def _is_generalized_scope_mismatch(claim: str, passage: str) -> bool:
+    """Evaluates whether a passage documents an operational scope distinct from the asserted threat boundary."""
+    return (
+        _is_local_storage_scope_mismatch(claim, passage)
+        or _is_ip_hiding_scope_mismatch(claim, passage)
+        or _is_https_phishing_scope_mismatch(claim, passage)
+        or _is_file_deletion_scope_mismatch(claim, passage)
+    )
+
+
 
 
 class CrossEncoderNLI:
@@ -419,7 +487,7 @@ class CrossEncoderNLI:
                 if re.search(r'\b(false|myth|untrue|debunk|incorrect|wrong|fiction|disproven)\b', s_stripped, re.IGNORECASE):
                     c = max(c, e)
                     e = min(e, 0.10)
-            elif (_is_local_storage_scope_mismatch(hypothesis, s_stripped) or _is_ip_hiding_scope_mismatch(hypothesis, s_stripped)) and c < 0.40:
+            elif _is_generalized_scope_mismatch(hypothesis, s_stripped) and c < 0.40:
                 e = min(e, 0.15)
                 n = max(n, 0.80)
 

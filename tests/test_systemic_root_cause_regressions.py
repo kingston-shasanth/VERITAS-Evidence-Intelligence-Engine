@@ -886,6 +886,114 @@ class TestEvidenceConsistencyAndNeutralInvariance(unittest.TestCase):
         self.assertIn("Insufficient", res["reason"])
 
 
+class TestSystemWideReliabilityAndPipelineTrace(unittest.TestCase):
+    """
+    Validates end-to-end 5-stage verification architecture, generalized scope boundary checks,
+    abstention on unverifiable claims, and explanation-count consistency.
+    """
+
+    def setUp(self):
+        self.engine = VerificationEngine.__new__(VerificationEngine)
+        self.engine.device = "cpu"
+        self.engine.aggregator = EvidenceAggregator()
+        from veritas.verification.temporal_analyzer import TemporalAnalyzer
+        self.engine.temporal_analyzer = TemporalAnalyzer()
+        from veritas.verification.calibrator import TemperatureCalibrator, SelectiveAbstainer
+        self.engine.calibrator = TemperatureCalibrator(temperature=1.0)
+        self.engine.abstainer = SelectiveAbstainer(confidence_threshold=0.40, entropy_threshold=0.88)
+        from veritas.reasoning.decomposer import ClaimDecomposer
+        self.engine.decomposer = ClaimDecomposer()
+        self.engine.retriever = None
+
+        # Mock NLI model
+        self.mock_nli = MagicMock()
+        self.engine.nli = self.mock_nli
+
+    def test_five_stage_pipeline_execution_and_trace(self):
+        """Verifies that all 5 explicit pipeline stages execute and record full provenance."""
+        claim = "Apollo 11 landed astronauts on the Moon in July 1969."
+        passages = [
+            {
+                "doc_id": "p1",
+                "text": "The Apollo 11 lunar module landed on the Moon on July 20, 1969, carrying Neil Armstrong and Buzz Aldrin.",
+            },
+            {
+                "doc_id": "p2",
+                "text": "Astronauts walked on lunar soil during the Apollo 11 mission in July 1969.",
+            },
+        ]
+        self.mock_nli.predict_batch.return_value = [
+            {"entailment": 0.95, "contradiction": 0.01, "neutral": 0.04, "predicted_label": "ENTAILMENT"},
+            {"entailment": 0.92, "contradiction": 0.02, "neutral": 0.06, "predicted_label": "ENTAILMENT"},
+            {"entailment": 0.96, "contradiction": 0.01, "neutral": 0.03, "predicted_label": "ENTAILMENT"},
+        ]
+
+        verdict = self.engine.verify_claim(claim, candidate_passages=passages)
+
+        self.assertEqual(verdict.verdict, CanonicalVeracity.VERIFIED_TRUE)
+        self.assertIn("execution_order", verdict.pipeline_trace)
+        expected_stages = [
+            "stage1_assess_eligibility",
+            "stage2_classify_stance",
+            "stage3_aggregate_consensus",
+            "stage4_resolve_verdict_policy",
+            "stage5_synthesize_canonical_verdict",
+        ]
+        self.assertEqual(verdict.pipeline_trace["execution_order"], expected_stages)
+        self.assertEqual(verdict.pipeline_trace["stage1_eligibility"]["eligible_count"], 2)
+        self.assertEqual(verdict.pipeline_trace["stage2_stance"]["support_count"], 2)
+        self.assertIn("stage3_consensus", verdict.pipeline_trace)
+        self.assertIn("stage4_verdict_policy", verdict.pipeline_trace)
+        self.assertIn("stage5_synthesis", verdict.pipeline_trace)
+        self.assertEqual(verdict.evidence_counts["eligible_supporting"], 2)
+        self.assertIn("2 supporting", verdict.canonical_reason)
+
+    def test_https_phishing_threat_boundary(self):
+        """Verifies transport encryption does not entail phishing protection."""
+        claim = "HTTPS prevents phishing attacks and protects users from fraudulent websites."
+        passage = "HTTPS encrypts communications between the browser and server in transit, preventing eavesdropping."
+        pred = {"entailment": 0.88, "contradiction": 0.05, "neutral": 0.07, "predicted_label": "ENTAILMENT"}
+
+        adj = VerificationEngine.adjust_scope_mismatch_nli_prediction(claim, passage, pred)
+        self.assertEqual(adj["predicted_label"], "NEUTRAL")
+        self.assertEqual(adj["entailment"], 0.0)
+
+    def test_file_deletion_threat_boundary(self):
+        """Verifies recycle bin / pointer deletion does not entail permanent disk erasure."""
+        claim = "Moving a file to the recycle bin permanently destroys all data from the hard drive."
+        passage = "When a file is sent to the recycle bin, its directory pointer is moved and space is marked as free until overwritten."
+        pred = {"entailment": 0.82, "contradiction": 0.08, "neutral": 0.10, "predicted_label": "ENTAILMENT"}
+
+        adj = VerificationEngine.adjust_scope_mismatch_nli_prediction(claim, passage, pred)
+        self.assertEqual(adj["predicted_label"], "NEUTRAL")
+        self.assertEqual(adj["entailment"], 0.0)
+
+    def test_unrecorded_traveler_abstention(self):
+        """Verifies off-topic passages do not manufacture a false verdict on an unrecorded event."""
+        claim = "In 1943, an unrecorded traveler dropped an unmarked copper button into an undisclosed lake."
+        passages = [
+            {
+                "doc_id": "p1",
+                "text": "The Battle of Stalingrad concluded in February 1943 with the defeat of Axis forces.",
+            },
+            {
+                "doc_id": "p2",
+                "text": "Allied leaders met at the Tehran Conference in late 1943 to coordinate military strategy.",
+            },
+        ]
+        self.mock_nli.predict_batch.return_value = [
+            {"entailment": 0.01, "contradiction": 0.90, "neutral": 0.09, "predicted_label": "CONTRADICTION"},
+            {"entailment": 0.02, "contradiction": 0.88, "neutral": 0.10, "predicted_label": "CONTRADICTION"},
+        ]
+
+        verdict = self.engine.verify_claim(claim, candidate_passages=passages)
+        self.assertEqual(verdict.verdict, CanonicalVeracity.INSUFFICIENT_EVIDENCE)
+        self.assertTrue(verdict.was_abstained)
+        self.assertEqual(verdict.evidence_counts["eligible_refuting"], 0)
+        self.assertEqual(verdict.evidence_counts["off_topic"], 2)
+        self.assertIn("off-topic", verdict.canonical_reason)
+
+
 if __name__ == "__main__":
     unittest.main()
 

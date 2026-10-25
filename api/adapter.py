@@ -227,6 +227,7 @@ class VeritasAPIAdapter:
         include_timings: bool = False,
         include_research: bool = False,
         candidate_passages: Optional[List[Dict[str, Any]]] = None,
+        include_pipeline_trace: bool = False,
     ) -> Dict[str, Any]:
         """
         Executes verification across requested evidence mode ('local', 'web', 'hybrid')
@@ -397,6 +398,7 @@ class VeritasAPIAdapter:
             t_eng_ms=t_eng_ms,
             include_timings=include_timings,
             include_research=include_research,
+            include_pipeline_trace=include_pipeline_trace,
         )
 
     def _format_report(
@@ -413,6 +415,7 @@ class VeritasAPIAdapter:
         t_eng_ms: float = 0.0,
         include_timings: bool = True,
         include_research: bool = False,
+        include_pipeline_trace: bool = False,
     ) -> Dict[str, Any]:
         """Formats a ForensicVerdict into the client API payload contract."""
         claim_clean = claim_clean or getattr(verdict, "claim_text", "")
@@ -660,6 +663,14 @@ class VeritasAPIAdapter:
         else:
             reason = "Adjudication completed by VERITAS-X verification pipeline."
 
+        # If engine synthesized a canonical reason and evidence counts directly from the 5-stage pipeline,
+        # adopt them as the canonical single-source-of-truth unless a web retrieval provider error intervened:
+        if isinstance(getattr(verdict, "evidence_counts", None), dict):
+            evidence_counts = verdict.evidence_counts
+
+        if isinstance(getattr(verdict, "canonical_reason", None), str) and getattr(verdict, "canonical_reason", None) and (mode != "web" or ret_status_code not in ("unconfigured", "limit_reached", "quota_exceeded", "billing_restricted", "timeout", "network_error", "http_error", "unauthorized")):
+            reason = verdict.canonical_reason
+
         latency_ms = round((time.perf_counter() - t_infer_start) * 1000.0, 1) if t_infer_start > 0 else 0.0
         timing_breakdown = {
             "init_ms": init_delta_ms,
@@ -697,6 +708,9 @@ class VeritasAPIAdapter:
             response_payload["raw_verdict"] = raw_pred
             response_payload["abstention_reason"] = getattr(verdict, "abstention_reason", "")
             response_payload["has_meaningful_evidence"] = has_ev
+
+        if include_research or include_pipeline_trace:
+            response_payload["pipeline_trace"] = getattr(verdict, "pipeline_trace", {})
 
         if include_timings:
             response_payload["timing_ms"] = timing_breakdown

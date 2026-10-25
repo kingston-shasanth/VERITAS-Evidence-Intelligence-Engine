@@ -1,14 +1,14 @@
 {
   "evaluation_title": "VERITAS-X Phase 3.2.5 Final One-Shot Held-Out Test Evaluation",
-  "timestamp": 1792513042.6410172,
+  "timestamp": 1792923737.3210833,
   "dataset_split": "held_out_test_split_strictly_once",
   "split_size": 256,
   "model_evaluated": "MoritzLaurer/DeBERTa-v3-base-mnli-fever-anli",
   "compute_device": "cuda",
   "execution_durations": {
-    "model_load_sec": 4.7486045360565186,
-    "inference_sec": 15.625844240188599,
-    "total_sec": 20.374448776245117
+    "model_load_sec": 3.4379987716674805,
+    "inference_sec": 16.166157722473145,
+    "total_sec": 19.604156494140625
   },
   "frozen_pipeline_configuration": {
     "aggregator_parameters": {
@@ -28,10 +28,10 @@
   "full_test_evaluation": {
     "evaluation_scope": "full_test_split_unretained",
     "total_claims": 256,
-    "accuracy": 0.59375,
-    "macro_precision": 0.4691002381842076,
-    "macro_recall": 0.49070140632985826,
-    "macro_f1": 0.4334393784175799,
+    "accuracy": 0.59765625,
+    "macro_precision": 0.4694481094563331,
+    "macro_recall": 0.4922937630177563,
+    "macro_f1": 0.43572505085716917,
     "per_class": {
       "VERIFIED_TRUE": {
         "precision": 0.5769230769230769,
@@ -40,9 +40,9 @@
         "support": 61
       },
       "VERIFIED_FALSE": {
-        "precision": 0.816793893129771,
-        "recall": 0.6815286624203821,
-        "f1": 0.7430555555555556,
+        "precision": 0.8120300751879699,
+        "recall": 0.6878980891719745,
+        "f1": 0.7448275862068966,
         "support": 157
       },
       "CONFLICTING_OR_CHERRYPICKED": {
@@ -52,24 +52,24 @@
         "support": 19
       },
       "INSUFFICIENT_EVIDENCE": {
-        "precision": 0.19696969696969696,
+        "precision": 0.203125,
         "recall": 0.6842105263157895,
-        "f1": 0.3058823529411765,
+        "f1": 0.3132530120481928,
         "support": 19
       }
     },
     "confusion_matrix": [
       [
         30,
-        12,
+        13,
         2,
-        17
+        16
       ],
       [
         17,
-        107,
+        108,
         2,
-        31
+        30
       ],
       [
         3,
@@ -86,64 +86,66 @@
     ],
     "calibration": {
       "temperature_applied": 4.103875670709753,
-      "uncalibrated_nll": 1.9076822421856232,
-      "calibrated_nll": 0.9915334841019277,
-      "uncalibrated_brier": 0.5773696382410645,
-      "calibrated_brier": 0.5226086791022246,
-      "uncalibrated_ece": 0.2310136057243754,
-      "calibrated_ece": 0.10601298213616644,
+      "uncalibrated_nll": 2.01439518243369,
+      "calibrated_nll": 1.0035695752095997,
+      "uncalibrated_brier": 0.5838319414044474,
+      "calibrated_brier": 0.5254228648908255,
+      "uncalibrated_ece": 0.239503718749088,
+      "calibrated_ece": 0.11040613818149649,
       "ece_binning_method": "equal_width_10_bins",
       "bin_counts": [
         0,
         0,
         0,
-        82,
-        18,
-        25,
-        47,
-        14,
-        40,
-        30
+        80,
+        16,
+        21,
+        49,
+        16,
+        41,
+        33
       ],
       "bin_accuracies": [
         0.0,
         0.0,
         0.0,
-        0.2926829268292683,
-        0.6666666666666666,
-        0.48,
-        0.8297872340425532,
-        0.5714285714285714,
-        0.8,
-        0.8
+        0.3,
+        0.6875,
+        0.42857142857142855,
+        0.8163265306122449,
+        0.5625,
+        0.8292682926829268,
+        0.7575757575757576
       ],
       "bin_confidences": [
         0.05,
         0.15000000000000002,
         0.25,
-        0.3308930029283143,
-        0.4551334842129973,
-        0.5600712100147809,
-        0.6443430983838121,
-        0.7465513233177721,
-        0.8647477362936797,
-        0.9479739099348147
+        0.3317844808845303,
+        0.4508631913889739,
+        0.5583846381718035,
+        0.6430822835318738,
+        0.7408887946394882,
+        0.8685906354845025,
+        0.9470770208570237
       ]
     }
   },
   "selective_abstention_evaluation": {
     "confidence_threshold": 0.32,
     "entropy_threshold": 0.94,
+    "evidence_aware_conf_threshold": 0.38,
+    "margin_threshold": 0.1,
     "total_samples": 256,
-    "retained_count": 242,
-    "abstained_count": 14,
-    "coverage": 0.9453125,
+    "retained_count": 245,
+    "abstained_count": 11,
+    "coverage": 0.95703125,
     "is_low_coverage": false,
-    "selective_accuracy": 0.6239669421487604,
-    "selective_risk": 0.37603305785123964,
-    "macro_f1_retained": 0.4553870903547681,
-    "macro_precision_retained": 0.47755012163409105,
-    "macro_recall_retained": 0.5059907120743034,
+    "selective_accuracy": 0.6204081632653061,
+    "selective_risk": 0.3795918367346939,
+    "macro_f1_retained": 0.45159540536313,
+    "macro_precision_retained": 0.47527063304123873,
+    "macro_recall_retained": 0.5036549707602339,
     "per_class_retained": {
       "VERIFIED_TRUE": {
         "precision": 0.5769230769230769,
@@ -152,42 +154,42 @@
         "support": 57
       },
       "VERIFIED_FALSE": {
-        "precision": 0.816793893129771,
-        "recall": 0.7133333333333334,
-        "f1": 0.7615658362989324,
-        "support": 150
+        "precision": 0.8120300751879699,
+        "recall": 0.7105263157894737,
+        "f1": 0.7578947368421053,
+        "support": 152
       },
       "CONFLICTING_OR_CHERRYPICKED": {
         "precision": 0.2857142857142857,
-        "recall": 0.11764705882352941,
-        "f1": 0.16666666666666666,
-        "support": 17
+        "recall": 0.1111111111111111,
+        "f1": 0.16,
+        "support": 18
       },
       "INSUFFICIENT_EVIDENCE": {
-        "precision": 0.23076923076923078,
+        "precision": 0.22641509433962265,
         "recall": 0.6666666666666666,
-        "f1": 0.34285714285714286,
+        "f1": 0.3380281690140845,
         "support": 18
       }
     },
     "confusion_matrix_retained": [
       [
         30,
-        12,
+        13,
         2,
-        13
+        12
       ],
       [
         17,
-        107,
+        108,
         2,
-        24
+        25
       ],
       [
         3,
         9,
         2,
-        3
+        4
       ],
       [
         2,
@@ -198,13 +200,13 @@
     ],
     "abstained_support_by_true_class": {
       "VERIFIED_TRUE": 4,
-      "VERIFIED_FALSE": 7,
-      "CONFLICTING_OR_CHERRYPICKED": 2,
+      "VERIFIED_FALSE": 5,
+      "CONFLICTING_OR_CHERRYPICKED": 1,
       "INSUFFICIENT_EVIDENCE": 1
     },
     "operational_fallback_4class": {
-      "accuracy": 0.59375,
-      "macro_f1": 0.4334393784175799,
+      "accuracy": 0.59765625,
+      "macro_f1": 0.43572505085716917,
       "per_class": {
         "VERIFIED_TRUE": {
           "precision": 0.5769230769230769,
@@ -213,9 +215,9 @@
           "support": 61
         },
         "VERIFIED_FALSE": {
-          "precision": 0.816793893129771,
-          "recall": 0.6815286624203821,
-          "f1": 0.7430555555555556,
+          "precision": 0.8120300751879699,
+          "recall": 0.6878980891719745,
+          "f1": 0.7448275862068966,
           "support": 157
         },
         "CONFLICTING_OR_CHERRYPICKED": {
@@ -225,9 +227,9 @@
           "support": 19
         },
         "INSUFFICIENT_EVIDENCE": {
-          "precision": 0.19696969696969696,
+          "precision": 0.203125,
           "recall": 0.6842105263157895,
-          "f1": 0.3058823529411765,
+          "f1": 0.3132530120481928,
           "support": 19
         }
       }
@@ -235,21 +237,21 @@
   },
   "baseline_comparison": {
     "full_test_vs_phase31": {
-      "accuracy_change": 0.01953125,
-      "macro_f1_change": -0.00894577245126621,
+      "accuracy_change": 0.0234375,
+      "macro_f1_change": -0.006660100011676939,
       "conflicting_precision_change": 0.14285714285714285,
       "conflicting_recall_change": -0.10526315789473684,
       "conflicting_f1_change": -0.01615384615384613
     },
     "selective_vs_phase31": {
-      "coverage": 0.9453125,
-      "selective_accuracy": 0.6239669421487604,
-      "selective_risk": 0.37603305785123964,
-      "retained_macro_f1": 0.4553870903547681,
-      "selective_accuracy_vs_baseline_acc": 0.04974819214876036,
-      "retained_macro_f1_vs_baseline_macro_f1": 0.013001939485921987,
-      "conflicting_retained_f1": 0.16666666666666666,
-      "conflicting_retained_recall": 0.11764705882352941
+      "coverage": 0.95703125,
+      "selective_accuracy": 0.6204081632653061,
+      "selective_risk": 0.3795918367346939,
+      "retained_macro_f1": 0.45159540536313,
+      "selective_accuracy_vs_baseline_acc": 0.04618941326530612,
+      "retained_macro_f1_vs_baseline_macro_f1": 0.009210254494283865,
+      "conflicting_retained_f1": 0.16,
+      "conflicting_retained_recall": 0.1111111111111111
     }
   },
   "claim_evaluations": [
@@ -259,20 +261,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "INSUFFICIENT_EVIDENCE",
       "raw_logits": [
-        -0.003891277313232422,
-        0.003891277313232422,
+        0.0,
+        0.0,
         -5.0,
-        0.4918675422668457
+        0.5
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 1,
-      "total_informative_mass": 0.0016264915466308596,
-      "conflict_ratio": 0.20239681709476284,
+      "total_informative_mass": 0.0,
+      "conflict_ratio": 0.0,
       "calibrated_probabilities": [
-        0.2918604116035654,
-        0.29241441832585785,
-        0.08638925845680764,
-        0.329335911613769
+        0.2919466384163763,
+        0.2919466384163763,
+        0.0863328818823383,
+        0.3297738412849091
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -283,20 +285,20 @@
       "true_label": "VERIFIED_TRUE",
       "rule_verdict": "VERIFIED_TRUE",
       "raw_logits": [
-        5.581337776780128,
-        -5.581337776780128,
+        5.580099883675575,
+        -5.580099883675575,
         -5.0,
-        -8.852902665734291
+        -8.850578919053078
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 1.8705805331468581,
-      "conflict_ratio": 0.005417891374364592,
+      "total_informative_mass": 1.8701157838106155,
+      "conflict_ratio": 0.005391368784759004,
       "calibrated_probabilities": [
-        0.8536418314533353,
-        0.056231613617257564,
-        0.06478894034492845,
-        0.02533761458447878
+        0.8535774043819951,
+        0.05626130072084435,
+        0.0648035949262678,
+        0.025357699970892815
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -307,20 +309,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "INSUFFICIENT_EVIDENCE",
       "raw_logits": [
-        -0.03313307762145996,
-        0.03313307762145996,
+        -0.026586914062499998,
+        0.026586914062499998,
         -5.0,
-        0.34561753273010254
+        0.3604736328125
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 0.03087649345397949,
-      "conflict_ratio": 0.6422844612171784,
+      "total_informative_mass": 0.0279052734375,
+      "conflict_ratio": 0.6823902443530983,
       "calibrated_probabilities": [
-        0.2931628081523433,
-        0.2979349955821746,
-        0.08739527539510213,
-        0.3215069208703799
+        0.293290854203097,
+        0.29711574343707875,
+        0.08729409198522237,
+        0.3222993103746019
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -331,20 +333,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_TRUE",
       "raw_logits": [
-        1.2942030698060991,
-        -1.2942030698060991,
+        1.2731390744447708,
+        -1.2731390744447708,
         -5.0,
-        -5.344821885228157
+        -5.278396561741828
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 3,
-      "total_informative_mass": 1.1689643770456315,
-      "conflict_ratio": 0.6309539771323274,
+      "total_informative_mass": 1.1556793123483657,
+      "conflict_ratio": 0.6327871237857812,
       "calibrated_probabilities": [
-        0.5137996456835613,
-        0.27344788005147824,
-        0.11084266014326233,
-        0.10190981412169832
+        0.5109445853466413,
+        0.2747342313183257,
+        0.11079395036452157,
+        0.10352723297051145
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -355,20 +357,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -2.7649273261427876,
-        2.7649273261427876,
+        -2.7929333075881004,
+        2.7929333075881004,
         -5.0,
-        -7.7147724851965895
+        -7.657994531095027
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 1.642954497039318,
-      "conflict_ratio": 0.4390332277968332,
+      "total_informative_mass": 1.6315989062190055,
+      "conflict_ratio": 0.42940743889018684,
       "calibrated_probabilities": [
-        0.17460863269804766,
-        0.6718387638012461,
-        0.10128337024401476,
-        0.05226923325669148
+        0.1727059101122757,
+        0.6736495707561868,
+        0.1008656700545377,
+        0.052778849076999805
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -379,20 +381,20 @@
       "true_label": "VERIFIED_TRUE",
       "rule_verdict": "INSUFFICIENT_EVIDENCE",
       "raw_logits": [
-        0.0008600234985351563,
-        -0.0008600234985351563,
+        0.0,
+        0.0,
         -5.0,
-        0.4978799819946289
+        0.5
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 1,
-      "total_informative_mass": 0.00042400360107421877,
-      "conflict_ratio": 0.3231245599223007,
+      "total_informative_mass": 0.0,
+      "conflict_ratio": 0.0,
       "calibrated_probabilities": [
-        0.2920575638915201,
-        0.29193518019478176,
-        0.0863475869455662,
-        0.3296596689681319
+        0.2919466384163763,
+        0.2919466384163763,
+        0.0863328818823383,
+        0.3297738412849091
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -427,20 +429,20 @@
       "true_label": "CONFLICTING_OR_CHERRYPICKED",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -1.0488409850746394,
-        1.0488409850746394,
+        -1.0484413001686335,
+        1.0484413001686335,
         -5.0,
-        -1.2986941579729316
+        -1.2966461423784499
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 0.35973883159458636,
-      "conflict_ratio": 0.02814581265065646,
+      "total_informative_mass": 0.35932922847568993,
+      "conflict_ratio": 0.027408757476165717,
       "calibrated_probabilities": [
-        0.25062889927534576,
-        0.41784891737496016,
-        0.09569692289269945,
-        0.23582526045699467
+        0.2506278875694839,
+        0.4177658485782816,
+        0.09568721696690692,
+        0.23591904688532758
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -451,20 +453,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "INSUFFICIENT_EVIDENCE",
       "raw_logits": [
-        -0.007419204711914063,
-        0.007419204711914063,
+        -0.0050828933715820306,
+        0.0050828933715820306,
         -5.0,
-        0.48324680328369146
+        0.4880094528198242
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 0.003350639343261719,
-      "conflict_ratio": 0.26183339437202224,
+      "total_informative_mass": 0.002398109436035156,
+      "conflict_ratio": 0.29336371027365626,
       "calibrated_probabilities": [
-        0.29181108458102273,
-        0.2928680975524824,
-        0.08644894244410911,
-        0.32887187542238583
+        0.291865946742626,
+        0.29258982950867424,
+        0.08641598524382559,
+        0.3291282385048743
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -475,20 +477,20 @@
       "true_label": "VERIFIED_TRUE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -1.0445242926478384,
-        1.0445242926478384,
+        -0.9302601858973504,
+        0.9302601858973504,
         -5.0,
-        -1.4333131238818169
+        -1.2360885068774223
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 4,
-      "total_informative_mass": 0.3866626247763634,
-      "conflict_ratio": 0.09953835347888647,
+      "total_informative_mass": 0.34721770137548447,
+      "conflict_ratio": 0.1069382858582859,
       "calibrated_probabilities": [
-        0.25286138433182426,
-        0.42068498729985404,
-        0.096447843577941,
-        0.23000578479038056
+        0.25821610550762947,
+        0.4063251728432953,
+        0.09578583447164246,
+        0.23967288717743288
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -499,20 +501,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -6.489221536329205,
-        6.489221536329205,
+        -6.44098855178636,
+        6.44098855178636,
         -5.0,
-        -10.320065996364065
+        -10.239199421122976
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 2.164013199272813,
-      "conflict_ratio": 0.00043407932815790284,
+      "total_informative_mass": 2.147839884224595,
+      "conflict_ratio": 0.0003928132209446917,
       "calibrated_probabilities": [
-        0.03779306343942128,
-        0.8930209565809744,
-        0.05432623812697787,
-        0.014859741852626616
+        0.038614105285689364,
+        0.8912242111864663,
+        0.05485790721975573,
+        0.015303776308088662
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -523,20 +525,20 @@
       "true_label": "CONFLICTING_OR_CHERRYPICKED",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -2.371628817915916,
-        2.371628817915916,
+        -2.34323259294033,
+        2.34323259294033,
         -5.0,
-        -3.75631545484066
+        -3.696144327521324
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 3,
-      "total_informative_mass": 0.851263090968132,
-      "conflict_ratio": 0.07132939390614992,
+      "total_informative_mass": 0.8392288655042648,
+      "conflict_ratio": 0.06929130732164006,
       "calibrated_probabilities": [
-        0.1845962442925408,
-        0.5863814535651746,
-        0.09729136635544204,
-        0.13173093578684258
+        0.1860297620422707,
+        0.582813642208576,
+        0.09737082038839408,
+        0.13378577536075914
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -547,20 +549,20 @@
       "true_label": "INSUFFICIENT_EVIDENCE",
       "rule_verdict": "INSUFFICIENT_EVIDENCE",
       "raw_logits": [
-        -0.04626781940460205,
-        0.04626781940460205,
+        -0.04182701110839844,
+        0.04182701110839844,
         -5.0,
-        0.4027959108352661
+        0.4146213531494141
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 0.019440817832946777,
-      "conflict_ratio": 0.20667878895237324,
+      "total_informative_mass": 0.017075729370117188,
+      "conflict_ratio": 0.18348901982762242,
       "calibrated_probabilities": [
-        0.2909084559333638,
-        0.2975424746203544,
-        0.08700123494984449,
-        0.3245478344964373
+        0.2909529171314232,
+        0.29694460566402453,
+        0.0869204242519029,
+        0.3251820529526494
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -571,20 +573,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -3.169578552246093,
-        3.169578552246093,
+        -3.1146514892578123,
+        3.1146514892578123,
         -5.0,
-        -4.834716796875
+        -4.7151641845703125
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 1.066943359375,
-      "conflict_ratio": 0.009763560022071795,
+      "total_informative_mass": 1.0430328369140625,
+      "conflict_ratio": 0.0046169871558268275,
       "calibrated_probabilities": [
-        0.14299811420024075,
-        0.6701537490721297,
-        0.09154299988227589,
-        0.09530513684535383
+        0.14553113284535493,
+        0.6640101059721407,
+        0.0919259356571948,
+        0.09853282552530962
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -595,20 +597,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_TRUE",
       "raw_logits": [
-        4.405514998733997,
-        -4.405514998733997,
+        4.430472274124622,
+        -4.430472274124622,
         -5.0,
-        -8.214089639484882
+        -8.160828836262226
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 4,
-      "total_informative_mass": 1.7428179278969764,
-      "conflict_ratio": 0.15739611495382663,
+      "total_informative_mass": 1.7321657672524453,
+      "conflict_ratio": 0.1474117161839982,
       "calibrated_probabilities": [
-        0.7910769519406763,
-        0.09242459018830602,
-        0.07996057194956623,
-        0.03653788592145137
+        0.7921457647325747,
+        0.09143062255979435,
+        0.0795831545910356,
+        0.03684045811659537
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -643,20 +645,20 @@
       "true_label": "CONFLICTING_OR_CHERRYPICKED",
       "rule_verdict": "VERIFIED_TRUE",
       "raw_logits": [
-        0.698209261894226,
-        -0.698209261894226,
+        0.5930419921875001,
+        -0.5930419921875001,
         -5.0,
-        -0.9291669130325315
+        -0.7469482421875
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 3,
-      "total_informative_mass": 0.2858333826065063,
-      "conflict_ratio": 0.18576128417760557,
+      "total_informative_mass": 0.2493896484375,
+      "conflict_ratio": 0.2073413125109975,
       "calibrated_probabilities": [
-        0.37969840843348884,
-        0.27018557625790335,
-        0.09471597365986069,
-        0.255400041648747
+        0.36678976641961464,
+        0.2747257331340274,
+        0.09387091150508992,
+        0.264613588941268
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -667,20 +669,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "INSUFFICIENT_EVIDENCE",
       "raw_logits": [
-        -0.004354977607727051,
-        0.004354977607727051,
+        -0.0022719383239746095,
+        0.0022719383239746095,
         -5.0,
-        0.4833778142929077
+        0.491152286529541
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 3,
-      "total_informative_mass": 0.003324437141418457,
-      "conflict_ratio": 0.5631674451208976,
+      "total_informative_mass": 0.0017695426940917969,
+      "conflict_ratio": 0.5717060214426621,
       "calibrated_probabilities": [
-        0.2920261684550582,
-        0.29264661510812123,
-        0.08644808896547407,
-        0.32887912747134646
+        0.29199240810053545,
+        0.29231588580230633,
+        0.08639423194556638,
+        0.32929747415159194
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -691,20 +693,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -5.837904011963175,
-        5.837904011963175,
+        -5.786943185089397,
+        5.786943185089397,
         -5.0,
-        -9.361500402691686
+        -9.273455759289586
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 5,
-      "total_informative_mass": 1.972300080538337,
-      "conflict_ratio": 0.01335094160341116,
+      "total_informative_mass": 1.9546911518579173,
+      "conflict_ratio": 0.013153012425519129,
       "calibrated_probabilities": [
-        0.05037020844534428,
-        0.8665055813512815,
-        0.061779631802164454,
-        0.021344578401209905
+        0.05149399828328356,
+        0.8641085968615266,
+        0.062378543410370066,
+        0.022018861444819786
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -739,20 +741,20 @@
       "true_label": "INSUFFICIENT_EVIDENCE",
       "rule_verdict": "INSUFFICIENT_EVIDENCE",
       "raw_logits": [
-        -0.021943759918212888,
-        0.021943759918212888,
+        -0.015071868896484375,
+        0.015071868896484375,
         -5.0,
-        0.4299807548522949
+        0.4440040588378907
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 0.014003849029541016,
-      "conflict_ratio": 0.47763902174359585,
+      "total_informative_mass": 0.011199188232421876,
+      "conflict_ratio": 0.5513507278134777,
       "calibrated_probabilities": [
-        0.2920164017659314,
-        0.2951560310172659,
-        0.08681648791843061,
-        0.3260110792983721
+        0.29218103602148104,
+        0.2943350618004178,
+        0.08672010026667551,
+        0.3267638019114257
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -763,23 +765,23 @@
       "true_label": "VERIFIED_TRUE",
       "rule_verdict": "INSUFFICIENT_EVIDENCE",
       "raw_logits": [
-        5.804300308227123e-05,
-        -5.804300308227123e-05,
+        -0.011865234375000002,
+        0.011865234375000002,
         -5.0,
-        0.14065474271774292
+        0.2044677734375
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 3,
-      "total_informative_mass": 0.07186905145645142,
-      "conflict_ratio": 0.9997168825222502,
+      "total_informative_mass": 0.059106445312500006,
+      "conflict_ratio": 0.9330697155986984,
       "calibrated_probabilities": [
-        0.30025204043072984,
-        0.30024354734515746,
-        0.08878765470009904,
-        0.3107167575240136
+        0.297929526505573,
+        0.2996572805451918,
+        0.08835720095461456,
+        0.3140559919946208
       ],
       "is_abstained": true,
-      "abstention_reason": "Confidence 0.311 below threshold 0.320"
+      "abstention_reason": "Confidence 0.314 below threshold 0.320"
     },
     {
       "claim_id": "averitec_200",
@@ -787,20 +789,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -0.4096315383911132,
-        0.4096315383911132,
+        -0.35002441406249996,
+        0.35002441406249996,
         -5.0,
-        -0.9266881942749023
+        -0.8165283203125
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 0.2853376388549805,
-      "conflict_ratio": 0.5214638764721655,
+      "total_informative_mass": 0.2633056640625,
+      "conflict_ratio": 0.5568824469258206,
       "calibrated_probabilities": [
-        0.29160219723279884,
-        0.3560325249888196,
-        0.09528246687802197,
-        0.25708281090035956
+        0.29406683286694785,
+        0.3487618920952558,
+        0.09470224926643526,
+        0.26246902577136105
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -811,20 +813,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -2.389461982733337,
-        2.389461982733337,
+        -2.187967460694381,
+        2.187967460694381,
         -5.0,
-        -3.485610027302755
+        -3.1502874159896237
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 1,
-      "total_informative_mass": 0.797122005460551,
-      "conflict_ratio": 0.0007962107208350402,
+      "total_informative_mass": 0.7300574831979247,
+      "conflict_ratio": 0.0010067635904704938,
       "calibrated_probabilities": [
-        0.18184362533667148,
-        0.5826796508844175,
-        0.09625797600335854,
-        0.1392187477755525
+        0.19232436990474192,
+        0.5586240026518787,
+        0.09692810333559758,
+        0.15212352410778193
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -835,20 +837,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "INSUFFICIENT_EVIDENCE",
       "raw_logits": [
-        -0.033242654800415036,
-        0.033242654800415036,
+        0.0,
+        0.0,
         -5.0,
-        0.4437100887298584
+        0.5
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 1,
-      "total_informative_mass": 0.01125798225402832,
-      "conflict_ratio": 0.015729425321127713,
+      "total_informative_mass": 0.0,
+      "conflict_ratio": 0.0,
       "calibrated_probabilities": [
-        0.29089256377586004,
-        0.29564358300180865,
-        0.08672080438223667,
-        0.32674304884009464
+        0.2919466384163763,
+        0.2919466384163763,
+        0.0863328818823383,
+        0.3297738412849091
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -859,20 +861,20 @@
       "true_label": "VERIFIED_TRUE",
       "rule_verdict": "INSUFFICIENT_EVIDENCE",
       "raw_logits": [
-        -0.08156261444091797,
-        0.08156261444091797,
+        0.0,
+        0.0,
         -5.0,
-        0.3603029251098633
+        0.5
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 1,
-      "total_informative_mass": 0.027939414978027346,
-      "conflict_ratio": 0.026910009448534385,
+      "total_informative_mass": 0.0,
+      "conflict_ratio": 0.0,
       "calibrated_probabilities": [
-        0.28936183901695656,
-        0.3010953554394773,
-        0.08728616554476605,
-        0.32225663999880017
+        0.2919466384163763,
+        0.2919466384163763,
+        0.0863328818823383,
+        0.3297738412849091
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -883,20 +885,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -1.9563656575104689,
-        1.9563656575104689,
+        -1.9501895672699905,
+        1.9501895672699905,
         -5.0,
-        -2.7736059018934616
+        -2.762170870002592
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 0.6547211803786923,
-      "conflict_ratio": 0.0039700725281154765,
+      "total_informative_mass": 0.6524341740005184,
+      "conflict_ratio": 0.003634054393455758,
       "calibrated_probabilities": [
-        0.20448471490635953,
-        0.5305513148176224,
-        0.09740177742325365,
-        0.16756219285276439
+        0.20479725766472512,
+        0.5297652980484265,
+        0.0974039527153105,
+        0.16803349157153785
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -907,20 +909,20 @@
       "true_label": "INSUFFICIENT_EVIDENCE",
       "rule_verdict": "INSUFFICIENT_EVIDENCE",
       "raw_logits": [
-        0.00031764507293701176,
-        -0.00031764507293701176,
+        0.0,
+        0.0,
         -5.0,
-        0.49927246570587164
+        0.5
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 1,
-      "total_informative_mass": 0.0001455068588256836,
-      "conflict_ratio": 0.2704662987405006,
+      "total_informative_mass": 0.0,
+      "conflict_ratio": 0.0,
       "calibrated_probabilities": [
-        0.2919863044739913,
-        0.29194110776727705,
-        0.08633792879296388,
-        0.3297346589657678
+        0.2919466384163763,
+        0.2919466384163763,
+        0.0863328818823383,
+        0.3297738412849091
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -931,20 +933,20 @@
       "true_label": "VERIFIED_TRUE",
       "rule_verdict": "VERIFIED_TRUE",
       "raw_logits": [
-        3.622101771086455,
-        -3.622101771086455,
+        3.610895716398954,
+        -3.610895716398954,
         -5.0,
-        -9.576346676796675
+        -9.437186520546675
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 2.015269335359335,
-      "conflict_ratio": 0.40089017545453176,
+      "total_informative_mass": 1.987437304109335,
+      "conflict_ratio": 0.3943797384916948,
       "calibrated_probabilities": [
-        0.7498497650552944,
-        0.12833738136625558,
-        0.09173529798572798,
-        0.030077555592722086
+        0.7482962193496164,
+        0.12877282888142763,
+        0.09179555523887799,
+        0.031135396530077977
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -955,23 +957,23 @@
       "true_label": "VERIFIED_TRUE",
       "rule_verdict": "INSUFFICIENT_EVIDENCE",
       "raw_logits": [
-        0.12099480628967285,
-        -0.12099480628967285,
+        0.08731384277343751,
+        -0.08731384277343751,
         -5.0,
-        0.12298560142517095
+        0.1822662353515625
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 3,
-      "total_informative_mass": 0.07540287971496581,
-      "conflict_ratio": 0.46511237553002743,
+      "total_informative_mass": 0.0635467529296875,
+      "conflict_ratio": 0.5419883014586455,
       "calibrated_probabilities": [
-        0.3095642449907296,
-        0.2918381974544272,
-        0.0888831061383991,
-        0.3097144514164441
+        0.30569474143773634,
+        0.29295972209209437,
+        0.08849540087146492,
+        0.3128501355987044
       ],
       "is_abstained": true,
-      "abstention_reason": "Confidence 0.310 below threshold 0.320"
+      "abstention_reason": "Confidence 0.313 below threshold 0.320"
     },
     {
       "claim_id": "averitec_9",
@@ -1027,20 +1029,20 @@
       "true_label": "CONFLICTING_OR_CHERRYPICKED",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -3.5212227880954745,
-        3.5212227880954745,
+        -3.499625498056412,
+        3.499625498056412,
         -5.0,
-        -6.560694843530655
+        -6.4741927683353415
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 1.412138968706131,
-      "conflict_ratio": 0.16882040351807648,
+      "total_informative_mass": 1.3948385536670684,
+      "conflict_ratio": 0.16367238825526567,
       "calibrated_probabilities": [
-        0.12925320837396764,
-        0.7189708639885353,
-        0.09014654180415502,
-        0.06162938583334202
+        0.1301667742393695,
+        0.7164716584034754,
+        0.09030719195604141,
+        0.06305437540111374
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -1051,20 +1053,20 @@
       "true_label": "VERIFIED_TRUE",
       "rule_verdict": "INSUFFICIENT_EVIDENCE",
       "raw_logits": [
-        0.0002589941024780274,
-        -0.0002589941024780274,
+        0.0,
+        0.0,
         -5.0,
-        0.49922335147857666
+        0.5
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 1,
-      "total_informative_mass": 0.00015532970428466797,
-      "conflict_ratio": 0.4413642123083016,
+      "total_informative_mass": 0.0,
+      "conflict_ratio": 0.0,
       "calibrated_probabilities": [
-        0.291983283935941,
-        0.2919464323437603,
-        0.08633826954854772,
-        0.32973201417175096
+        0.2919466384163763,
+        0.2919466384163763,
+        0.0863328818823383,
+        0.3297738412849091
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -1075,20 +1077,20 @@
       "true_label": "VERIFIED_TRUE",
       "rule_verdict": "VERIFIED_TRUE",
       "raw_logits": [
-        5.987178309448063,
-        -5.987178309448063,
+        6.0578131036832925,
+        -6.0578131036832925,
         -5.0,
-        -9.820687559433281
+        -9.686833408661183
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 6,
-      "total_informative_mass": 2.0641375118866563,
-      "conflict_ratio": 0.03314283820748671,
+      "total_informative_mass": 2.037366681732237,
+      "conflict_ratio": 0.0088818760272835,
       "calibrated_probabilities": [
-        0.8740946809395451,
-        0.04724619327745995,
-        0.0600945945279122,
-        0.0185645312550827
+        0.8761413361588464,
+        0.045754371914687335,
+        0.059207420942222456,
+        0.01889687098424379
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -1123,20 +1125,20 @@
       "true_label": "CONFLICTING_OR_CHERRYPICKED",
       "rule_verdict": "VERIFIED_TRUE",
       "raw_logits": [
-        3.19296984502289,
-        -3.19296984502289,
+        3.18608279057953,
+        -3.18608279057953,
         -5.0,
-        -10.003261360383476
+        -9.987777504182302
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 2.100652272076695,
-      "conflict_ratio": 0.4933365273450811,
+      "total_informative_mass": 2.0975555008364606,
+      "conflict_ratio": 0.49368296089457947,
       "calibrated_probabilities": [
-        0.721022566028422,
-        0.15210865555894906,
-        0.09793189354938193,
-        0.028936884863247053
+        0.7204217010674905,
+        0.15249285952362512,
+        0.09801463044240277,
+        0.02907080896648161
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -1147,20 +1149,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "INSUFFICIENT_EVIDENCE",
       "raw_logits": [
-        0.0015197753906249995,
-        -0.0015197753906249995,
+        0.0,
+        0.0,
         -5.0,
-        0.43710327148437506
+        0.5
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 1,
-      "total_informative_mass": 0.012579345703125001,
-      "conflict_ratio": 0.9596519993286899,
+      "total_informative_mass": 0.0,
+      "conflict_ratio": 0.0,
       "calibrated_probabilities": [
-        0.2935269878000607,
-        0.29330966643454826,
-        0.08676807576043104,
-        0.32639527000496005
+        0.2919466384163763,
+        0.2919466384163763,
+        0.0863328818823383,
+        0.3297738412849091
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -1171,20 +1173,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -1.1471995353698732,
-        1.1471995353698732,
+        -1.13521728515625,
+        1.13521728515625,
         -5.0,
-        -2.0873446464538574
+        -2.06402587890625
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 3,
-      "total_informative_mass": 0.5174689292907715,
-      "conflict_ratio": 0.2610182283492338,
+      "total_informative_mass": 0.51280517578125,
+      "conflict_ratio": 0.26208618462471744,
       "calibrated_probabilities": [
-        0.25410295386166254,
-        0.4444424402360062,
-        0.09937688462845061,
-        0.20207772127388063
+        0.25469345850202013,
+        0.44288150739677506,
+        0.09931741973504112,
+        0.20310761436616376
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -1195,20 +1197,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -1.5478245528414847,
-        1.5478245528414847,
+        -7.4012358167414956,
+        7.4012358167414956,
         -5.0,
-        -2.1325669633224615
+        -11.846985949809284
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 0.5265133926644923,
-      "conflict_ratio": 0.02007898587000375,
+      "total_informative_mass": 2.4693971899618568,
+      "conflict_ratio": 0.0009389268975670562,
       "calibrated_probabilities": [
-        0.2260108788072319,
-        0.48053806784021447,
-        0.09745437268648516,
-        0.1959966806660685
+        0.02500804972942941,
+        0.9216330032926934,
+        0.044894349236219246,
+        0.008464597741658001
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -1219,20 +1221,20 @@
       "true_label": "VERIFIED_TRUE",
       "rule_verdict": "VERIFIED_TRUE",
       "raw_logits": [
-        5.0188727550208565,
-        -5.0188727550208565,
+        5.019740860909224,
+        -5.019740860909224,
         -5.0,
-        -8.776725780218838
+        -8.77082337066531
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 4,
-      "total_informative_mass": 1.8553451560437677,
-      "conflict_ratio": 0.09830379654097987,
+      "total_informative_mass": 1.8541646741330622,
+      "conflict_ratio": 0.0975736542966932,
       "calibrated_probabilities": [
-        0.827559690952673,
-        0.07170516045819987,
-        0.07203567495351168,
-        0.028699473635615442
+        0.8275682464752585,
+        0.0716755718251702,
+        0.07202118319497434,
+        0.02873499850459672
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -1243,20 +1245,20 @@
       "true_label": "CONFLICTING_OR_CHERRYPICKED",
       "rule_verdict": "VERIFIED_TRUE",
       "raw_logits": [
-        10.545704960842702,
-        -10.545704960842702,
+        10.565848279018972,
+        -10.565848279018972,
         -5.0,
-        -17.812298331554345
+        -17.765767607982568
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 5,
-      "total_informative_mass": 3.662459666310869,
-      "conflict_ratio": 0.040198296385145306,
+      "total_informative_mass": 3.6531535215965136,
+      "conflict_ratio": 0.03591528759082343,
       "calibrated_probabilities": [
-        0.971346651521711,
-        0.00569332978333501,
-        0.0219909025225704,
-        0.0009691161723836534
+        0.9714992157304759,
+        0.005638598824119772,
+        0.021886664705708794,
+        0.0009755207396954245
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -1267,20 +1269,20 @@
       "true_label": "VERIFIED_TRUE",
       "rule_verdict": "VERIFIED_TRUE",
       "raw_logits": [
-        6.15422919918783,
-        -6.15422919918783,
+        6.154104315536096,
+        -6.154104315536096,
         -5.0,
-        -10.101480082841586
+        -10.10069640097208
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 2.1202960165683176,
-      "conflict_ratio": 0.03248897817967024,
+      "total_informative_mass": 2.120139280194416,
+      "conflict_ratio": 0.03243708713906961,
       "calibrated_probabilities": [
-        0.8811529835360246,
-        0.043903909080331954,
-        0.058163430381201614,
-        0.016779677002441953
+        0.8811457956697729,
+        0.04390622305064553,
+        0.058164725886366474,
+        0.01678325539321514
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -1339,20 +1341,20 @@
       "true_label": "INSUFFICIENT_EVIDENCE",
       "rule_verdict": "INSUFFICIENT_EVIDENCE",
       "raw_logits": [
-        0.0021404743194580076,
-        -0.0021404743194580076,
+        0.0,
+        0.0,
         -5.0,
-        0.4934861660003662
+        0.5
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 1,
-      "total_informative_mass": 0.0013027667999267578,
-      "conflict_ratio": 0.4519791117096446,
+      "total_informative_mass": 0.0,
+      "conflict_ratio": 0.0,
       "calibrated_probabilities": [
-        0.2922517787008947,
-        0.29194707587054336,
-        0.08637805203181305,
-        0.329423093396749
+        0.2919466384163763,
+        0.2919466384163763,
+        0.0863328818823383,
+        0.3297738412849091
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -1363,20 +1365,20 @@
       "true_label": "VERIFIED_TRUE",
       "rule_verdict": "INSUFFICIENT_EVIDENCE",
       "raw_logits": [
-        7.839202880859377e-05,
-        -7.839202880859377e-05,
+        0.0,
+        0.0,
         -5.0,
-        0.49884033203125006
+        0.5
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 1,
-      "total_informative_mass": 0.00023193359375000002,
-      "conflict_ratio": 0.8835261336385437,
+      "total_informative_mass": 0.0,
+      "conflict_ratio": 0.0,
       "calibrated_probabilities": [
-        0.29197942005221106,
-        0.2919682655125863,
-        0.08634092659466115,
-        0.32971138784054155
+        0.2919466384163763,
+        0.2919466384163763,
+        0.0863328818823383,
+        0.3297738412849091
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -1459,20 +1461,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -2.74820418813033,
-        2.74820418813033,
+        -2.749261908314656,
+        2.749261908314656,
         -5.0,
-        -4.099008512857836
+        -4.096533251169603
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 0.9198017025715671,
-      "conflict_ratio": 0.004059174702377597,
+      "total_informative_mass": 0.9193066502339207,
+      "conflict_ratio": 0.0031393343983385966,
       "calibrated_probabilities": [
-        0.16356745098912134,
-        0.6242474331539078,
-        0.0944929885811399,
-        0.11769212727583099
+        0.1634942730603156,
+        0.6242898751977132,
+        0.0944750602306959,
+        0.11774079151127537
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -1483,20 +1485,20 @@
       "true_label": "VERIFIED_TRUE",
       "rule_verdict": "INSUFFICIENT_EVIDENCE",
       "raw_logits": [
-        4.878044128417968e-05,
-        -4.878044128417968e-05,
+        0.0,
+        0.0,
         -5.0,
-        0.4991028308868409
+        0.5
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 1,
-      "total_informative_mass": 0.00017943382263183597,
-      "conflict_ratio": 0.904340844510373,
+      "total_informative_mass": 0.0,
+      "conflict_ratio": 0.0,
       "calibrated_probabilities": [
-        0.2919711555610586,
-        0.2919642146526772,
-        0.0863391056897896,
-        0.32972552409647465
+        0.2919466384163763,
+        0.2919466384163763,
+        0.0863328818823383,
+        0.3297738412849091
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -1507,20 +1509,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "INSUFFICIENT_EVIDENCE",
       "raw_logits": [
-        -0.0008881330490112303,
-        0.0008881330490112303,
+        -0.0005364418029785156,
+        0.0005364418029785156,
         -5.0,
-        0.49476468563079834
+        0.49611616134643555
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 5,
-      "total_informative_mass": 0.001047062873840332,
-      "conflict_ratio": 0.7165777387171683,
+      "total_informative_mass": 0.0007767677307128906,
+      "conflict_ratio": 0.7688076694036187,
       "calibrated_probabilities": [
-        0.29200622664783377,
-        0.2921326420336827,
-        0.08636919240682263,
-        0.329491938911661
+        0.29199956512139497,
+        0.2920759130729301,
+        0.08635982094544307,
+        0.3295647008602318
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -1531,23 +1533,23 @@
       "true_label": "CONFLICTING_OR_CHERRYPICKED",
       "rule_verdict": "INSUFFICIENT_EVIDENCE",
       "raw_logits": [
-        0.08636598587036132,
-        -0.08636598587036132,
+        0.07051162719726561,
+        -0.07051162719726561,
         -5.0,
-        0.28258180618286133
+        0.35531234741210943
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 4,
-      "total_informative_mass": 0.043483638763427736,
-      "conflict_ratio": 0.3379348943562955,
+      "total_informative_mass": 0.028937530517578122,
+      "conflict_ratio": 0.18776540093684738,
       "calibrated_probabilities": [
-        0.30327718874191856,
-        0.29077717129887354,
-        0.08781582503706604,
-        0.31812981492214193
+        0.3004121555596693,
+        0.290264318566364,
+        0.087322937422657,
+        0.32200058845130974
       ],
-      "is_abstained": true,
-      "abstention_reason": "Confidence 0.318 below threshold 0.320"
+      "is_abstained": false,
+      "abstention_reason": ""
     },
     {
       "claim_id": "averitec_112",
@@ -1555,20 +1557,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -5.366213010599313,
-        5.366213010599313,
+        -5.364916967203317,
+        5.364916967203317,
         -5.0,
-        -13.038462811811769
+        -13.034954244001709
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 3,
-      "total_informative_mass": 2.707692562362354,
-      "conflict_ratio": 0.339386592684008,
+      "total_informative_mass": 2.706990848800342,
+      "conflict_ratio": 0.33937493881743197,
       "calibrated_probabilities": [
-        0.06282437548172358,
-        0.8587998763994721,
-        0.06868831077166616,
-        0.009687437347138207
+        0.06285949684582597,
+        0.8587374138333866,
+        0.06870500918347015,
+        0.009698080137317329
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -1579,20 +1581,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "CONFLICTING_OR_CHERRYPICKED",
       "raw_logits": [
-        -0.1268296182953883,
-        0.1268296182953883,
-        8.82926563925737,
-        -11.997969661661914
+        -0.14140481360788937,
+        0.14140481360788937,
+        8.673479515262459,
+        -11.827528987833789
       ],
       "has_cross_passage_disparity": true,
       "num_evidence_used": 6,
-      "total_informative_mass": 2.499593932332383,
-      "conflict_ratio": 0.983086243740962,
+      "total_informative_mass": 2.465505797566758,
+      "conflict_ratio": 0.9808818463141874,
       "calibrated_probabilities": [
-        0.09102235262545653,
-        0.09682592593125385,
-        0.807106510355098,
-        0.005045211088191817
+        0.09348825631251566,
+        0.10015797034709831,
+        0.8009329190720904,
+        0.005420854268295711
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -1603,20 +1605,20 @@
       "true_label": "CONFLICTING_OR_CHERRYPICKED",
       "rule_verdict": "CONFLICTING_OR_CHERRYPICKED",
       "raw_logits": [
-        0.4232349387079012,
-        -0.4232349387079012,
-        5.694824176516062,
-        -8.57392639646423
+        0.4250079146295316,
+        -0.4250079146295316,
+        5.689150960187655,
+        -8.569789834116818
       ],
       "has_cross_passage_disparity": true,
       "num_evidence_used": 3,
-      "total_informative_mass": 1.8147852792928463,
-      "conflict_ratio": 0.9222611970828835,
+      "total_informative_mass": 1.8139579668233639,
+      "conflict_ratio": 0.921899939597528,
       "calibrated_probabilities": [
-        0.18056158384005058,
-        0.14690862755481449,
-        0.6523695009059148,
-        0.02016028769922018
+        0.1807962342425484,
+        0.14697249756378405,
+        0.6520331514589389,
+        0.02019811673472863
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -1627,20 +1629,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -2.7711330243058914,
-        2.7711330243058914,
+        -2.7697143145509475,
+        2.7697143145509475,
         -5.0,
-        -4.127694486229302
+        -4.124924419968011
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 0.9255388972458605,
-      "conflict_ratio": 0.001974943651090596,
+      "total_informative_mass": 0.9249848839936021,
+      "conflict_ratio": 0.0018884387032424002,
       "calibrated_probabilities": [
-        0.16236932158015896,
-        0.6266380532280015,
-        0.09432637172656641,
-        0.11666625346527315
+        0.16243872964622497,
+        0.6264726294695123,
+        0.09433407652471155,
+        0.11675456435955114
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -1651,20 +1653,20 @@
       "true_label": "CONFLICTING_OR_CHERRYPICKED",
       "rule_verdict": "CONFLICTING_OR_CHERRYPICKED",
       "raw_logits": [
-        2.1763933692691344,
-        -2.1763933692691344,
-        4.495321722117619,
-        -9.996477706884736
+        1.1111294075292966,
+        -1.1111294075292966,
+        5.193690885146464,
+        -9.093999987187878
       ],
       "has_cross_passage_disparity": true,
       "num_evidence_used": 3,
-      "total_informative_mass": 2.0992955413769474,
-      "conflict_ratio": 0.6544244978619335,
+      "total_informative_mass": 1.9187999974375756,
+      "conflict_ratio": 0.8069745274934476,
       "calibrated_probabilities": [
-        0.3167284198187407,
-        0.10966080429902085,
-        0.557299516368123,
-        0.016311259514115488
+        0.22887184001343577,
+        0.13317442372779634,
+        0.6189153571875132,
+        0.019038379071254684
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -1675,20 +1677,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -4.703588847292122,
-        4.703588847292122,
+        -4.6932692805654375,
+        4.6932692805654375,
         -5.0,
-        -7.354966514685657
+        -7.334766500571278
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 4,
-      "total_informative_mass": 1.5709933029371315,
-      "conflict_ratio": 0.001992594011260914,
+      "total_informative_mass": 1.5669533001142557,
+      "conflict_ratio": 0.0016147290270422034,
       "calibrated_probabilities": [
-        0.08096005882616708,
-        0.8012897921514659,
-        0.07531872714175006,
-        0.04243142188061706
+        0.08129389972742941,
+        0.8005576410120646,
+        0.07543936804041673,
+        0.04270909122008928
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -1723,20 +1725,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -7.18115200428465,
-        7.18115200428465,
+        -7.180020469708233,
+        7.180020469708233,
         -5.0,
-        -11.515454426560154
+        -11.511660233292329
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 3,
-      "total_informative_mass": 2.403090885312031,
-      "conflict_ratio": 0.0039006209491086103,
+      "total_informative_mass": 2.402332046658466,
+      "conflict_ratio": 0.003742982306954706,
       "calibrated_probabilities": [
-        0.027659050718281127,
-        0.9156606024992971,
-        0.047060729929569375,
-        0.009619616852852396
+        0.02767320637956332,
+        0.9156241723478492,
+        0.04707183460531393,
+        0.009630786667273674
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -1747,20 +1749,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_TRUE",
       "raw_logits": [
-        0.5490129155397878,
-        -0.5490129155397878,
+        0.625194374966668,
+        -0.625194374966668,
         -5.0,
-        -10.276791231910465
+        -10.14624108580756
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 5,
-      "total_informative_mass": 2.155358246382093,
-      "conflict_ratio": 0.9150928990203766,
+      "total_informative_mass": 2.129248217161512,
+      "conflict_ratio": 0.9021255364054073,
       "calibrated_probabilities": [
-        0.47722676526570607,
-        0.36519575228215256,
-        0.12345196716280045,
-        0.03412551528934097
+        0.48455581663789815,
+        0.3572900002532437,
+        0.12304248557669703,
+        0.035111697532161174
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -1795,20 +1797,20 @@
       "true_label": "VERIFIED_TRUE",
       "rule_verdict": "VERIFIED_TRUE",
       "raw_logits": [
-        3.0626961708068845,
-        -3.0626961708068845,
+        3.0676025390625004,
+        -3.0676025390625004,
         -5.0,
-        -5.060365915298462
+        -5.039672851562499
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 1.1120731830596924,
-      "conflict_ratio": 0.08198595097904861,
+      "total_informative_mass": 1.1079345703124999,
+      "conflict_ratio": 0.07708064702797864,
       "calibrated_probabilities": [
-        0.6652687901686642,
-        0.14954598593183843,
-        0.09327359468888283,
-        0.09191162921061449
+        0.665344873981111,
+        0.14920589722353308,
+        0.09317280307466004,
+        0.09227642572069597
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -1819,20 +1821,20 @@
       "true_label": "VERIFIED_TRUE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -1.2044413603842257,
-        1.2044413603842257,
+        -1.170383743196726,
+        1.170383743196726,
         -5.0,
-        -6.324988160282372
+        -6.2378299571573725
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 1.3649976320564745,
-      "conflict_ratio": 0.705874098308402,
+      "total_informative_mass": 1.3475659914314746,
+      "conflict_ratio": 0.710493862732206,
       "calibrated_probabilities": [
-        0.28716809210135436,
-        0.5164844804847162,
-        0.11388577692441856,
-        0.08246165048951079
+        0.28959169848823957,
+        0.512269944817866,
+        0.11389777798635425,
+        0.08424057870754018
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -1843,20 +1845,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_TRUE",
       "raw_logits": [
-        1.3086901187896727,
-        -1.3086901187896727,
+        1.31484375,
+        -1.31484375,
         -5.0,
-        -2.2720086574554443
+        -2.2597656250000004
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 0.5544017314910888,
-      "conflict_ratio": 0.2131513522249496,
+      "total_informative_mass": 0.551953125,
+      "conflict_ratio": 0.20594442518207465,
       "calibrated_probabilities": [
-        0.4626774986353407,
-        0.2445079263429898,
-        0.09946228220704786,
-        0.1933522928146217
+        0.46295253025686983,
+        0.24392066981639432,
+        0.09937228869133231,
+        0.19375451123540358
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -1891,20 +1893,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -5.665188715197861,
-        5.665188715197861,
+        -5.664799902179061,
+        5.664799902179061,
         -5.0,
-        -8.948180586781405
+        -8.946259409871004
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 1.889636117356281,
-      "conflict_ratio": 0.0006561465932300041,
+      "total_informative_mass": 1.8892518819742008,
+      "conflict_ratio": 0.0005215013426282416,
       "calibrated_probabilities": [
-        0.054231923135364735,
-        0.8576246880441266,
-        0.06377476973703057,
-        0.024368619083478142
+        0.05424057089369855,
+        0.8575989256738057,
+        0.0637788963035355,
+        0.024381607128960356
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -1915,20 +1917,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -6.530946829258756,
-        6.530946829258756,
+        -6.530583622395353,
+        6.530583622395353,
         -5.0,
-        -10.420756504412566
+        -10.419449255343352
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 3,
-      "total_informative_mass": 2.184151300882513,
-      "conflict_ratio": 0.003282291468425255,
+      "total_informative_mass": 2.1838898510686704,
+      "conflict_ratio": 0.003218404253176687,
       "calibrated_probabilities": [
-        0.037099733216418906,
-        0.8946466424629125,
-        0.05387458290422321,
-        0.014379041416445455
+        0.03710566285979857,
+        0.8946312638721741,
+        0.053878425034990435,
+        0.014384648233037037
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -1939,20 +1941,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_TRUE",
       "raw_logits": [
-        6.469185094928253,
-        -6.469185094928253,
+        6.469806509112822,
+        -6.469806509112822,
         -5.0,
-        -10.381891208977322
+        -10.379430729240992
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 2.1763782417954647,
-      "conflict_ratio": 0.009181860297577492,
+      "total_informative_mass": 2.1758861458481986,
+      "conflict_ratio": 0.008862581030785624,
       "calibrated_probabilities": [
-        0.8925869943756558,
-        0.03814536116637318,
-        0.05456559588261423,
-        0.014702048575356638
+        0.8925987964676685,
+        0.038134315093505754,
+        0.05455805549055266,
+        0.01470883294827308
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -1963,20 +1965,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -6.090536992927081,
-        6.090536992927081,
+        -6.0902168444590625,
+        6.0902168444590625,
         -5.0,
-        -9.765288870898075
+        -9.763833563891238
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 3,
-      "total_informative_mass": 2.053057774179615,
-      "conflict_ratio": 0.011143751374773291,
+      "total_informative_mass": 2.0527667127782476,
+      "conflict_ratio": 0.011055528178187354,
       "calibrated_probabilities": [
-        0.04510712403564995,
-        0.8776326086834823,
-        0.05883716031036324,
-        0.018423106970504557
+        0.04511327806769806,
+        0.877615406975079,
+        0.05884059714414777,
+        0.0184307178130752
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -2083,20 +2085,20 @@
       "true_label": "VERIFIED_TRUE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -2.2097354410216212,
-        2.2097354410216212,
+        -2.2085801599547263,
+        2.2085801599547263,
         -5.0,
-        -3.324976603500545
+        -3.322316805832088
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 0.764995320700109,
-      "conflict_ratio": 0.037146375205520055,
+      "total_informative_mass": 0.7644633611664176,
+      "conflict_ratio": 0.03698010783878503,
       "calibrated_probabilities": [
-        0.19214970702001732,
-        0.564068974899794,
-        0.09735510494601346,
-        0.14642621313417528
+        0.19220567809168404,
+        0.5639156969728318,
+        0.09735605286750293,
+        0.14652257206798125
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -2131,23 +2133,23 @@
       "true_label": "VERIFIED_TRUE",
       "rule_verdict": "INSUFFICIENT_EVIDENCE",
       "raw_logits": [
-        -0.08992924690246584,
-        0.08992924690246584,
+        -0.006591796875,
+        0.006591796875,
         -5.0,
-        0.04353976249694823
+        0.19146728515625003
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 3,
-      "total_informative_mass": 0.09129204750061036,
-      "conflict_ratio": 0.6716352837936004,
+      "total_informative_mass": 0.06170654296875,
+      "conflict_ratio": 0.9643760629699152,
       "calibrated_probabilities": [
-        0.2958470853940969,
-        0.3091013492450985,
-        0.08942456934044692,
-        0.3056269960203576
+        0.298609736615216,
+        0.29957055509582586,
+        0.0884452071959313,
+        0.31337450109302684
       ],
       "is_abstained": true,
-      "abstention_reason": "Confidence 0.309 below threshold 0.320"
+      "abstention_reason": "Confidence 0.313 below threshold 0.320"
     },
     {
       "claim_id": "averitec_41",
@@ -2155,20 +2157,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_TRUE",
       "raw_logits": [
-        3.4521008491516105,
-        -3.4521008491516105,
+        3.446411132812499,
+        -3.446411132812499,
         -5.0,
-        -5.398734569549559
+        -5.351684570312499
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 1.179746913909912,
-      "conflict_ratio": 0.02462104871464351,
+      "total_informative_mass": 1.1703369140625,
+      "conflict_ratio": 0.018399133161681076,
       "calibrated_probabilities": [
-        0.6997151445571226,
-        0.13010111996459853,
-        0.08922240260740852,
-        0.08096133287087037
+        0.6986446799130157,
+        0.13026278263281396,
+        0.08920950161826824,
+        0.08188303583590213
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -2179,20 +2181,20 @@
       "true_label": "VERIFIED_TRUE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -1.8326065421104427,
-        1.8326065421104427,
+        -1.8351059317588807,
+        1.8351059317588807,
         -5.0,
-        -8.758343040943146
+        -8.701107323169708
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 1.851668608188629,
-      "conflict_ratio": 0.6700978162255832,
+      "total_informative_mass": 1.8402214646339417,
+      "conflict_ratio": 0.6675929193296526,
       "calibrated_probabilities": [
-        0.24450748910567216,
-        0.5972621357590997,
-        0.1130059560241622,
-        0.04522441911106593
+        0.24415105732648554,
+        0.5971183594914623,
+        0.11290996592809699,
+        0.04582061725395521
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -2203,20 +2205,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -5.248612495455018,
-        5.248612495455018,
+        -5.248518582376709,
+        5.248518582376709,
         -5.0,
-        -8.262214090769703
+        -8.261746909563954
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 1.7524428181539407,
-      "conflict_ratio": 0.0016578675098384624,
+      "total_informative_mass": 1.7523493819127907,
+      "conflict_ratio": 0.0016224995962949552,
       "calibrated_probabilities": [
-        0.06472193451569072,
-        0.8354587818745278,
-        0.06876398207640871,
-        0.03105530153337281
+        0.06472432835855922,
+        0.8354514448241418,
+        0.0687649517858319,
+        0.03105927503146714
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -2251,47 +2253,47 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "INSUFFICIENT_EVIDENCE",
       "raw_logits": [
-        0.20952272415161138,
-        -0.20952272415161138,
+        0.2037792205810547,
+        -0.2037792205810547,
         -5.0,
-        0.048092842102050795
+        0.1376056671142578
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 8,
-      "total_informative_mass": 0.09038143157958985,
-      "conflict_ratio": 0.22726234700783587,
+      "total_informative_mass": 0.07247886657714844,
+      "conflict_ratio": 0.0628099903019438,
       "calibrated_probabilities": [
-        0.31792923526171973,
-        0.28706800625935375,
-        0.08933679926047365,
-        0.30566595921845285
+        0.31537230593739074,
+        0.28555745251053766,
+        0.08874242365784366,
+        0.310327817894228
       ],
       "is_abstained": true,
-      "abstention_reason": "Confidence 0.318 below threshold 0.320"
+      "abstention_reason": "Confidence 0.315 below threshold 0.320"
     },
     {
       "claim_id": "averitec_85",
       "claim_text": "India's Congress party candidate Maskoor Usmani installed Jinnah's portrait at AMU.",
       "true_label": "VERIFIED_FALSE",
-      "rule_verdict": "INSUFFICIENT_EVIDENCE",
+      "rule_verdict": "VERIFIED_TRUE",
       "raw_logits": [
-        0.1702325105667114,
-        -0.1702325105667114,
+        3.3291458129882816,
+        -3.3291458129882816,
         -5.0,
-        0.09061634540557868
+        -5.11353302001953
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 6,
-      "total_informative_mass": 0.08187673091888427,
-      "conflict_ratio": 0.3069523354876448,
+      "total_informative_mass": 1.1227066040039062,
+      "conflict_ratio": 0.01157143049666857,
       "calibrated_probabilities": [
-        0.3139843579869884,
-        0.2889868955299288,
-        0.0890770530298803,
-        0.30795169345320256
+        0.6865243257607229,
+        0.13553118490065752,
+        0.09020286716489188,
+        0.08774162217372775
       ],
-      "is_abstained": true,
-      "abstention_reason": "Confidence 0.314 below threshold 0.320"
+      "is_abstained": false,
+      "abstention_reason": ""
     },
     {
       "claim_id": "averitec_266",
@@ -2299,20 +2301,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "INSUFFICIENT_EVIDENCE",
       "raw_logits": [
-        -0.00038280487060546873,
-        0.00038280487060546873,
+        0.0,
+        0.0,
         -5.0,
-        0.4980535507202149
+        0.5
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 1,
-      "total_informative_mass": 0.0003892898559570313,
-      "conflict_ratio": 0.6704971405935937,
+      "total_informative_mass": 0.0,
+      "conflict_ratio": 0.0,
       "calibrated_probabilities": [
-        0.29196506198203054,
-        0.29201953540313946,
-        0.08634638391676813,
-        0.32966901869806187
+        0.2919466384163763,
+        0.2919466384163763,
+        0.0863328818823383,
+        0.3297738412849091
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -2323,20 +2325,20 @@
       "true_label": "INSUFFICIENT_EVIDENCE",
       "rule_verdict": "VERIFIED_TRUE",
       "raw_logits": [
-        6.003168360656127,
-        -6.003168360656127,
+        8.02030554094781,
+        -8.02030554094781,
         -5.0,
-        -9.676498485496266
+        -13.024525003857585
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 3,
-      "total_informative_mass": 2.035299697099253,
-      "conflict_ratio": 0.01682482442488669,
+      "total_informative_mass": 2.704905000771517,
+      "conflict_ratio": 0.011634349011242533,
       "calibrated_probabilities": [
-        0.8741046052833471,
-        0.04687998288725881,
-        0.05986158141532158,
-        0.019153830414072447
+        0.936428905400424,
+        0.01879186807774053,
+        0.03922790747700956,
+        0.005551319044825934
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -2347,20 +2349,20 @@
       "true_label": "VERIFIED_TRUE",
       "rule_verdict": "VERIFIED_TRUE",
       "raw_logits": [
-        0.2917023181915283,
-        -0.2917023181915283,
+        0.3065185546875,
+        -0.3065185546875,
         -5.0,
-        -0.5437915325164795
+        -0.5067138671875
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 0.2087583065032959,
-      "conflict_ratio": 0.5342238499805151,
+      "total_informative_mass": 0.2013427734375,
+      "conflict_ratio": 0.4925402965380688,
       "calibrated_probabilities": [
-        0.3379854254215321,
-        0.2931965906872863,
-        0.09308960851630939,
-        0.27572837537487216
+        0.33830517749639805,
+        0.2913625420528299,
+        0.09284188304211366,
+        0.2774903974086584
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -2395,20 +2397,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -3.4032725930213923,
-        3.4032725930213923,
+        -3.315023481845855,
+        3.315023481845855,
         -5.0,
-        -6.545380771160126
+        -6.397540748119353
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 1.4090761542320251,
-      "conflict_ratio": 0.19491619442791855,
+      "total_informative_mass": 1.3795081496238708,
+      "conflict_ratio": 0.19898405343434125,
       "calibrated_probabilities": [
-        0.13523590911979258,
-        0.7102278846914138,
-        0.09164686880994354,
-        0.06288933737885007
+        0.13955191545269305,
+        0.702042643562521,
+        0.09255979983510154,
+        0.06584564114968443
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -2419,20 +2421,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -6.540458575616139,
-        6.540458575616139,
+        -6.540531245599049,
+        6.540531245599049,
         -5.0,
-        -10.415864200675058
+        -10.414741726004648
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 2.1831728401350117,
-      "conflict_ratio": 0.0013832987281086086,
+      "total_informative_mass": 2.1829483452009297,
+      "conflict_ratio": 0.0012695041873841178,
       "calibrated_probabilities": [
-        0.03693969839973158,
-        0.8949262863967066,
-        0.05376666068247952,
-        0.014367354521082364
+        0.03693833790725846,
+        0.8949250196516492,
+        0.05376563250587287,
+        0.014371009935219522
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -2443,20 +2445,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -4.365085983685276,
-        4.365085983685276,
+        -4.365121889523289,
+        4.365121889523289,
         -5.0,
-        -6.948847462052072
+        -6.94831698071357
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 1.4897694924104146,
-      "conflict_ratio": 0.023319586042934163,
+      "total_informative_mass": 1.4896633961427141,
+      "conflict_ratio": 0.023241990874769487,
       "calibrated_probabilities": [
-        0.0927502297008702,
-        0.7783758527109294,
-        0.079455677209029,
-        0.04941824037917143
+        0.09274826932436672,
+        0.7783730211373038,
+        0.07945469299328846,
+        0.04942401654504109
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -2491,20 +2493,20 @@
       "true_label": "VERIFIED_TRUE",
       "rule_verdict": "INSUFFICIENT_EVIDENCE",
       "raw_logits": [
-        5.3071975708007825e-05,
-        -5.3071975708007825e-05,
+        0.0,
+        0.0,
         -5.0,
-        0.499622106552124
+        0.5
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 1,
-      "total_informative_mass": 7.557868957519531e-05,
-      "conflict_ratio": 0.7559287228206887,
+      "total_informative_mass": 0.0,
+      "conflict_ratio": 0.0,
       "calibrated_probabilities": [
-        0.2919592792316051,
-        0.2919517280011887,
-        0.08633550344415078,
-        0.32975348932305554
+        0.2919466384163763,
+        0.2919466384163763,
+        0.0863328818823383,
+        0.3297738412849091
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -2515,20 +2517,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -0.3152384597808122,
-        0.3152384597808122,
+        -0.338639124110341,
+        0.338639124110341,
         -5.0,
-        -0.20699130184948442
+        -0.11960075981914994
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 10,
-      "total_informative_mass": 0.1413982603698969,
-      "conflict_ratio": 0.2568526432265898,
+      "total_informative_mass": 0.12392015196383,
+      "conflict_ratio": 0.08909248947485666,
       "calibrated_probabilities": [
-        0.2847289799369363,
-        0.332010772207817,
-        0.0909211003180136,
-        0.2923391475372331
+        0.28126169822185243,
+        0.331729327869013,
+        0.09032750014169305,
+        0.29668147376744153
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -2539,20 +2541,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -2.5827236652374266,
-        2.5827236652374266,
+        -2.5371757507324215,
+        2.5371757507324215,
         -5.0,
-        -3.827090501785278
+        -3.7498893737792964
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 0.8654181003570556,
-      "conflict_ratio": 0.005211592790960183,
+      "total_informative_mass": 0.8499778747558593,
+      "conflict_ratio": 0.005003212006816331,
       "calibrated_probabilities": [
-        0.17199677476687142,
-        0.6055584682042212,
-        0.09543571945759002,
-        0.12700903757131748
+        0.17432643016655425,
+        0.6002867514365469,
+        0.0956607446001073,
+        0.1297260737967916
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -2587,20 +2589,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "INSUFFICIENT_EVIDENCE",
       "raw_logits": [
-        -0.05264968872070312,
-        0.05264968872070312,
+        0.0,
+        0.0,
         -5.0,
-        0.40940475463867193
+        0.5
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 1,
-      "total_informative_mass": 0.018119049072265626,
-      "conflict_ratio": 0.03141011537890313,
+      "total_informative_mass": 0.0,
+      "conflict_ratio": 0.0,
       "calibrated_probabilities": [
-        0.29030137121017824,
-        0.2978464588010447,
-        0.086954792577765,
-        0.324897377411012
+        0.2919466384163763,
+        0.2919466384163763,
+        0.0863328818823383,
+        0.3297738412849091
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -2609,22 +2611,22 @@
       "claim_id": "averitec_246",
       "claim_text": "A \u201cnew virus\u201d disease called Novel Bunya V!rus that is caused by ticks is diagnosed as severe fever with thrombocytopenia syndrome (SFTS) is spreading in China.",
       "true_label": "VERIFIED_FALSE",
-      "rule_verdict": "VERIFIED_TRUE",
+      "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        0.635306039080024,
-        -0.635306039080024,
+        -6.372696456256484,
+        6.372696456256484,
         -5.0,
-        -9.965250277891755
+        -10.127765151067988
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 3,
-      "total_informative_mass": 2.093050055578351,
-      "conflict_ratio": 0.8988224968860946,
+      "total_informative_mass": 2.125553030213598,
+      "conflict_ratio": 0.0006214276886534615,
       "calibrated_probabilities": [
-        0.4848303649201669,
-        0.35573510051932083,
-        0.12280923468370686,
-        0.036625299876805364
+        0.03980494768552157,
+        0.8886361448294174,
+        0.0556164513725446,
+        0.015942456112516403
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -2635,20 +2637,20 @@
       "true_label": "VERIFIED_TRUE",
       "rule_verdict": "VERIFIED_TRUE",
       "raw_logits": [
-        2.6244596242904663,
-        -2.6244596242904663,
+        2.6132080078125,
+        -2.6132080078125,
         -5.0,
-        -4.764819264411926
+        -4.695434570312501
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 1.0529638528823853,
-      "conflict_ratio": 0.16918321407523268,
+      "total_informative_mass": 1.0390869140625,
+      "conflict_ratio": 0.16169717292553737,
       "calibrated_probabilities": [
-        0.625186663215192,
-        0.17399648430487338,
-        0.09753216134053105,
-        0.10328469113940361
+        0.6231464957128172,
+        0.17438227538492884,
+        0.09748078278965806,
+        0.104990446112596
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -2659,20 +2661,20 @@
       "true_label": "VERIFIED_TRUE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -2.8650011012330654,
-        2.8650011012330654,
+        -2.8652078101411464,
+        2.8652078101411464,
         -5.0,
-        -4.539094456471504
+        -4.538184889592231
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 3,
-      "total_informative_mass": 1.0078188912943007,
-      "conflict_ratio": 0.052408693927225004,
+      "total_informative_mass": 1.0076369779184462,
+      "conflict_ratio": 0.05216924036546382,
       "calibrated_probabilities": [
-        0.1587454943529707,
-        0.641329856370153,
-        0.09435484215060252,
-        0.10556980712627369
+        0.15872992581459106,
+        0.6413315631186629,
+        0.09435034078354633,
+        0.10558817028319972
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -2683,20 +2685,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -3.8487823605537415,
-        3.8487823605537415,
+        -3.84292756319046,
+        3.84292756319046,
         -5.0,
-        -6.453604042530059
+        -6.43511801958084
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 1.3907208085060119,
-      "conflict_ratio": 0.07750892689595165,
+      "total_informative_mass": 1.387023603916168,
+      "conflict_ratio": 0.07645700676104061,
       "calibrated_probabilities": [
-        0.11349784469838246,
-        0.7406036541349079,
-        0.08573526446708876,
-        0.06016323669962075
+        0.11373064227055754,
+        0.7400082384421168,
+        0.08578863991232229,
+        0.060472479375003343
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -2707,20 +2709,20 @@
       "true_label": "VERIFIED_TRUE",
       "rule_verdict": "INSUFFICIENT_EVIDENCE",
       "raw_logits": [
-        0.010591793060302735,
-        -0.010591793060302735,
+        0.010399246215820314,
+        -0.010399246215820314,
         -5.0,
-        0.466768741607666
+        0.47070884704589844
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 0.006646251678466797,
-      "conflict_ratio": 0.46871310767307234,
+      "total_informative_mass": 0.005858230590820313,
+      "conflict_ratio": 0.40821318575414056,
       "calibrated_probabilities": [
-        0.29348106688958575,
-        0.29197006510347057,
-        0.08656293383066785,
-        0.32798593417627586
+        0.2933748908823541,
+        0.2918918245963795,
+        0.08653567697763791,
+        0.3281976075436286
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -2755,20 +2757,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -9.000771687861699,
-        9.000771687861699,
+        -8.987112019892948,
+        8.987112019892948,
         -5.0,
-        -14.51371068642137
+        -14.485237786030742
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 3,
-      "total_informative_mass": 3.0027421372842737,
-      "conflict_ratio": 0.0008275459749408509,
+      "total_informative_mass": 2.9970475572061486,
+      "conflict_ratio": 0.00044829122702580535,
       "calibrated_probabilities": [
-        0.011866847259910943,
-        0.9535791512183976,
-        0.031457109148458805,
-        0.0030968923732325885
+        0.011943526944398616,
+        0.9533731296041702,
+        0.031555168957587754,
+        0.0031281744938435304
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -2827,20 +2829,20 @@
       "true_label": "INSUFFICIENT_EVIDENCE",
       "rule_verdict": "INSUFFICIENT_EVIDENCE",
       "raw_logits": [
-        0.16786086559295654,
-        -0.16786086559295654,
+        0.17789611816406248,
+        -0.17789611816406248,
         -5.0,
-        0.028554797172546387
+        0.054916381835937514
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 3,
-      "total_informative_mass": 0.09428904056549073,
-      "conflict_ratio": 0.4065691187665294,
+      "total_informative_mass": 0.0890167236328125,
+      "conflict_ratio": 0.33384382755852393,
       "calibrated_probabilities": [
-        0.31526463800844107,
-        0.29050081673277584,
-        0.08949197001104839,
-        0.3047425752477348
+        0.31539744119423263,
+        0.2892053300558336,
+        0.089311007491563,
+        0.3060862212583708
       ],
       "is_abstained": true,
       "abstention_reason": "Confidence 0.315 below threshold 0.320"
@@ -2875,20 +2877,20 @@
       "true_label": "CONFLICTING_OR_CHERRYPICKED",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -11.101134050863818,
-        11.101134050863818,
+        -11.105213073199572,
+        11.105213073199572,
         -5.0,
-        -18.00785016111028
+        -18.013676779930815
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 3,
-      "total_informative_mass": 3.701570032222056,
-      "conflict_ratio": 0.0003220295536877145,
+      "total_informative_mass": 3.7027353559861633,
+      "conflict_ratio": 0.0002694399016626374,
       "calibrated_probabilities": [
-        0.004361932809560498,
-        0.975537442225648,
-        0.01929008833913751,
-        0.0008105366256540813
+        0.004353400034245121,
+        0.9755664948079932,
+        0.019271498507649504,
+        0.0008086066501120937
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -2923,20 +2925,20 @@
       "true_label": "CONFLICTING_OR_CHERRYPICKED",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -3.758212906122208,
-        3.758212906122208,
+        -3.7580320894718167,
+        3.7580320894718167,
         -5.0,
-        -5.856206804513931
+        -5.852983385324478
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 1.2712413609027864,
-      "conflict_ratio": 0.014555623772304458,
+      "total_informative_mass": 1.2705966770648958,
+      "conflict_ratio": 0.014103058923432976,
       "calibrated_probabilities": [
-        0.11652052101057568,
-        0.7274975712156331,
-        0.08609734161822705,
-        0.06988456615556426
+        0.11652239307581728,
+        0.7274451542304149,
+        0.08609493146860775,
+        0.06993752122516009
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -2947,20 +2949,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -4.731131196845672,
-        4.731131196845672,
+        -4.727716065276763,
+        4.727716065276763,
         -5.0,
-        -7.836295384782716
+        -7.8071495479525765
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 4,
-      "total_informative_mass": 1.6672590769565432,
-      "conflict_ratio": 0.0541099411672675,
+      "total_informative_mass": 1.6614299095905154,
+      "conflict_ratio": 0.051476443591229236,
       "calibrated_probabilities": [
-        0.08040579523479374,
-        0.8065578263283434,
-        0.07530679937828862,
-        0.0377295790585742
+        0.08049970729413365,
+        0.8061570264911,
+        0.07533204060430283,
+        0.038011225610463384
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -2971,20 +2973,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "INSUFFICIENT_EVIDENCE",
       "raw_logits": [
-        -0.005706882476806641,
-        0.005706882476806641,
+        0.0,
+        0.0,
         -5.0,
-        0.48900365829467773
+        0.5
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 1,
-      "total_informative_mass": 0.002199268341064453,
-      "conflict_ratio": 0.13497180165998984,
+      "total_informative_mass": 0.0,
+      "conflict_ratio": 0.0,
       "calibrated_probabilities": [
-        0.2917982689281173,
-        0.29261095256261055,
-        0.0864090845165187,
-        0.3291816939927535
+        0.2919466384163763,
+        0.2919466384163763,
+        0.0863328818823383,
+        0.3297738412849091
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -3019,20 +3021,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -7.616085207525247,
-        7.616085207525247,
+        -7.614728581968302,
+        7.614728581968302,
         -5.0,
-        -12.277757321689931
+        -12.274359260891288
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 4,
-      "total_informative_mass": 2.555551464337986,
-      "conflict_ratio": 0.006595988694472203,
+      "total_informative_mass": 2.5548718521782576,
+      "conflict_ratio": 0.006508735457413923,
       "calibrated_probabilities": [
-        0.02265812268852838,
-        0.9272037601135061,
-        0.04286198830819892,
-        0.007276128889766437
+        0.022672255631913146,
+        0.927168906510933,
+        0.04287454789945227,
+        0.007284289957701646
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -3091,20 +3093,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "INSUFFICIENT_EVIDENCE",
       "raw_logits": [
-        -0.00022187232971191404,
-        0.00022187232971191404,
+        0.0,
+        0.0,
         -5.0,
-        0.4988687038421631
+        0.5
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 1,
-      "total_informative_mass": 0.0002262592315673828,
-      "conflict_ratio": 0.6701676639477695,
+      "total_informative_mass": 0.0,
+      "conflict_ratio": 0.0,
       "calibrated_probabilities": [
-        0.2919573921362257,
-        0.29198896266819024,
-        0.0863407297215961,
-        0.32971291547398807
+        0.2919466384163763,
+        0.2919466384163763,
+        0.0863328818823383,
+        0.3297738412849091
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -3139,23 +3141,23 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "INSUFFICIENT_EVIDENCE",
       "raw_logits": [
-        -0.15739245414733888,
-        0.15739245414733888,
+        -0.13981475830078124,
+        0.13981475830078124,
         -5.0,
-        0.198340654373169
+        0.22985076904296878
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 0.06033186912536621,
-      "conflict_ratio": 0.13040516482933243,
+      "total_informative_mass": 0.05402984619140625,
+      "conflict_ratio": 0.13742014573507555,
       "calibrated_probabilities": [
-        0.28755885147476984,
-        0.31048383521122164,
-        0.08835998362456961,
-        0.3135973296894389
+        0.2881234481147201,
+        0.3084398778451134,
+        0.08815507563328535,
+        0.315281598406881
       ],
       "is_abstained": true,
-      "abstention_reason": "Confidence 0.314 below threshold 0.320"
+      "abstention_reason": "Confidence 0.315 below threshold 0.320"
     },
     {
       "claim_id": "averitec_66",
@@ -3163,20 +3165,20 @@
       "true_label": "VERIFIED_TRUE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -3.037518049329174,
-        3.037518049329174,
+        -3.035838342755687,
+        3.035838342755687,
         -5.0,
-        -4.578292719523688
+        -4.5744393984482485
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 1.0156585439047376,
-      "conflict_ratio": 0.0031039214671874315,
+      "total_informative_mass": 1.0148878796896497,
+      "conflict_ratio": 0.002898608405930621,
       "calibrated_probabilities": [
-        0.14922658505988354,
-        0.6557519913567802,
-        0.0925050982449424,
-        0.10251632533839383
+        0.14930424090037897,
+        0.6555563822885597,
+        0.09251536279132726,
+        0.10262401401973396
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -3235,20 +3237,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -8.966189958153608,
-        8.966189958153608,
+        -8.966054917870405,
+        8.966054917870405,
         -5.0,
-        -14.451995033773375
+        -14.450681824239684
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 3,
-      "total_informative_mass": 2.990399006754675,
-      "conflict_ratio": 0.0005581262371931289,
+      "total_informative_mass": 2.990136364847937,
+      "conflict_ratio": 0.0004853931600370467,
       "calibrated_probabilities": [
-        0.012062005920866776,
-        0.953063149895092,
-        0.031706139565462484,
-        0.003168704618578803
+        0.012062764108237985,
+        0.9530603330374295,
+        0.03170708917734189,
+        0.0031698136769905487
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -3283,20 +3285,20 @@
       "true_label": "VERIFIED_TRUE",
       "rule_verdict": "VERIFIED_TRUE",
       "raw_logits": [
-        1.5436903746798636,
-        -1.5436903746798636,
+        1.5847678693011404,
+        -1.5847678693011404,
         -5.0,
-        -2.237278257496655
+        -2.167570029385388
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 4,
-      "total_informative_mass": 0.547455651499331,
-      "conflict_ratio": 0.06008182233721576,
+      "total_informative_mass": 0.5335140058770775,
+      "conflict_ratio": 0.009855485572931763,
       "calibrated_probabilities": [
-        0.4825604931478852,
-        0.22741982046324535,
-        0.09796316262948712,
-        0.19205652375938242
+        0.48456587803226037,
+        0.2238387588261982,
+        0.09739054997127018,
+        0.19420481317027133
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -3307,20 +3309,20 @@
       "true_label": "CONFLICTING_OR_CHERRYPICKED",
       "rule_verdict": "INSUFFICIENT_EVIDENCE",
       "raw_logits": [
-        -0.08640575408935547,
-        0.08640575408935547,
+        -0.0826995849609375,
+        0.0826995849609375,
         -5.0,
-        0.2908678054809571
+        0.3060455322265625
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 3,
-      "total_informative_mass": 0.04182643890380859,
-      "conflict_ratio": 0.3113870037315981,
+      "total_informative_mass": 0.038790893554687504,
+      "conflict_ratio": 0.2893482170070215,
       "calibrated_probabilities": [
-        0.29058747809192803,
-        0.30308521492601187,
-        0.08775938737829345,
-        0.3185679196037667
+        0.29051032233851504,
+        0.30245795365464956,
+        0.08765688800193525,
+        0.31937483600490013
       ],
       "is_abstained": true,
       "abstention_reason": "Confidence 0.319 below threshold 0.320"
@@ -3331,20 +3333,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -8.733683209332538,
-        8.733683209332538,
+        -8.724044136914323,
+        8.724044136914323,
         -5.0,
-        -14.06428318839071
+        -14.046565350103357
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 3,
-      "total_informative_mass": 2.9128566376781424,
-      "conflict_ratio": 0.0005592107258842969,
+      "total_informative_mass": 2.9093130700206715,
+      "conflict_ratio": 0.00044627623028956135,
       "calibrated_probabilities": [
-        0.013457898979355953,
-        0.949443537592772,
-        0.033426889273586884,
-        0.00367167415428513
+        0.013519015479834723,
+        0.9492854532406378,
+        0.03349991498944905,
+        0.0036956162900784587
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -3355,20 +3357,20 @@
       "true_label": "VERIFIED_TRUE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -2.186111354827881,
-        2.186111354827881,
+        -2.1941894531250004,
+        2.1941894531250004,
         -5.0,
-        -4.985694169998169
+        -4.954345703125
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 1.0971388339996337,
-      "conflict_ratio": 0.3358141210805129,
+      "total_informative_mass": 1.090869140625,
+      "conflict_ratio": 0.32952836718405804,
       "calibrated_probabilities": [
-        0.2036147764744085,
-        0.59088330495878,
-        0.10257186805532538,
-        0.10293005051148606
+        0.20289924922728336,
+        0.5911294608326934,
+        0.10241280978966028,
+        0.10355848015036305
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -3379,20 +3381,20 @@
       "true_label": "VERIFIED_TRUE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -2.183929818001343,
-        2.183929818001343,
+        -2.184036820259644,
+        2.184036820259644,
         -5.0,
-        -3.154658328945516
+        -3.1540742034267173
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 0.7309316657891032,
-      "conflict_ratio": 0.0040428618489300305,
+      "total_informative_mass": 0.7308148406853434,
+      "conflict_ratio": 0.0038348474532707757,
       "calibrated_probabilities": [
-        0.19261422042873938,
-        0.5583661096104685,
-        0.09697872238454544,
-        0.15204094757624664
+        0.1926031932036228,
+        0.5583632591443941,
+        0.09697569878149416,
+        0.152057848870489
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -3403,20 +3405,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -0.5831386785954238,
-        0.5831386785954238,
+        -0.5708355646580459,
+        0.5708355646580459,
         -5.0,
-        -0.4991739224642515
+        -0.4769697617739439
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 3,
-      "total_informative_mass": 0.1998347844928503,
-      "conflict_ratio": 0.027298539022362036,
+      "total_informative_mass": 0.1953939523547888,
+      "conflict_ratio": 0.026179953680781392,
       "calibrated_probabilities": [
-        0.27098648320430396,
-        0.3600555028566941,
-        0.09237007583550737,
-        0.27658793810349463
+        0.27146447239507976,
+        0.35853442297155863,
+        0.09225601443388777,
+        0.27774509019947397
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -3427,20 +3429,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "INSUFFICIENT_EVIDENCE",
       "raw_logits": [
-        -0.0006425857543945312,
-        0.0006425857543945312,
+        0.0,
+        0.0,
         -5.0,
-        0.4962263107299805
+        0.5
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 1,
-      "total_informative_mass": 0.0007547378540039063,
-      "conflict_ratio": 0.7152514587899266,
+      "total_informative_mass": 0.0,
+      "conflict_ratio": 0.0,
       "calibrated_probabilities": [
-        0.2919894293514924,
-        0.29208088320864195,
-        0.08635905684788389,
-        0.3295706305919818
+        0.2919466384163763,
+        0.2919466384163763,
+        0.0863328818823383,
+        0.3297738412849091
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -3451,20 +3453,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "INSUFFICIENT_EVIDENCE",
       "raw_logits": [
-        -0.02602264881134033,
-        0.02602264881134033,
+        -0.023009490966796872,
+        0.023009490966796872,
         -5.0,
-        0.4077357053756714
+        0.4209785461425781
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 5,
-      "total_informative_mass": 0.01845285892486572,
-      "conflict_ratio": 0.529896900926379,
+      "total_informative_mass": 0.015804290771484375,
+      "conflict_ratio": 0.5146669281083268,
       "calibrated_probabilities": [
-        0.29224034398686943,
-        0.2959701327872251,
-        0.08696946294944197,
-        0.3248200602764635
+        0.2921490308413356,
+        0.29544349302378586,
+        0.0868784769966623,
+        0.32552899913821637
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -3523,20 +3525,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -4.534519814047963,
-        4.534519814047963,
+        -4.533840750250965,
+        4.533840750250965,
         -5.0,
-        -7.105923535767943
+        -7.104064586106688
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 1.5211847071535887,
-      "conflict_ratio": 0.006362209706166552,
+      "total_informative_mass": 1.5208129172213376,
+      "conflict_ratio": 0.006268135127997428,
       "calibrated_probabilities": [
-        0.08664206923806085,
-        0.7897033830854401,
-        0.07735157598065406,
-        0.04630297169584495
+        0.08666466994724116,
+        0.7896480107332358,
+        0.07735895169140133,
+        0.04632836762812169
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -3547,20 +3549,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -3.3237053024218763,
-        3.3237053024218763,
+        -3.3147462951586926,
+        3.3147462951586926,
         -5.0,
-        -5.09229932436574
+        -5.073138576837664
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 3,
-      "total_informative_mass": 1.118459864873148,
-      "conflict_ratio": 0.009439845175438123,
+      "total_informative_mass": 1.1146277153675328,
+      "conflict_ratio": 0.008713469798565118,
       "calibrated_probabilities": [
-        0.13574825062626752,
-        0.6858031060272731,
-        0.09022764123528991,
-        0.0882210021111695
+        0.1361519342361571,
+        0.6848458678699832,
+        0.09029861454841755,
+        0.08870358334544229
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -3571,20 +3573,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -3.015935663272467,
-        3.015935663272467,
+        -3.00695090680274,
+        3.00695090680274,
         -5.0,
-        -4.561372462429063
+        -4.5411602889671485
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 1.0122744924858125,
-      "conflict_ratio": 0.006878171782293964,
+      "total_informative_mass": 1.0082320577934296,
+      "conflict_ratio": 0.005866787260604701,
       "calibrated_probabilities": [
-        0.15034859028332168,
-        0.6537697871553451,
-        0.09271176794432387,
-        0.10316985461700937
+        0.15076719524567533,
+        0.6527256960585606,
+        0.09276657921687363,
+        0.10374052947889052
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -3595,20 +3597,20 @@
       "true_label": "VERIFIED_TRUE",
       "rule_verdict": "VERIFIED_TRUE",
       "raw_logits": [
-        6.049684836901725,
-        -6.049684836901725,
+        6.050903632678091,
+        -6.050903632678091,
         -5.0,
-        -10.272768632508813
+        -10.2648855606094
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 3,
-      "total_informative_mass": 2.1545537265017627,
-      "conflict_ratio": 0.06404669721489906,
+      "total_informative_mass": 2.15297711212188,
+      "conflict_ratio": 0.06317260440166365,
       "calibrated_probabilities": [
-        0.8780579557887515,
-        0.046036464618177814,
-        0.05945458235904521,
-        0.01645099723402561
+        0.8780739845388125,
+        0.04600996820441799,
+        0.05943801277864371,
+        0.016478034478125885
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -3667,20 +3669,20 @@
       "true_label": "VERIFIED_TRUE",
       "rule_verdict": "VERIFIED_TRUE",
       "raw_logits": [
-        6.551505685005032,
-        -6.551505685005032,
+        6.551496601257167,
+        -6.551496601257167,
         -5.0,
-        -10.431948349867525
+        -10.431649253760042
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 2.1863896699735053,
-      "conflict_ratio": 0.0011683372388913292,
+      "total_informative_mass": 2.1863298507520086,
+      "conflict_ratio": 0.0011423935824230475,
       "calibrated_probabilities": [
-        0.8953180319537456,
-        0.03675744206298009,
-        0.05364559490191608,
-        0.014278931081358236
+        0.8953168198928129,
+        0.036757555023696306,
+        0.05364564101987499,
+        0.014279984063615869
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -3691,20 +3693,20 @@
       "true_label": "INSUFFICIENT_EVIDENCE",
       "rule_verdict": "INSUFFICIENT_EVIDENCE",
       "raw_logits": [
-        -0.0011160850524902345,
-        0.0011160850524902345,
+        0.0,
+        0.0,
         -5.0,
-        0.4972710609436035
+        0.5
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 1,
-      "total_informative_mass": 0.0005457878112792969,
-      "conflict_ratio": 0.3177822491007634,
+      "total_informative_mass": 0.0,
+      "conflict_ratio": 0.0,
       "calibrated_probabilities": [
-        0.291931241336664,
-        0.2920900710608891,
-        0.08635180968156246,
-        0.3296268779208846
+        0.2919466384163763,
+        0.2919466384163763,
+        0.0863328818823383,
+        0.3297738412849091
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -3739,20 +3741,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -0.27834320068359375,
-        0.27834320068359375,
+        -0.26015625,
+        0.26015625,
         -5.0,
-        -0.22214508056640617
+        -0.16284179687499997
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 0.14442901611328124,
-      "conflict_ratio": 0.3575984453137553,
+      "total_informative_mass": 0.132568359375,
+      "conflict_ratio": 0.3458537447201871,
       "calibrated_probabilities": [
-        0.28772549013248744,
-        0.3295261819456931,
-        0.09105564851946518,
-        0.2916926794023544
+        0.2878329353760591,
+        0.32674036526177835,
+        0.09068686688561714,
+        0.2947398324765454
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -3787,20 +3789,20 @@
       "true_label": "VERIFIED_TRUE",
       "rule_verdict": "CONFLICTING_OR_CHERRYPICKED",
       "raw_logits": [
-        -0.5386324465362118,
-        0.5386324465362118,
-        5.384813358358176,
-        -8.378741936627193
+        0.6569564282806823,
+        -0.6569564282806823,
+        6.635277884474451,
+        -10.139029221478266
       ],
       "has_cross_passage_disparity": true,
       "num_evidence_used": 4,
-      "total_informative_mass": 1.7757483873254387,
-      "conflict_ratio": 0.8988904908953242,
+      "total_informative_mass": 2.1278058442956533,
+      "conflict_ratio": 0.8970834797901736,
       "calibrated_probabilities": [
-        0.14962950379127576,
-        0.19454464265933308,
-        0.6336778728912466,
-        0.0221479806581447
+        0.1642023200606172,
+        0.11921581503830063,
+        0.7047544653108178,
+        0.01182739959026441
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -3811,23 +3813,23 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "INSUFFICIENT_EVIDENCE",
       "raw_logits": [
-        0.08625168800354004,
-        -0.08625168800354004,
+        0.08447113037109374,
+        -0.08447113037109374,
         -5.0,
-        0.2651216983795166
+        0.32199859619140625
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 6,
-      "total_informative_mass": 0.04697566032409668,
-      "conflict_ratio": 0.3879606921929577,
+      "total_informative_mass": 0.03560028076171875,
+      "conflict_ratio": 0.20907217789453922,
       "calibrated_probabilities": [
-        0.30367900318002294,
-        0.29117864325941917,
-        0.08793462199560825,
-        0.3172077315649498
+        0.302211041818218,
+        0.2900226640861499,
+        0.08754752887673854,
+        0.32021876521889353
       ],
-      "is_abstained": true,
-      "abstention_reason": "Confidence 0.317 below threshold 0.320"
+      "is_abstained": false,
+      "abstention_reason": ""
     },
     {
       "claim_id": "averitec_380",
@@ -3835,20 +3837,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -3.0539741306698485,
-        3.0539741306698485,
+        -3.054166820565478,
+        3.054166820565478,
         -5.0,
-        -4.64831172564027
+        -4.647292963051768
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 1.029662345128054,
-      "conflict_ratio": 0.011334741877844348,
+      "total_informative_mass": 1.0294585926103537,
+      "conflict_ratio": 0.011076671524600654,
       "calibrated_probabilities": [
-        0.14858433218603345,
-        0.6581871187475331,
-        0.09247704778407555,
-        0.10075150128235794
+        0.14857008446943373,
+        0.658185810233811,
+        0.0924725219561471,
+        0.10077158334060816
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -3859,20 +3861,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -8.580024950531879,
-        8.580024950531879,
+        -7.966637158623593,
+        7.966637158623593,
         -5.0,
-        -13.882448779497281
+        -12.812877006096652
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 2.876489755899456,
-      "conflict_ratio": 0.005729703466522344,
+      "total_informative_mass": 2.6625754012193306,
+      "conflict_ratio": 0.0026401802685975394,
       "calibrated_probabilities": [
-        0.01446626791736444,
-        0.9469487490448707,
-        0.03461100807880012,
-        0.003973974958964844
+        0.019263171388341355,
+        0.9351336465217063,
+        0.03968930512420498,
+        0.0059138769657474345
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -3883,20 +3885,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -6.58484345758643,
-        6.58484345758643,
+        -6.504652396835274,
+        6.504652396835274,
         -5.0,
-        -10.482734863796395
+        -10.347652062984988
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 2.196546972759279,
-      "conflict_ratio": 0.0007280303383464955,
+      "total_informative_mass": 2.169530412596998,
+      "conflict_ratio": 0.0006051753745609614,
       "calibrated_probabilities": [
-        0.03621273032267944,
-        0.8964979275180051,
-        0.053281695905086,
-        0.01400764625422937
+        0.037534016237260104,
+        0.8935946235711009,
+        0.054157118826327774,
+        0.014714241365311269
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -3907,20 +3909,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -9.010674928029811,
-        9.010674928029811,
+        -9.008937142690456,
+        9.008937142690456,
         -5.0,
-        -14.526224779129961
+        -14.520759271622639
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 3,
-      "total_informative_mass": 3.0052449558259924,
-      "conflict_ratio": 0.0005612340911571492,
+      "total_informative_mass": 3.004151854324528,
+      "conflict_ratio": 0.0003903951689254881,
       "calibrated_probabilities": [
-        0.011811482087167096,
-        0.9537220420555719,
-        0.031385992541086365,
-        0.0030804833161746873
+        0.01182115005100552,
+        0.9536946592661499,
+        0.031398384227151056,
+        0.0030858064556935636
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -3955,20 +3957,20 @@
       "true_label": "CONFLICTING_OR_CHERRYPICKED",
       "rule_verdict": "INSUFFICIENT_EVIDENCE",
       "raw_logits": [
-        -0.060726928710937496,
-        0.060726928710937496,
+        0.0,
+        0.0,
         -5.0,
-        0.3663482666015625
+        0.5
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 1,
-      "total_informative_mass": 0.026730346679687503,
-      "conflict_ratio": 0.24271269184897076,
+      "total_informative_mass": 0.0,
+      "conflict_ratio": 0.0,
       "calibrated_probabilities": [
-        0.2907116870984428,
-        0.29944385168111276,
-        0.08724925057908754,
-        0.32259521064135704
+        0.2919466384163763,
+        0.2919466384163763,
+        0.0863328818823383,
+        0.3297738412849091
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -3979,20 +3981,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -0.3708072172903485,
-        0.3708072172903485,
+        -0.3714300619863936,
+        0.3714300619863936,
         -5.0,
-        -9.004219428565193
+        -8.99590100434034
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 4,
-      "total_informative_mass": 1.9008438857130385,
-      "conflict_ratio": 0.9349744912420438,
+      "total_informative_mass": 1.8991802008680678,
+      "conflict_ratio": 0.9348082107144173,
       "calibrated_probabilities": [
-        0.37825081618674455,
-        0.453170419452191,
-        0.12243158534305194,
-        0.04614717901801263
+        0.3781537020957635,
+        0.45319161090313453,
+        0.12241872968352792,
+        0.04623595731757413
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -4003,20 +4005,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -4.856272936368077,
-        4.856272936368077,
+        -6.5731413369418075,
+        6.5731413369418075,
         -5.0,
-        -7.927085941443691
+        -10.463313167701017
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 4,
-      "total_informative_mass": 1.6854171882887383,
-      "conflict_ratio": 0.03955074372396232,
+      "total_informative_mass": 2.1926626335402033,
+      "conflict_ratio": 0.000736784795239696,
       "calibrated_probabilities": [
-        0.076331999633787,
-        0.8138439867528634,
-        0.0737049504602738,
-        0.03611906315307584
+        0.03640288014034602,
+        0.8960804470066419,
+        0.05340896139836972,
+        0.014107711454642409
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -4027,20 +4029,20 @@
       "true_label": "VERIFIED_TRUE",
       "rule_verdict": "INSUFFICIENT_EVIDENCE",
       "raw_logits": [
-        -0.002532863616943359,
-        0.002532863616943359,
+        -0.002148342132568359,
+        0.002148342132568359,
         -5.0,
-        0.48902273178100586
+        0.49174737930297857
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 3,
-      "total_informative_mass": 0.002195453643798828,
-      "conflict_ratio": 0.615157882024542,
+      "total_informative_mass": 0.0016505241394042967,
+      "conflict_ratio": 0.5657865198094438,
       "calibrated_probabilities": [
-        0.2920237245248411,
-        0.2923844142832681,
-        0.08640899152503656,
-        0.3291828696668542
+        0.2919872613396137,
+        0.2922931268582734,
+        0.0863901072852832,
+        0.32932950451682974
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -4051,20 +4053,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "INSUFFICIENT_EVIDENCE",
       "raw_logits": [
-        -0.001339387893676758,
-        0.001339387893676758,
+        -0.0010248184204101562,
+        0.0010248184204101562,
         -5.0,
-        0.4861686229705811
+        0.49140262603759766
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 3,
-      "total_informative_mass": 0.002766275405883789,
-      "conflict_ratio": 0.8383020966130839,
+      "total_informative_mass": 0.0017194747924804688,
+      "conflict_ratio": 0.8008653531954564,
       "calibrated_probabilities": [
-        0.29217555185394767,
-        0.2923663296343765,
-        0.08642877821066737,
-        0.32902934030100844
+        0.29207530828859324,
+        0.2922212186132109,
+        0.08639250265401027,
+        0.3293109704441856
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -4075,20 +4077,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -2.683651894563809,
-        2.683651894563809,
+        -2.681877559656277,
+        2.681877559656277,
         -5.0,
-        -3.9789270258042957
+        -3.9755404090974484
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 0.8957854051608591,
-      "conflict_ratio": 0.0013784241784377338,
+      "total_informative_mass": 0.8951080818194896,
+      "conflict_ratio": 0.0012835254280537563,
       "calibrated_probabilities": [
-        0.16677010916161178,
-        0.6167590655103112,
-        0.09483958321794028,
-        0.12163124211013679
+        0.16685792473688565,
+        0.6165504612106337,
+        0.09484850539977625,
+        0.12174310865270435
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -4099,20 +4101,20 @@
       "true_label": "VERIFIED_TRUE",
       "rule_verdict": "INSUFFICIENT_EVIDENCE",
       "raw_logits": [
-        0.00022176504135131838,
-        -0.00022176504135131838,
+        0.0,
+        0.0,
         -5.0,
-        0.49942356348037725
+        0.5
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 1,
-      "total_informative_mass": 0.00011528730392456055,
-      "conflict_ratio": 0.35571917206848613,
+      "total_informative_mass": 0.0,
+      "conflict_ratio": 0.0,
       "calibrated_probabilities": [
-        0.29197593832215807,
-        0.29194438446312515,
-        0.08633688069772891,
-        0.32974279651698785
+        0.2919466384163763,
+        0.2919466384163763,
+        0.0863328818823383,
+        0.3297738412849091
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -4123,20 +4125,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "INSUFFICIENT_EVIDENCE",
       "raw_logits": [
-        -0.0005451679229736333,
-        0.0005451679229736333,
+        -0.00047721862792968737,
+        0.00047721862792968737,
         -5.0,
-        0.4854924678802491
+        0.4872112274169922
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 0.002901506423950195,
-      "conflict_ratio": 0.9370466023835589,
+      "total_informative_mass": 0.0025577545166015625,
+      "conflict_ratio": 0.9374410968547443,
       "calibrated_probabilities": [
-        0.2922479511558536,
-        0.29232560720012274,
-        0.0864334657071851,
-        0.3289929759368386
+        0.2922125189444209,
+        0.2922804866343025,
+        0.08642155556958697,
+        0.3290854388516896
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -4147,20 +4149,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -6.462270551345592,
-        6.462270551345592,
+        -6.3865020805814305,
+        6.3865020805814305,
         -5.0,
-        -10.320598945978873
+        -10.193950043085806
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 2.1641197891957744,
-      "conflict_ratio": 0.004634494277760687,
+      "total_informative_mass": 2.1387900086171614,
+      "conflict_ratio": 0.00465495773854092,
       "calibrated_probabilities": [
-        0.03825624689841856,
-        0.8921702054738223,
-        0.05463208784253917,
-        0.014941459785219885
+        0.0395681635663089,
+        0.8893132921530673,
+        0.05547190726793953,
+        0.015646637012684393
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -4171,20 +4173,20 @@
       "true_label": "CONFLICTING_OR_CHERRYPICKED",
       "rule_verdict": "INSUFFICIENT_EVIDENCE",
       "raw_logits": [
-        0.005997848510742189,
-        -0.005997848510742189,
+        0.0054039001464843755,
+        -0.0054039001464843755,
         -5.0,
-        0.4608840942382813
+        0.46609115600585943
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 3,
-      "total_informative_mass": 0.00782318115234375,
-      "conflict_ratio": 0.7443460474691497,
+      "total_informative_mass": 0.006781768798828125,
+      "conflict_ratio": 0.7342825471008959,
       "calibrated_probabilities": [
-        0.2932909497131269,
-        0.2924349070991342,
-        0.0866037497122693,
-        0.3276703934754697
+        0.29312659399674246,
+        0.29235564332151615,
+        0.0865677462351025,
+        0.3279500164466389
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -4195,20 +4197,20 @@
       "true_label": "VERIFIED_TRUE",
       "rule_verdict": "VERIFIED_TRUE",
       "raw_logits": [
-        6.358150693093194,
-        -6.358150693093194,
+        6.358555384789361,
+        -6.358555384789361,
         -5.0,
-        -10.149262861552415
+        -10.147818283381637
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 2.129852572310483,
-      "conflict_ratio": 0.004915365113446891,
+      "total_informative_mass": 2.1295636566763276,
+      "conflict_ratio": 0.004717018123108819,
       "calibrated_probabilities": [
-        0.8882331849939675,
-        0.040069940909667534,
-        0.0557886185831085,
-        0.015908255513256486
+        0.8882415092526414,
+        0.04006241437845169,
+        0.05578364020577956,
+        0.015912436163127333
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -4243,20 +4245,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -2.470364512210446,
-        2.470364512210446,
+        -2.4107211959415245,
+        2.4107211959415245,
         -5.0,
-        -6.892738252301656
+        -6.564684062619648
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 9,
-      "total_informative_mass": 1.4785476504603312,
-      "conflict_ratio": 0.44306476682582796,
+      "total_informative_mass": 1.4129368125239297,
+      "conflict_ratio": 0.4312738148432144,
       "calibrated_probabilities": [
-        0.19181185338047851,
-        0.639337685937496,
-        0.10355608722329107,
-        0.06529437345873457
+        0.1948113426239213,
+        0.6307329815598633,
+        0.1036579581133259,
+        0.07079771770288945
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -4291,20 +4293,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -2.732180589437485,
-        2.732180589437485,
+        -2.732350391149521,
+        2.732350391149521,
         -5.0,
-        -4.890159696340561
+        -4.8873136937618264
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 3,
-      "total_informative_mass": 1.0780319392681121,
-      "conflict_ratio": 0.1551947719110226,
+      "total_informative_mass": 1.0774627387523652,
+      "conflict_ratio": 0.15469594849554957,
       "calibrated_probabilities": [
-        0.16797478999656226,
-        0.6360812256413234,
-        0.09666095940825221,
-        0.09928302495386226
+        0.1679530190386532,
+        0.6360514163901471,
+        0.096652430330217,
+        0.09934313424098283
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -4339,20 +4341,20 @@
       "true_label": "VERIFIED_TRUE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -5.136465622857213,
-        5.136465622857213,
+        -5.129436661675573,
+        5.129436661675573,
         -5.0,
-        -8.084891514852643
+        -8.067187504842877
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 1.7169783029705286,
-      "conflict_ratio": 0.002809058526863549,
+      "total_informative_mass": 1.7134375009685754,
+      "conflict_ratio": 0.002115792546976178,
       "calibrated_probabilities": [
-        0.06782794146725969,
-        0.8289840781208393,
-        0.07012133445510975,
-        0.03306664595679134
+        0.06802308058803849,
+        0.8285260405083649,
+        0.07020272802817164,
+        0.03324815087542502
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -4363,20 +4365,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -8.944540192513022,
-        8.944540192513022,
+        -8.944614793686425,
+        8.944614793686425,
         -5.0,
-        -14.458423474259913
+        -14.457026937432829
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 4,
-      "total_informative_mass": 2.991684694851983,
-      "conflict_ratio": 0.003399854926319601,
+      "total_informative_mass": 2.991405387486566,
+      "conflict_ratio": 0.0032984896220386675,
       "calibrated_probabilities": [
-        0.012186198266221646,
-        0.9527702500897992,
-        0.03186404987827355,
-        0.0031795017657056377
+        0.012185755202069586,
+        0.9527702481109458,
+        0.031863470585506225,
+        0.003180526101478458
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -4411,23 +4413,23 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "INSUFFICIENT_EVIDENCE",
       "raw_logits": [
-        -0.1492405414581299,
-        0.1492405414581299,
+        -0.14504699707031252,
+        0.14504699707031252,
         -5.0,
-        0.17079615592956543
+        0.18473815917968756
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 5,
-      "total_informative_mass": 0.06584076881408692,
-      "conflict_ratio": 0.24443331264110327,
+      "total_informative_mass": 0.0630523681640625,
+      "conflict_ratio": 0.23318927392375588,
       "calibrated_probabilities": [
-        0.2887491599101108,
-        0.31053290329676214,
-        0.08854966773242799,
-        0.312168269060699
+        0.2887439658772578,
+        0.3098933409339644,
+        0.08845763828173134,
+        0.31290505490704634
       ],
       "is_abstained": true,
-      "abstention_reason": "Confidence 0.312 below threshold 0.320"
+      "abstention_reason": "Confidence 0.313 below threshold 0.320"
     },
     {
       "claim_id": "averitec_165",
@@ -4435,20 +4437,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "INSUFFICIENT_EVIDENCE",
       "raw_logits": [
-        -0.06985301971435548,
-        0.06985301971435548,
+        -0.06911430358886719,
+        0.06911430358886719,
         -5.0,
-        0.3689088821411133
+        0.37422370910644537
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 0.026218223571777347,
-      "conflict_ratio": 0.11189819023284318,
+      "total_informative_mass": 0.025155258178710938,
+      "conflict_ratio": 0.08416025020022921,
       "calibrated_probabilities": [
-        0.29000148310761414,
-        0.3000438111156155,
-        0.08722986602182947,
-        0.3227248397549409
+        0.28993295389444557,
+        0.2998649353203286,
+        0.08719355639819507,
+        0.32300855438703074
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -4483,20 +4485,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -5.5362584892311135,
-        5.5362584892311135,
+        -5.534308415988926,
+        5.534308415988926,
         -5.0,
-        -9.427156865034096
+        -9.423387944135659
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 3,
-      "total_informative_mass": 1.9854313730068194,
-      "conflict_ratio": 0.07051958983846357,
+      "total_informative_mass": 1.984677588827132,
+      "conflict_ratio": 0.07049409290675303,
       "calibrated_probabilities": [
-        0.05754397930588222,
-        0.8545824352017348,
-        0.06557671933574154,
-        0.022296866156641486
+        0.05759195579661242,
+        0.854482482092188,
+        0.06560021379695309,
+        0.02232534831424643
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -4507,20 +4509,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -9.791656713374582,
-        9.791656713374582,
+        -9.788522248156994,
+        9.788522248156994,
         -5.0,
-        -15.843292600917698
+        -15.837667710590246
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 4,
-      "total_informative_mass": 3.2686585201835396,
-      "conflict_ratio": 0.0014602160393906445,
+      "total_informative_mass": 3.2675335421180494,
+      "conflict_ratio": 0.0014361876429753275,
       "calibrated_probabilities": [
-        0.008157441672494516,
-        0.9637555595108364,
-        0.026220030716448652,
-        0.001866968100220423
+        0.008169614065096649,
+        0.9637203897937165,
+        0.026239107184489786,
+        0.0018708889566971506
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -4531,20 +4533,20 @@
       "true_label": "VERIFIED_TRUE",
       "rule_verdict": "VERIFIED_TRUE",
       "raw_logits": [
-        0.43268606811761856,
-        -0.43268606811761856,
+        0.43385032564401627,
+        -0.43385032564401627,
         -5.0,
-        -0.5287071838974954
+        -0.5249532237648964
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 4,
-      "total_informative_mass": 0.20574143677949908,
-      "conflict_ratio": 0.29897938592457113,
+      "total_informative_mass": 0.2049906447529793,
+      "conflict_ratio": 0.2945186844617955,
       "calibrated_probabilities": [
-        0.34877745433303253,
-        0.282468490698674,
-        0.09281794862651867,
-        0.27593610634177473
+        0.3487817697263003,
+        0.2823117581647027,
+        0.09279276828344704,
+        0.27611370382555
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -4555,20 +4557,20 @@
       "true_label": "VERIFIED_TRUE",
       "rule_verdict": "VERIFIED_TRUE",
       "raw_logits": [
-        5.914010055921972,
-        -5.914010055921972,
+        5.914749129675329,
+        -5.914749129675329,
         -5.0,
-        -10.09432918485254
+        -10.092759079299867
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 2.118865836970508,
-      "conflict_ratio": 0.06962643857039968,
+      "total_informative_mass": 2.1185518158599734,
+      "conflict_ratio": 0.06937224860981601,
       "calibrated_probabilities": [
-        0.8724274135869557,
-        0.04886791106579358,
-        0.06105894534821031,
-        0.0176457299990404
+        0.872449242130405,
+        0.04885153508727143,
+        0.06104947758028478,
+        0.01764974520203883
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -4579,20 +4581,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -0.6770321563817561,
-        0.6770321563817561,
+        -0.7161230878508376,
+        0.7161230878508376,
         -5.0,
-        -9.628494309727103
+        -9.634320143831474
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 2.0256988619454206,
-      "conflict_ratio": 0.8885923874014333,
+      "total_informative_mass": 2.026864028766295,
+      "conflict_ratio": 0.8822276310645234,
       "calibrated_probabilities": [
-        0.3505630961629441,
-        0.48759658873553463,
-        0.12226050536771249,
-        0.039579809733808785
+        0.3467933171657619,
+        0.4916304945986519,
+        0.12210333499077039,
+        0.03947285324481581
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -4627,20 +4629,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -0.7982488632202147,
-        0.7982488632202147,
+        -0.7101562499999999,
+        0.7101562499999999,
         -5.0,
-        -0.8951406478881834
+        -0.7421874999999999
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 0.2790281295776367,
-      "conflict_ratio": 0.046393633490859565,
+      "total_informative_mass": 0.24843749999999998,
+      "conflict_ratio": 0.04716962145561175,
       "calibrated_probabilities": [
-        0.26236987781798393,
-        0.387136447391925,
-        0.09424575026556735,
-        0.2562479245245238
+        0.26614595699323523,
+        0.37620544759756275,
+        0.09357185431587392,
+        0.26407674109332807
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -4673,22 +4675,22 @@
       "claim_id": "averitec_374",
       "claim_text": "Police: Political Activists Didn\u2019t Cause Oregon\u2019s Wildfires",
       "true_label": "VERIFIED_TRUE",
-      "rule_verdict": "VERIFIED_TRUE",
+      "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        2.178435516357422,
-        -2.178435516357422,
+        -2.5582763671875,
+        2.5582763671875,
         -5.0,
-        -3.7218284606933594
+        -4.0604248046875
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 0.8443656921386719,
-      "conflict_ratio": 0.14001087574889284,
+      "total_informative_mass": 0.9120849609375,
+      "conflict_ratio": 0.06504449626000249,
       "calibrated_probabilities": [
-        0.5690653766001847,
-        0.19683137818667856,
-        0.0989694159728527,
-        0.135133829240284
+        0.17469961661868055,
+        0.6077898426355631,
+        0.09635970333979188,
+        0.12115083740596458
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -4699,20 +4701,20 @@
       "true_label": "VERIFIED_TRUE",
       "rule_verdict": "VERIFIED_TRUE",
       "raw_logits": [
-        6.539398450117005,
-        -6.539398450117005,
+        6.539463681440247,
+        -6.539463681440247,
         -5.0,
-        -10.427184482894518
+        -10.426504989944078
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 2.1854368965789037,
-      "conflict_ratio": 0.002579534845347603,
+      "total_informative_mass": 2.185300997988816,
+      "conflict_ratio": 0.0025075576955082913,
       "calibrated_probabilities": [
-        0.8949288767864348,
-        0.03695889505673513,
-        0.05378070731132935,
-        0.014331520845500668
+        0.8949287733944451,
+        0.03695771587842305,
+        0.05377984625766675,
+        0.014333664469465155
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -4723,23 +4725,23 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "INSUFFICIENT_EVIDENCE",
       "raw_logits": [
-        -0.039607143402099615,
-        0.039607143402099615,
+        -0.03724365234375,
+        0.03724365234375,
         -5.0,
-        0.15407228469848633
+        0.17901611328125006
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 0.06918554306030274,
-      "conflict_ratio": 0.8091625835023266,
+      "total_informative_mass": 0.06419677734375,
+      "conflict_ratio": 0.8066046630435451,
       "calibrated_probabilities": [
-        0.2970534212100326,
-        0.302842934639273,
-        0.08869492312794804,
-        0.31140872102274647
+        0.2966622823919298,
+        0.3020960077771211,
+        0.08852713700921087,
+        0.3127145728217382
       ],
       "is_abstained": true,
-      "abstention_reason": "Confidence 0.311 below threshold 0.320"
+      "abstention_reason": "Confidence 0.313 below threshold 0.320"
     },
     {
       "claim_id": "averitec_369",
@@ -4747,20 +4749,20 @@
       "true_label": "VERIFIED_TRUE",
       "rule_verdict": "INSUFFICIENT_EVIDENCE",
       "raw_logits": [
-        0.06446714401245118,
-        -0.06446714401245118,
+        0.05951156616210937,
+        -0.05951156616210937,
         -5.0,
-        0.3620915412902832
+        0.3757972717285157
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 0.02758169174194336,
-      "conflict_ratio": 0.22088648181236956,
+      "total_informative_mass": 0.024840545654296876,
+      "conflict_ratio": 0.2014108543494882,
       "calibrated_probabilities": [
-        0.2998146946117136,
-        0.2905416415851823,
-        0.08727772348594352,
-        0.32236594031716065
+        0.2991335093065468,
+        0.29058245569819097,
+        0.08718464171899858,
+        0.32309939327626364
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -4795,20 +4797,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -1.6730283826589583,
-        1.6730283826589583,
+        -1.672333368659019,
+        1.672333368659019,
         -5.0,
-        -9.843827649950981
+        -9.84235195815563
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 2.068765529990196,
-      "conflict_ratio": 0.7304301285483245,
+      "total_informative_mass": 2.0684703916311262,
+      "conflict_ratio": 0.7305036663910104,
       "calibrated_probabilities": [
-        0.26034507370721577,
-        0.5883656651073218,
-        0.1157367018186574,
-        0.0355525593668051
+        0.26040030133136577,
+        0.5882911820570079,
+        0.11574165017516191,
+        0.03556686643646442
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -4819,20 +4821,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -5.251762622594833,
-        5.251762622594833,
+        -5.196210712194443,
+        5.196210712194443,
         -5.0,
-        -9.017903178930283
+        -8.912003368139267
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 1.9035806357860565,
-      "conflict_ratio": 0.08037117612659453,
+      "total_informative_mass": 1.8824006736278536,
+      "conflict_ratio": 0.07986097671703718,
       "calibrated_probabilities": [
-        0.06497316573603883,
-        0.839990343975985,
-        0.06908391164992282,
-        0.02595257863805313
+        0.06650575057181865,
+        0.8368388876684406,
+        0.06976270082704691,
+        0.02689266093269392
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -4867,20 +4869,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -1.197731663379818,
-        1.197731663379818,
+        -1.1962126032449305,
+        1.1962126032449305,
         -5.0,
-        -1.5406693988479674
+        -1.5376889281906188
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 0.4081338797695935,
-      "conflict_ratio": 0.021781995161353172,
+      "total_informative_mass": 0.4075377856381237,
+      "conflict_ratio": 0.021593653250370992,
       "calibrated_probabilities": [
-        0.24340145377000078,
-        0.43633911640829903,
-        0.0963710114758193,
-        0.22388841834588097
+        0.24346933982798222,
+        0.43613781927052836,
+        0.09636221457844467,
+        0.22403062632304482
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -4915,20 +4917,20 @@
       "true_label": "CONFLICTING_OR_CHERRYPICKED",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -4.724928518802283,
-        4.724928518802283,
+        -10.476600328092218,
+        10.476600328092218,
         -5.0,
-        -16.752482056897428
+        -17.21165493397288
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 6,
-      "total_informative_mass": 3.450496411379486,
-      "conflict_ratio": 0.5435506869995218,
+      "total_informative_mass": 3.542330986794576,
+      "conflict_ratio": 0.014151942171819523,
       "calibrated_probabilities": [
-        0.08340743182086623,
-        0.8341422225988985,
-        0.0780001048307018,
-        0.0044502407495333384
+        0.005883977947478361,
+        0.9706281566347092,
+        0.0223477971324506,
+        0.00114006828536165
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -4963,20 +4965,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "INSUFFICIENT_EVIDENCE",
       "raw_logits": [
-        0.016565179824829107,
-        -0.016565179824829107,
+        0.015724182128906253,
+        -0.015724182128906253,
         -5.0,
-        0.41568136215209966
+        0.4208297729492188
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 3,
-      "total_informative_mass": 0.01686372756958008,
-      "conflict_ratio": 0.6725279678849931,
+      "total_informative_mass": 0.01583404541015625,
+      "conflict_ratio": 0.6689372270693713,
       "calibrated_probabilities": [
-        0.29510515416293864,
-        0.29273237722924694,
-        0.0869153606401398,
-        0.3252471079676747
+        0.29492441129377645,
+        0.29267301663596634,
+        0.08687992992139117,
+        0.32552264214886606
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -4987,20 +4989,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -4.074577552801475,
-        4.074577552801475,
+        -4.046133262640343,
+        4.046133262640343,
         -5.0,
-        -6.412696532944664
+        -6.360673598984703
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 4,
-      "total_informative_mass": 1.3825393065889329,
-      "conflict_ratio": 0.017610183856780946,
+      "total_informative_mass": 1.3721347197969407,
+      "conflict_ratio": 0.0170709295824079,
       "calibrated_probabilities": [
-        0.10364739489508944,
-        0.7549990093300597,
-        0.082722784706129,
-        0.05863081106872171
+        0.1047607138454973,
+        0.752603407760432,
+        0.08303383068480759,
+        0.0596020477092633
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -5011,20 +5013,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -1.593208050727844,
-        1.593208050727844,
+        -1.6281628847122194,
+        1.6281628847122194,
         -5.0,
-        -5.313427567481995
+        -5.134014725685119
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 1.162685513496399,
-      "conflict_ratio": 0.5432385737015264,
+      "total_informative_mass": 1.1268029451370238,
+      "conflict_ratio": 0.5183528031535757,
       "calibrated_probabilities": [
-        0.24915041403093605,
-        0.541583625311186,
-        0.10862663554783138,
-        0.10063932511004657
+        0.24531593802366877,
+        0.5424102636109108,
+        0.10786972988762505,
+        0.10440406847779553
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -5035,20 +5037,20 @@
       "true_label": "VERIFIED_TRUE",
       "rule_verdict": "VERIFIED_TRUE",
       "raw_logits": [
-        1.753959015011787,
-        -1.753959015011787,
+        3.6792771846055983,
+        -3.6792771846055983,
         -5.0,
-        -2.7719895392656326
+        -5.724103525280952
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 4,
-      "total_informative_mass": 0.6543979078531265,
-      "conflict_ratio": 0.10657857464647688,
+      "total_informative_mass": 1.2448207050561904,
+      "conflict_ratio": 0.014777198035355599,
       "calibrated_probabilities": [
-        0.5127762742827302,
-        0.21812273020032966,
-        0.09889792579684713,
-        0.17020306972009314
+        0.7203448480971297,
+        0.11989971223463551,
+        0.08690645940210677,
+        0.07284898026612806
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -5059,20 +5061,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "INSUFFICIENT_EVIDENCE",
       "raw_logits": [
-        0.018946838378906247,
-        -0.018946838378906247,
+        0.0,
+        0.0,
         -5.0,
-        0.43978118896484375
+        0.5
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 1,
-      "total_informative_mass": 0.012043762207031251,
-      "conflict_ratio": 0.4755718141715273,
+      "total_informative_mass": 0.0,
+      "conflict_ratio": 0.0,
       "calibrated_probabilities": [
-        0.2947114765939372,
-        0.2920027443055383,
-        0.08674905451895042,
-        0.326536724581574
+        0.2919466384163763,
+        0.2919466384163763,
+        0.0863328818823383,
+        0.3297738412849091
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -5083,23 +5085,23 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "INSUFFICIENT_EVIDENCE",
       "raw_logits": [
-        -0.1309234142303467,
-        0.1309234142303467,
+        -0.12105903625488282,
+        0.12105903625488282,
         -5.0,
-        0.2590982913970947
+        0.27842521667480474
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 3,
-      "total_informative_mass": 0.048180341720581055,
-      "conflict_ratio": 0.09421081858041885,
+      "total_informative_mass": 0.04431495666503906,
+      "conflict_ratio": 0.08940221261665124,
       "calibrated_probabilities": [
-        0.28811096015715104,
-        0.3070929439061995,
-        0.08796047544299151,
-        0.31683562049365793
+        0.2883856603554402,
+        0.3059115787338041,
+        0.08783296587702745,
+        0.3178697950337282
       ],
       "is_abstained": true,
-      "abstention_reason": "Confidence 0.317 below threshold 0.320"
+      "abstention_reason": "Confidence 0.318 below threshold 0.320"
     },
     {
       "claim_id": "indic_hi_03",
@@ -5131,20 +5133,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_TRUE",
       "raw_logits": [
-        7.735672429203987,
-        -7.735672429203987,
+        7.707175496220589,
+        -7.707175496220589,
         -5.0,
-        -12.840794280171394
+        -12.777876570820808
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 4,
-      "total_informative_mass": 2.668158856034279,
-      "conflict_ratio": 0.03358171341582416,
+      "total_informative_mass": 2.6555753141641616,
+      "conflict_ratio": 0.03257929925135534,
       "calibrated_probabilities": [
-        0.9305805940154781,
-        0.021453195425362868,
-        0.041782627747402705,
-        0.006183582811756326
+        0.929901350430579,
+        0.02173733392970802,
+        0.04204306189343863,
+        0.006318253746274414
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -5179,20 +5181,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -1.23984532202594,
-        1.23984532202594,
+        -1.2204670413862915,
+        1.2204670413862915,
         -5.0,
-        -1.5912368323188275
+        -1.5565173651557411
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 0.4182473664637655,
-      "conflict_ratio": 0.011872353494413668,
+      "total_informative_mass": 0.4113034730311483,
+      "conflict_ratio": 0.01089491166813827,
       "calibrated_probabilities": [
-        0.2410915058812854,
-        0.44116015763678523,
-        0.09644103349939233,
-        0.22130730298253715
+        0.2420043779860915,
+        0.4386682133468808,
+        0.09635016297977564,
+        0.22297724568725216
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -5203,20 +5205,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "INSUFFICIENT_EVIDENCE",
       "raw_logits": [
-        -0.00010721683502197267,
-        0.00010721683502197267,
+        0.0,
+        0.0,
         -5.0,
-        0.4994567632675171
+        0.5
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 1,
-      "total_informative_mass": 0.00010864734649658204,
-      "conflict_ratio": 0.6649353935029384,
+      "total_informative_mass": 0.0,
+      "conflict_ratio": 0.0,
       "calibrated_probabilities": [
-        0.2919517547722195,
-        0.2919670100886296,
-        0.08633665044382395,
-        0.32974458469532697
+        0.2919466384163763,
+        0.2919466384163763,
+        0.0863328818823383,
+        0.3297738412849091
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -5227,20 +5229,20 @@
       "true_label": "CONFLICTING_OR_CHERRYPICKED",
       "rule_verdict": "INSUFFICIENT_EVIDENCE",
       "raw_logits": [
-        0.018914794921875002,
-        -0.018914794921875002,
+        0.0,
+        0.0,
         -5.0,
-        0.387115478515625
+        0.5
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 1,
-      "total_informative_mass": 0.022576904296875002,
-      "conflict_ratio": 0.720703411720201,
+      "total_informative_mass": 0.0,
+      "conflict_ratio": 0.0,
       "calibrated_probabilities": [
-        0.29594140044216727,
-        0.29322594279760217,
-        0.08711176583038441,
-        0.3237208909298463
+        0.2919466384163763,
+        0.2919466384163763,
+        0.0863328818823383,
+        0.3297738412849091
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -5251,20 +5253,20 @@
       "true_label": "VERIFIED_TRUE",
       "rule_verdict": "INSUFFICIENT_EVIDENCE",
       "raw_logits": [
-        0.00021443367004394536,
-        -0.00021443367004394536,
+        0.0,
+        0.0,
         -5.0,
-        0.49913001060485845
+        0.5
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 1,
-      "total_informative_mass": 0.00017399787902832033,
-      "conflict_ratio": 0.5858356088823272,
+      "total_informative_mass": 0.0,
+      "conflict_ratio": 0.0,
       "calibrated_probabilities": [
-        0.2919823033952969,
-        0.2919517919614562,
-        0.08633891708111877,
-        0.3297269875621281
+        0.2919466384163763,
+        0.2919466384163763,
+        0.0863328818823383,
+        0.3297738412849091
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -5275,20 +5277,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "INSUFFICIENT_EVIDENCE",
       "raw_logits": [
-        -0.08627943992614745,
-        0.08627943992614745,
+        0.0,
+        0.0,
         -5.0,
-        0.35571312904357916
+        0.5
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 1,
-      "total_informative_mass": 0.02885737419128418,
-      "conflict_ratio": 0.003380678409729151,
+      "total_informative_mass": 0.0,
+      "conflict_ratio": 0.0,
       "calibrated_probabilities": [
-        0.28912958549378315,
-        0.3015460572408803,
-        0.08731640636135099,
-        0.32200795090398565
+        0.2919466384163763,
+        0.2919466384163763,
+        0.0863328818823383,
+        0.3297738412849091
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -5299,20 +5301,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -6.587593897286093,
-        6.587593897286093,
+        -6.587974127236044,
+        6.587974127236044,
         -5.0,
-        -10.485627896706205
+        -10.4834101270834
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 2.197125579341241,
-      "conflict_ratio": 0.0005739072679743948,
+      "total_informative_mass": 2.1966820254166803,
+      "conflict_ratio": 0.00031440570320868884,
       "calibrated_probabilities": [
-        0.03616796464652146,
-        0.8965906839556326,
-        0.05325150730147971,
-        0.013989844096366198
+        0.03616145741092041,
+        0.8965954982707284,
+        0.05324685961344679,
+        0.013996184704904527
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -5371,20 +5373,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -5.910275202803314,
-        5.910275202803314,
+        -5.910598355345428,
+        5.910598355345428,
         -5.0,
-        -9.595209727995098
+        -9.593896280042827
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 2.0190419455990196,
-      "conflict_ratio": 0.024244264560071303,
+      "total_informative_mass": 2.0187792560085653,
+      "conflict_ratio": 0.02406393864917509,
       "calibrated_probabilities": [
-        0.04883754005898693,
-        0.8702996807750993,
-        0.060965489016768286,
-        0.019897290149145493
+        0.04883022487289841,
+        0.8703063726815763,
+        0.060961157323319005,
+        0.01990224512220639
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -5395,20 +5397,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -2.5763611067797227,
-        2.5763611067797227,
+        -2.5388839949633164,
+        2.5388839949633164,
         -5.0,
-        -5.461807126060875
+        -5.374885434166345
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 3,
-      "total_informative_mass": 1.192361425212175,
-      "conflict_ratio": 0.2797592263607068,
+      "total_informative_mass": 1.174977086833269,
+      "conflict_ratio": 0.27973493763729845,
       "calibrated_probabilities": [
-        0.17989134003009707,
-        0.6313924642480147,
-        0.09966153798200006,
-        0.0890546577398882
+        0.18193883861201426,
+        0.6270215844148868,
+        0.099879581504238,
+        0.09115999546886103
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -5419,20 +5421,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -10.711425181796987,
-        10.711425181796987,
+        -10.516523643901781,
+        10.516523643901781,
         -5.0,
-        -17.419260673225907
+        -17.03511219471791
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 3,
-      "total_informative_mass": 3.5838521346451815,
-      "conflict_ratio": 0.003732595489717436,
+      "total_informative_mass": 3.507022438943582,
+      "conflict_ratio": 0.0004318641347445019,
       "calibrated_probabilities": [
-        0.005258207280373967,
-        0.9725690434355483,
-        0.021147149300271555,
-        0.0010255999838062468
+        0.005772283944107399,
+        0.970910820015465,
+        0.02213789243883701,
+        0.0011790036015904071
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -5443,20 +5445,20 @@
       "true_label": "INSUFFICIENT_EVIDENCE",
       "rule_verdict": "INSUFFICIENT_EVIDENCE",
       "raw_logits": [
-        -0.0007690429687500002,
-        0.0007690429687500002,
+        0.0,
+        0.0,
         -5.0,
-        0.4946403503417969
+        0.5
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 1,
-      "total_informative_mass": 0.001071929931640625,
-      "conflict_ratio": 0.7601449557321159,
+      "total_informative_mass": 0.0,
+      "conflict_ratio": 0.0,
       "calibrated_probabilities": [
-        0.29201761653829994,
-        0.292127081932449,
-        0.08637005488972765,
-        0.32948524663952333
+        0.2919466384163763,
+        0.2919466384163763,
+        0.0863328818823383,
+        0.3297738412849091
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -5467,20 +5469,20 @@
       "true_label": "INSUFFICIENT_EVIDENCE",
       "rule_verdict": "INSUFFICIENT_EVIDENCE",
       "raw_logits": [
-        0.04513835906982422,
-        -0.04513835906982422,
+        0.044824218750000006,
+        -0.044824218750000006,
         -5.0,
-        0.37816905975341797
+        0.3861083984375
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 0.02436618804931641,
-      "conflict_ratio": 0.3824843613679283,
+      "total_informative_mass": 0.0227783203125,
+      "conflict_ratio": 0.34403634327050336,
       "calibrated_probabilities": [
-        0.29803985014390405,
-        0.2915551802433803,
-        0.0871706548739908,
-        0.3232343147387249
+        0.2978307621541822,
+        0.29139524911754366,
+        0.08711616909348337,
+        0.32365781963479073
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -5491,20 +5493,20 @@
       "true_label": "VERIFIED_TRUE",
       "rule_verdict": "VERIFIED_TRUE",
       "raw_logits": [
-        6.122772813029586,
-        -6.122772813029586,
+        6.123240876384079,
+        -6.123240876384079,
         -5.0,
-        -10.030235280282794
+        -10.024171818979081
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 3,
-      "total_informative_mass": 2.1060470560565587,
-      "conflict_ratio": 0.030921794428867375,
+      "total_informative_mass": 2.1048343637958165,
+      "conflict_ratio": 0.030289338902410704,
       "calibrated_probabilities": [
-        0.8797884393929499,
-        0.04451310583054243,
-        0.058520204299985994,
-        0.017178250476521686
+        0.8797826233160605,
+        0.044502658996072794,
+        0.058513143399025073,
+        0.017201574288841722
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -5515,20 +5517,20 @@
       "true_label": "INSUFFICIENT_EVIDENCE",
       "rule_verdict": "INSUFFICIENT_EVIDENCE",
       "raw_logits": [
-        -0.0009289741516113283,
-        0.0009289741516113283,
+        0.0,
+        0.0,
         -5.0,
-        0.4978747367858887
+        0.5
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 1,
-      "total_informative_mass": 0.00042505264282226567,
-      "conflict_ratio": 0.2708458549177334,
+      "total_informative_mass": 0.0,
+      "conflict_ratio": 0.0,
       "calibrated_probabilities": [
-        0.2919303977087599,
-        0.29206259332764783,
-        0.08634762314272734,
-        0.32965938582086507
+        0.2919466384163763,
+        0.2919466384163763,
+        0.0863328818823383,
+        0.3297738412849091
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -5539,20 +5541,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -6.559887146817255,
-        6.559887146817255,
+        -6.5602705238924495,
+        6.5602705238924495,
         -5.0,
-        -10.4386456673069
+        -10.437388724557877
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 2.18772913346138,
-      "conflict_ratio": 0.0005028428806046058,
+      "total_informative_mass": 2.1874777449115754,
+      "conflict_ratio": 0.0003295591400689178,
       "calibrated_probabilities": [
-        0.036619019209922894,
-        0.895597148318919,
-        0.05355283473582268,
-        0.014230997735335312
+        0.03661250078360417,
+        0.8956050422991355,
+        0.05354830413665639,
+        0.014234152780604054
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -5563,20 +5565,20 @@
       "true_label": "VERIFIED_TRUE",
       "rule_verdict": "INSUFFICIENT_EVIDENCE",
       "raw_logits": [
-        0.012896919250488284,
-        -0.012896919250488284,
+        0.0024169921875000005,
+        -0.0024169921875000005,
         -5.0,
-        0.4093341827392578
+        0.45294189453125
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 3,
-      "total_informative_mass": 0.018133163452148438,
-      "conflict_ratio": 0.7628799864497385,
+      "total_informative_mass": 0.00941162109375,
+      "conflict_ratio": 0.9142997413296892,
       "calibrated_probabilities": [
-        0.2949903242242655,
-        0.29314205409373467,
-        0.08695923456383448,
-        0.3249083871181654
+        0.29322106537287657,
+        0.29287588152919897,
+        0.08665869555365814,
+        0.3272443575442663
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -5587,20 +5589,20 @@
       "true_label": "INSUFFICIENT_EVIDENCE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -0.3323975801467896,
-        0.3323975801467896,
+        -0.33002178668975835,
+        0.33002178668975835,
         -5.0,
-        -0.5083175897598268
+        -0.47626650333404547
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 0.20166351795196535,
-      "conflict_ratio": 0.450571699436711,
+      "total_informative_mass": 0.1952533006668091,
+      "conflict_ratio": 0.43658981208489434,
       "calibrated_probabilities": [
-        0.2894730611974643,
-        0.3403771515691076,
-        0.09282330682796307,
-        0.27732648040546515
+        0.2890207335432035,
+        0.3394520266307186,
+        0.09262462480514948,
+        0.27890261502092834
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -5611,20 +5613,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -0.30201637130230663,
-        0.30201637130230663,
+        -0.3026648936793208,
+        0.3026648936793208,
         -5.0,
-        -0.02338136266916986
+        -0.016321907751262188
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 4,
-      "total_informative_mass": 0.10467627253383398,
-      "conflict_ratio": 0.03825232229951541,
+      "total_informative_mass": 0.10326438155025244,
+      "conflict_ratio": 0.02300948896401663,
       "calibrated_probabilities": [
-        0.2819187890050503,
-        0.32662246860561456,
-        0.08973415931164326,
-        0.30172458307769195
+        0.28172590101993356,
+        0.3265021703846078,
+        0.08968693529090242,
+        0.3020849933045561
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -5635,20 +5637,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -3.0547692105174065,
-        3.0547692105174065,
+        -3.0613428398966787,
+        3.0613428398966787,
         -5.0,
-        -6.381526105105877
+        -6.201728217303753
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 6,
-      "total_informative_mass": 1.3763052210211755,
-      "conflict_ratio": 0.260152001092978,
+      "total_informative_mass": 1.3403456434607506,
+      "conflict_ratio": 0.2386681323988597,
       "calibrated_probabilities": [
-        0.15388118560633202,
-        0.6819148764645994,
-        0.09579230062418749,
-        0.0684116373048812
+        0.1530364087561549,
+        0.6803473875967674,
+        0.09541914109712182,
+        0.07119706254995593
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -5659,20 +5661,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_TRUE",
       "raw_logits": [
-        2.096221331879496,
-        -2.096221331879496,
+        6.346259693428872,
+        -6.346259693428872,
         -5.0,
-        -5.785937024280429
+        -10.134287191554902
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 1.2571874048560858,
-      "conflict_ratio": 0.44420307945823023,
+      "total_informative_mass": 2.1268574383109806,
+      "conflict_ratio": 0.005377668910789902,
       "calibrated_probabilities": [
-        0.5938347817616665,
-        0.2137954742811087,
-        0.10536705186797858,
-        0.08700269208924638
+        0.8877899562347947,
+        0.04028270959900048,
+        0.05592258146499189,
+        0.01600475270121304
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -5683,20 +5685,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "INSUFFICIENT_EVIDENCE",
       "raw_logits": [
-        -0.03251953125,
-        0.03251953125,
+        0.0,
+        0.0,
         -5.0,
-        0.4229736328125
+        0.5
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 1,
-      "total_informative_mass": 0.0154052734375,
-      "conflict_ratio": 0.296335756081507,
+      "total_informative_mass": 0.0,
+      "conflict_ratio": 0.0,
       "calibrated_probabilities": [
-        0.2914239934010637,
-        0.29607933250628915,
-        0.08686392681394853,
-        0.3256327472786987
+        0.2919466384163763,
+        0.2919466384163763,
+        0.0863328818823383,
+        0.3297738412849091
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -5779,20 +5781,20 @@
       "true_label": "INSUFFICIENT_EVIDENCE",
       "rule_verdict": "INSUFFICIENT_EVIDENCE",
       "raw_logits": [
-        -0.013571834564208983,
-        0.013571834564208983,
+        -0.012998199462890627,
+        0.012998199462890627,
         -5.0,
-        0.46364450454711914
+        0.46760177612304693
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 0.007271099090576172,
-      "conflict_ratio": 0.37776633701263074,
+      "total_informative_mass": 0.006479644775390625,
+      "conflict_ratio": 0.3312805585713257,
       "calibrated_probabilities": [
-        0.2918306019857179,
-        0.2937672122341237,
-        0.08658443669663063,
-        0.3278177490835276
+        0.2917791959706847,
+        0.29363336612981084,
+        0.08655708513482058,
+        0.3280303527646839
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -5803,23 +5805,23 @@
       "true_label": "VERIFIED_TRUE",
       "rule_verdict": "INSUFFICIENT_EVIDENCE",
       "raw_logits": [
-        -0.005230951309204097,
-        0.005230951309204097,
+        -0.0004943847656249979,
+        0.0004943847656249979,
         -5.0,
-        0.2230660915374756
+        0.241912841796875
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 6,
-      "total_informative_mass": 0.05538678169250488,
-      "conflict_ratio": 0.9685011678913753,
+      "total_informative_mass": 0.051617431640625,
+      "conflict_ratio": 0.9967880674285245,
       "calibrated_probabilities": [
-        0.2979870676153009,
-        0.29874768733373774,
-        0.08823151645638307,
-        0.3150337285945783
+        0.29789935390096817,
+        0.2979711370920891,
+        0.08810379975915571,
+        0.3160257092477871
       ],
       "is_abstained": true,
-      "abstention_reason": "Confidence 0.315 below threshold 0.320"
+      "abstention_reason": "Confidence 0.316 below threshold 0.320"
     },
     {
       "claim_id": "averitec_391",
@@ -5827,20 +5829,20 @@
       "true_label": "VERIFIED_TRUE",
       "rule_verdict": "CONFLICTING_OR_CHERRYPICKED",
       "raw_logits": [
-        0.6695101900504593,
-        -0.6695101900504593,
-        6.958863256083333,
-        -10.564433882601925
+        0.6691073580192102,
+        -0.6691073580192102,
+        6.958043858929753,
+        -10.562738249667357
       ],
       "has_cross_passage_disparity": true,
       "num_evidence_used": 4,
-      "total_informative_mass": 2.212886776520385,
-      "conflict_ratio": 0.8991493984836979,
+      "total_informative_mass": 2.2125476499334713,
+      "conflict_ratio": 0.8991946296805226,
       "calibrated_probabilities": [
-        0.15585399593501295,
-        0.112464513740211,
-        0.7215917317211384,
-        0.010089758603637573
+        0.1558611655669019,
+        0.11249176933408779,
+        0.7215516815166924,
+        0.010095383582317968
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -5851,20 +5853,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -0.39481174349784853,
-        0.39481174349784853,
+        -0.39323117136955266,
+        0.39323117136955266,
         -5.0,
-        -0.38103625178337097
+        -0.37762424349784857
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 0.1762072503566742,
-      "conflict_ratio": 0.2531285326714665,
+      "total_informative_mass": 0.17552484869956972,
+      "conflict_ratio": 0.2532264729422411,
       "calibrated_probabilities": [
-        0.28239765265429956,
-        0.342312959949444,
-        0.09194221696527434,
-        0.28334717043098206
+        0.28244637539059897,
+        0.3421083983310116,
+        0.09192266993614587,
+        0.2835225563422435
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -5873,22 +5875,22 @@
       "claim_id": "averitec_262",
       "claim_text": "Nigeria performed poorly in Sustainable Development Goals (SDGs) in the past five years.",
       "true_label": "VERIFIED_TRUE",
-      "rule_verdict": "INSUFFICIENT_EVIDENCE",
+      "rule_verdict": "VERIFIED_TRUE",
       "raw_logits": [
-        0.031563735008239745,
-        -0.031563735008239745,
+        2.7797264099121093,
+        -2.7797264099121093,
         -5.0,
-        0.4096590280532837
+        -4.136653900146484
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 7,
-      "total_informative_mass": 0.01806819438934326,
-      "conflict_ratio": 0.41766938934741177,
+      "total_informative_mass": 0.9273307800292968,
+      "conflict_ratio": 0.0008144981924051905,
       "calibrated_probabilities": [
-        0.29632325288679323,
-        0.29179996783791695,
-        0.08695573802652606,
-        0.32492104124876375
+        0.6275001198819289,
+        0.16191318919176773,
+        0.09425855539888078,
+        0.11632813552742258
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -5899,20 +5901,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -11.163880166889067,
-        11.163880166889067,
+        -11.179506645084256,
+        11.179506645084256,
         -5.0,
-        -18.146099924422483
+        -18.153350471831537
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 4,
-      "total_informative_mass": 3.7292199848844967,
-      "conflict_ratio": 0.0021255366613034997,
+      "total_informative_mass": 3.7306700943663076,
+      "conflict_ratio": 0.0011171929212726126,
       "calibrated_probabilities": [
-        0.004232526997273593,
-        0.975989128042989,
-        0.01900619224585579,
-        0.0007721527138817465
+        0.004200873087255132,
+        0.9760951667529798,
+        0.018936016404569284,
+        0.0007679437551957116
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -5923,20 +5925,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_TRUE",
       "raw_logits": [
-        6.458688962738961,
-        -6.458688962738961,
+        6.475737226288766,
+        -6.475737226288766,
         -5.0,
-        -10.486269970890135
+        -10.450047513004392
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 2.197253994178027,
-      "conflict_ratio": 0.020187767638518313,
+      "total_informative_mass": 2.1900095026008786,
+      "conflict_ratio": 0.014351724402217629,
       "calibrated_probabilities": [
-        0.892584455962413,
-        0.03834087429126551,
-        0.05470517668955444,
-        0.014369493056767069
+        0.8930101719924451,
+        0.03804177897799616,
+        0.05450437591860172,
+        0.014443673110957107
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -5947,20 +5949,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_TRUE",
       "raw_logits": [
-        1.6982731819152832,
-        -1.6982731819152832,
+        1.7584716796874997,
+        -1.7584716796874997,
         -5.0,
-        -3.9383196830749507
+        -3.8231201171875
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 4,
-      "total_informative_mass": 0.8876639366149901,
-      "conflict_ratio": 0.36226830948493277,
+      "total_informative_mass": 0.8646240234375,
+      "conflict_ratio": 0.322066548303097,
       "calibrated_probabilities": [
-        0.5302776398957126,
-        0.2317726966001279,
-        0.10367058603811793,
-        0.13427907746604162
+        0.5336925751137613,
+        0.22652130438695578,
+        0.10281887949266616,
+        0.1369672410066168
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -5971,20 +5973,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -6.140156489750369,
-        6.140156489750369,
+        -6.140293246647344,
+        6.140293246647344,
         -5.0,
-        -9.76697090244852
+        -9.76640585041605
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 2.053394180489704,
-      "conflict_ratio": 0.00325088450403488,
+      "total_informative_mass": 2.05328117008321,
+      "conflict_ratio": 0.0031738231739631925,
       "calibrated_probabilities": [
-        0.04411827598068912,
-        0.879403434168856,
-        0.058247341000117,
-        0.01823094885033799
+        0.044115467097124425,
+        0.8794060535054946,
+        0.05824557349351874,
+        0.01823290590386208
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -5995,20 +5997,20 @@
       "true_label": "INSUFFICIENT_EVIDENCE",
       "rule_verdict": "INSUFFICIENT_EVIDENCE",
       "raw_logits": [
-        0.0014831542968749998,
-        -0.0014831542968749998,
+        0.0,
+        0.0,
         -5.0,
-        0.49602508544921875
+        0.5
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 1,
-      "total_informative_mass": 0.00079498291015625,
-      "conflict_ratio": 0.37764396784881116,
+      "total_informative_mass": 0.0,
+      "conflict_ratio": 0.0,
       "calibrated_probabilities": [
-        0.2921454261018469,
-        0.2919343377445817,
-        0.08636044970830943,
-        0.3295597864452619
+        0.2919466384163763,
+        0.2919466384163763,
+        0.0863328818823383,
+        0.3297738412849091
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -6067,20 +6069,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_TRUE",
       "raw_logits": [
-        2.03923414349556,
-        -2.03923414349556,
+        2.039842969179153,
+        -2.039842969179153,
         -5.0,
-        -3.7402162849903107
+        -3.7275057137012486
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 0.8480432569980622,
-      "conflict_ratio": 0.1984549050485779,
+      "total_informative_mass": 0.8455011427402497,
+      "conflict_ratio": 0.19580492819408366,
       "calibrated_probabilities": [
-        0.5572144938384122,
-        0.20626078690857763,
-        0.10025182717271197,
-        0.1362728920802983
+        0.5570326890981331,
+        0.20613231921185576,
+        0.10020425079575453,
+        0.13663074089425678
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -6091,20 +6093,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -2.8036891621886757,
-        2.8036891621886757,
+        -2.7902737540542146,
+        2.7902737540542146,
         -5.0,
-        -4.205717467179056
+        -4.1797557104728185
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 5,
-      "total_informative_mass": 0.9411434934358113,
-      "conflict_ratio": 0.006991954390442708,
+      "total_informative_mass": 0.9359511420945638,
+      "conflict_ratio": 0.006260887153957391,
       "calibrated_probabilities": [
-        0.16084333398112807,
-        0.630676125078303,
-        0.09418407741954685,
-        0.11429646352102218
+        0.16150020073894594,
+        0.6291250925731359,
+        0.09426007831841077,
+        0.1151146283695075
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -6115,20 +6117,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "INSUFFICIENT_EVIDENCE",
       "raw_logits": [
-        0.028385496139526366,
-        -0.028385496139526366,
+        0.0284820556640625,
+        -0.0284820556640625,
         -5.0,
-        0.392404317855835
+        0.3999786376953125
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 3,
-      "total_informative_mass": 0.021519136428833005,
-      "conflict_ratio": 0.5602801089202045,
+      "total_informative_mass": 0.0200042724609375,
+      "conflict_ratio": 0.5253741945665787,
       "calibrated_probabilities": [
-        0.29649904633168406,
-        0.29242566427568273,
-        0.08707473318202513,
-        0.32400055621060814
+        0.29632862854413544,
+        0.29224383507927754,
+        0.08702263795456562,
+        0.32440489842202147
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -6139,20 +6141,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "INSUFFICIENT_EVIDENCE",
       "raw_logits": [
-        -0.009089756011962892,
-        0.009089756011962892,
+        0.0,
+        0.0,
         -5.0,
-        0.4837775230407715
+        0.5
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 1,
-      "total_informative_mass": 0.0032444953918457035,
-      "conflict_ratio": 0.06611524444943892,
+      "total_informative_mass": 0.0,
+      "conflict_ratio": 0.0,
       "calibrated_probabilities": [
-        0.2916797765233233,
-        0.29297473734041857,
-        0.08644522428780527,
-        0.3289002618484529
+        0.2919466384163763,
+        0.2919466384163763,
+        0.0863328818823383,
+        0.3297738412849091
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -6163,20 +6165,20 @@
       "true_label": "CONFLICTING_OR_CHERRYPICKED",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -4.117306703941722,
-        4.117306703941722,
+        -4.038015884773632,
+        4.038015884773632,
         -5.0,
-        -6.613751122327811
+        -6.4405950993023
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 7,
-      "total_informative_mass": 1.4227502244655623,
-      "conflict_ratio": 0.03536433890885496,
+      "total_informative_mass": 1.38811901986046,
+      "conflict_ratio": 0.03033867701162448,
       "calibrated_probabilities": [
-        0.10216259241260045,
-        0.7598424609228392,
-        0.0823911360488889,
-        0.05560381061567136
+        0.10522374726022873,
+        0.7529453318078592,
+        0.08323603111604276,
+        0.058594889815869515
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -6187,20 +6189,20 @@
       "true_label": "INSUFFICIENT_EVIDENCE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -5.247997582231136,
-        5.247997582231136,
+        -5.181801414762112,
+        5.181801414762112,
         -5.0,
-        -8.947143951054585
+        -8.818079808350575
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 7,
-      "total_informative_mass": 1.8894287902109173,
-      "conflict_ratio": 0.07414737691041665,
+      "total_informative_mass": 1.8636159616701151,
+      "conflict_ratio": 0.07316354498828254,
       "calibrated_probabilities": [
-        0.06504966860524138,
-        0.8394377198606452,
-        0.06910182918389206,
-        0.02641078235022146
+        0.06687855293744419,
+        0.8356410791657695,
+        0.06990787223139426,
+        0.027572495665392098
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -6211,20 +6213,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_TRUE",
       "raw_logits": [
-        1.4577140808105469,
-        -1.4577140808105469,
+        1.3838378906250002,
+        -1.3838378906250002,
         -5.0,
-        -4.221437454223633
+        -3.955322265625
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 5,
-      "total_informative_mass": 0.9442874908447265,
-      "conflict_ratio": 0.4854266484082191,
+      "total_informative_mass": 0.8910644531249999,
+      "conflict_ratio": 0.48232725749015104,
       "calibrated_probabilities": [
-        0.5129888997533559,
-        0.2521050098560137,
-        0.10634509935078183,
-        0.12856099103984844
+        0.5018095354260955,
+        0.2556515203129312,
+        0.10591717870226697,
+        0.13662176555870645
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -6235,20 +6237,20 @@
       "true_label": "INSUFFICIENT_EVIDENCE",
       "rule_verdict": "INSUFFICIENT_EVIDENCE",
       "raw_logits": [
-        -0.025336647033691408,
-        0.025336647033691408,
+        -0.0067291259765625,
+        0.0067291259765625,
         -5.0,
-        0.44211912155151367
+        0.4788742065429688
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 2,
-      "total_informative_mass": 0.011576175689697267,
-      "conflict_ratio": 0.27041367967256447,
+      "total_informative_mass": 0.00422515869140625,
+      "conflict_ratio": 0.4690114224175531,
       "calibrated_probabilities": [
-        0.2914927676240952,
-        0.2951143364783671,
-        0.08673248808524167,
-        0.32666040781229605
+        0.2919624580929879,
+        0.2929214915939193,
+        0.08647924383835566,
+        0.3286368064747372
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -6259,20 +6261,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "INSUFFICIENT_EVIDENCE",
       "raw_logits": [
-        -0.00519897937774658,
-        0.00519897937774658,
+        0.0017715454101562495,
+        -0.0017715454101562495,
         -5.0,
-        0.4295691251754761
+        0.4482955932617188
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 3,
-      "total_informative_mass": 0.014086174964904784,
-      "conflict_ratio": 0.8769098041136422,
+      "total_informative_mass": 0.01034088134765625,
+      "conflict_ratio": 0.9428039138301656,
       "calibrated_probabilities": [
-        0.2932222425969963,
-        0.2939661195556329,
-        0.08682001462373509,
-        0.32599162322363573
+        0.2932835651106899,
+        0.29303046731926385,
+        0.08669080018543587,
+        0.3269951673846104
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -6283,20 +6285,20 @@
       "true_label": "VERIFIED_TRUE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -1.5245304286479948,
-        1.5245304286479948,
+        -1.466774958372116,
+        1.466774958372116,
         -5.0,
-        -3.124453514814377
+        -2.972382515668869
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 7,
-      "total_informative_mass": 0.7248907029628754,
-      "conflict_ratio": 0.2989603723256334,
+      "total_informative_mass": 0.6944765031337737,
+      "conflict_ratio": 0.29598009450587015,
       "calibrated_probabilities": [
-        0.2376381472616818,
-        0.4995562413666488,
-        0.10188799895248953,
-        0.16091761241917993
+        0.24041437800397672,
+        0.4913655128446472,
+        0.10163781352878301,
+        0.16658229562259314
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -6331,20 +6333,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -3.743246575444936,
-        3.743246575444936,
+        -3.735965844243764,
+        3.735965844243764,
         -5.0,
-        -5.826316323131322
+        -5.803603615611791
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 3,
-      "total_informative_mass": 1.2652632646262645,
-      "conflict_ratio": 0.013842488588573563,
+      "total_informative_mass": 1.2607207231223583,
+      "conflict_ratio": 0.012214253755353788,
       "calibrated_probabilities": [
-        0.11714675173947656,
-        0.7260921533613013,
-        0.08624496625324692,
-        0.07051612864597523
+        0.11743552328205359,
+        0.7253038898179117,
+        0.08630431428987725,
+        0.07095627261015747
       ],
       "is_abstained": false,
       "abstention_reason": ""
@@ -6379,20 +6381,20 @@
       "true_label": "VERIFIED_FALSE",
       "rule_verdict": "VERIFIED_FALSE",
       "raw_logits": [
-        -2.794220495223999,
-        2.794220495223999,
+        -6.524046406861645,
+        6.524046406861645,
         -5.0,
-        -5.39097237586975
+        -10.380338770703304
       ],
       "has_cross_passage_disparity": false,
       "num_evidence_used": 4,
-      "total_informative_mass": 1.1781944751739502,
-      "conflict_ratio": 0.20946239281404572,
+      "total_informative_mass": 2.176067754140661,
+      "conflict_ratio": 0.0006367530977481739,
       "calibrated_probabilities": [
-        0.166158579424352,
-        0.6485180119212984,
-        0.097072265622123,
-        0.08825114303222663
+        0.037210476426327736,
+        0.8943046723615367,
+        0.05394461830814307,
+        0.014540232903992424
       ],
       "is_abstained": false,
       "abstention_reason": ""

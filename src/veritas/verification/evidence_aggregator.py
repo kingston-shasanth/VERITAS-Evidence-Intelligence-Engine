@@ -287,7 +287,7 @@ class EvidenceAggregator:
             is_inf = bool(cand.get("is_informative", True))
             is_aligned = bool(cand.get("is_claim_aligned", True))
             is_fig = bool(cand.get("is_figurative", False))
-            is_eligible = bool(is_rel and is_inf and is_aligned and not is_fig)
+            is_eligible = bool(cand.get("is_decision_eligible", bool(is_rel and is_inf and is_aligned and not is_fig)))
 
             if is_joint:
                 weight = 0.0 if not can_use_joint else (self.joint_weight_disparity if has_disparity else self.joint_weight_default)
