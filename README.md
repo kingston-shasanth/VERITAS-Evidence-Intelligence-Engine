@@ -1,18 +1,21 @@
-# VERITAS-X: Multilingual Evidentiary Fact-Checking, Stance Disparity & Uncertainty Calibration
+# VERITAS-X: Multilingual Evidentiary Fact-Checking, Stance Disparity & Interactive NLP Telemetry
 
-[![Python 3.13](https://img.shields.io/badge/Python-3.13-blue.svg)](https://www.python.org/)
+[![Python 3.10--3.13](https://img.shields.io/badge/Python-3.10--3.13-blue.svg)](https://www.python.org/)
 [![PyTorch 2.6.0+cu124](https://img.shields.io/badge/PyTorch-2.6.0%2Bcu124-red.svg)](https://pytorch.org/)
-[![CUDA 12.4/12.5](https://img.shields.io/badge/CUDA-RTX%202050%20(4GB)-green.svg)](https://developer.nvidia.com/cuda-toolkit)
+[![CUDA 12.4/12.5](https://img.shields.io/badge/CUDA-RTX%20Accelerated%20%7C%20CPU%20Fallback-green.svg)](https://developer.nvidia.com/cuda-toolkit)
+[![React 19 / Vite 6](https://img.shields.io/badge/Frontend-React%2019%20%2F%20Vite%206-61dafb.svg)](ui/veritas-x-advanced-ui/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Evaluation: Frozen Phase 3.2.5](https://img.shields.io/badge/Evaluation-Held--Out%20Test%20(N=256)-purple.svg)](data/processed/final_test_evaluation_phase_3_2_5.json)
 
-**VERITAS-X** is an end-to-end, scientifically audited automated fact-checking and evidence verification system designed for real-world, multilingual discourse (English, Hindi, Bengali, and Code-Mixed Hinglish). It addresses critical failure modes in standard fact-checking pipelines: **unsupported binary classifications**, **single-source confirmation bias**, **spurious conflict hallucinations**, and **severe neural overconfidence**.
+**VERITAS-X** is an end-to-end, scientifically audited automated fact-verification system designed for real-world, multilingual discourse (English, Hindi, Bengali, and Code-Mixed Hinglish). It addresses critical failure modes in standard fact-checking pipelines: **unsupported binary classifications**, **single-source confirmation bias**, **spurious conflict hallucinations**, and **severe neural overconfidence**.
+
+The system features a **transparent 11-stage pipeline** that couples linguistic preprocessing, domain-aware spelling normalization, and meaning-preservation guardrails with dense/sparse hybrid retrieval, cross-encoder natural language inference (NLI), stance disparity aggregation, and post-hoc temperature calibration ($T = 4.1039$). The entire verification trace is visualized in real time via an interactive, natural light-themed UI dashboard.
 
 ---
 
 ## 1. Key Audited Results
 
-All metrics below derive from the post-hoc audited benchmark artifacts on the untouched, deterministic held-out test split ($N=256$, stratified 50/50 split from AVeriTeC and Multilingual Diagnostic claims). All baseline numbers have been reconciled against the underlying confusion matrices.
+All benchmark metrics derive from the post-hoc audited evaluation on the untouched held-out test split ($N=256$, stratified 50/50 split from AVeriTeC and Multilingual Diagnostic claims). All baseline numbers have been reconciled against the underlying confusion matrices.
 
 | Evaluation Metric | Phase 3.1 Baseline | Phase 3.2.5 Full-Test ($N=256$) | Difference vs. Baseline | Phase 3.2.5 Selective ($N=242$, Coverage: 94.53%) | Notes & Governance Restrictions |
 | :--- | :---: | :---: | :---: | :---: | :--- |
@@ -25,24 +28,22 @@ All metrics below derive from the post-hoc audited benchmark artifacts on the un
 | **Coverage ($g(x)=1$)** | 100.0% | 100.0% | — | **94.53%** (242/256) | Passes $\ge 85\%$ threshold (14 claims abstained) |
 | **Error Rate / Selective Risk** | 42.58% *(Full error)* | **40.62%** *(Full error)* | **-1.95 pp (+1.96 pp rounded)** | **37.60%** *(Selective risk)* | Full error ($1-\text{Acc}$) vs. selective risk on retained claims ($1-\text{Acc}_{\text{ret}}$) |
 
-
 > [!NOTE]
-> **Comparison Caveat**: Full-test metrics ($N=256$) and selective metrics ($N=242$, Coverage: $94.53\%$) are **not strictly like-for-like comparisons**, because selective classification evaluates performance on a subset where the model declined 14 uncertain claims. They are reported separately to ensure transparency. Multiclass temperature scaling (`softmax(logits / T)` with $T=4.1039$) improves probabilistic reliability (NLL, ECE) but does not guarantee classification correctness on individual difficult claims.
+> **Comparison Caveat**: Full-test metrics ($N=256$) and selective metrics ($N=242$, Coverage: $94.53\%$) evaluate different sample spaces because selective classification abstains on 14 ambiguous claims. Multiclass temperature scaling (`softmax(logits / T)` with $T=4.1039$) improves probabilistic reliability (NLL, ECE) without altering rank order.
 
 ### Multiclass Calibration Diagnostics (Phase 3.2.5 Test Logits, $N=256$)
 
-The metrics below evaluate the effect of multiclass temperature scaling ($\hat{p} = \text{softmax}(\mathbf{z} / T)$ with scalar $T = 4.1039$, fitted strictly on validation split NLL) on the saved Phase 3.2.5 held-out test logits. These figures represent a **before-versus-after calibration evaluation on the exact same Phase 3.2.5 test logits**, not a comparison against the Phase 3.1 baseline (Phase 3.1 baseline logits were not calibrated). Temperature scaling adjusts probability confidence to reflect empirical accuracy without altering logit rank order or classification decisions.
+Evaluated on the exact same Phase 3.2.5 held-out test logits before and after temperature scaling ($T = 4.1039$, fitted strictly on validation split NLL):
 
-| Calibration Metric | Phase 3.2.5 test logits — uncalibrated (T=1) | Phase 3.2.5 test logits — calibrated (T=4.1039) | Difference (Before vs. After Calibration) | Mathematical & Practical Meaning |
+| Calibration Metric | Uncalibrated ($T=1$) | Calibrated ($T=4.1039$) | Relative / Absolute Delta | Mathematical & Practical Meaning |
 | :--- | :---: | :---: | :---: | :--- |
-| **Negative Log-Likelihood (NLL)** | 1.9077 (1.907682) | **0.9915** (0.991533) | **-48.0% relative** ($-0.9161$) | Penalizes overconfident incorrect predictions; cross-entropy loss |
-| **Multiclass Brier Score** | 0.5774 (0.577370) | **0.5226** (0.522609) | **-9.5% relative** ($-0.0548$) | Mean squared difference between predicted class probabilities and one-hot ground truth |
-| **Expected Calibration Error (ECE)** | 23.10% (0.231014) | **10.60%** (0.106013) | **-12.50 percentage points** | 10 equal-width bins across $[0.0, 1.0]$; measures confidence vs. empirical accuracy |
-
+| **Negative Log-Likelihood (NLL)** | 1.9077 | **0.9915** | **-48.0% relative** ($-0.9161$) | Penalizes overconfident incorrect predictions (cross-entropy) |
+| **Multiclass Brier Score** | 0.5774 | **0.5226** | **-9.5% relative** ($-0.0548$) | Mean squared difference between probabilities and one-hot labels |
+| **Expected Calibration Error (ECE)** | 23.10% | **10.60%** | **-12.50 percentage points** | 10 equal-width bins across $[0.0, 1.0]$; confidence vs. accuracy |
 
 ### Per-Class Evaluation Breakdown
 
-| Class Label | Support (Full / Ret) | Phase 3.1 Baseline (P / R / F1) | Phase 3.2.5 Full-Test ($N=256$) (P / R / F1) | Phase 3.2.5 Retained ($N=242$, Coverage: 94.53%) (P / R / F1) |
+| Class Label | Support (Full / Ret) | Phase 3.1 Baseline (P / R / F1) | Phase 3.2.5 Full-Test ($N=256$) (P / R / F1) | Phase 3.2.5 Retained ($N=242$) (P / R / F1) |
 | :--- | :---: | :---: | :---: | :---: |
 | `VERIFIED_TRUE` | 61 / 57 | 64.44% / 47.54% / **54.72%** | 57.69% / 49.18% / **53.10%** | 57.69% / 52.63% / **55.05%** |
 | `VERIFIED_FALSE` | 157 / 150 | 81.45% / 64.33% / **71.89%** | 81.68% / 68.15% / **74.31%** | 81.68% / 71.33% / **76.16%** |
@@ -51,7 +52,7 @@ The metrics below evaluate the effect of multiclass temperature scaling ($\hat{p
 
 #### Confusion Matrices
 
-**Full Test Split ($N=256$, Ground Truth Rows $\times$ Predicted Columns `[TRUE, FALSE, CONF, INSUF]`):**
+**Full Test Split ($N=256$, Rows = Ground Truth, Columns = Predicted `[TRUE, FALSE, CONF, INSUF]`):**
 ```
                   Pred_TRUE   Pred_FALSE   Pred_CONF   Pred_INSUF   Support
 True_TRUE        :  [   30,         12,          2,         17    ]    61
@@ -71,71 +72,52 @@ True_INSUF       :  [    2,          3,          1,         12    ]    18 (1 abs
 
 ---
 
-## 2. System Architecture
+## 2. The 11-Stage End-to-End Pipeline
+
+VERITAS-X decomposes verification into eleven transparent, inspectable processing stages:
 
 ```
 +---------------------------------------------------------------------------------------------------+
-|                                     VERITAS-X SYSTEM PIPELINE                                     |
+|                                     VERITAS-X 11-STAGE PIPELINE                                   |
 +---------------------------------------------------------------------------------------------------+
-                                                  |
-                                    [Natural Language Claim]
-                         (English, Hindi, Bengali, Code-Mixed Hinglish)
-                                                  |
-                         +------------------------+------------------------+
-                         |                                                 |
-                         v                                                 v
-              [Claim Preprocessing]                           [Temporal Analyzer]
-            - Unicode NFC Normalization                     - Regex & ISO-8601 Parser
-            - Date & Currency Preservation                  - Delta vs Claim Date Audit
-            - Script Classification                         - Anachronism Drift Warning
-                         |                                                 |
-                         +------------------------+------------------------+
-                                                  |
-                                                  v
-                                     [Hybrid Retrieval Engine]
-                         - Sparse BM25 (Custom Multilingual Okapi BM25)
-                         - Dense Multilingual E5 (FAISS Cosine Similarity)
-                         - Reciprocal Rank Fusion (RRF, k = 60)
-                         - Local Verified Corpus (1,047 Passages)
-                                                  |
-                                                  v
-                                      [Cross-Encoder NLI Engine]
-                            (MoritzLaurer/DeBERTa-v3-base-mnli-fever-anli)
-                            - Dynamic Label Mapping (resolve_nli_label_mapping)
-                            - Pairwise Inference: (Passage Premise, Claim)
-                            - Concatenated Joint Premise Inference
-                                                  |
-                                                  v
-                               [Cross-Passage Stance Disparity Aggregator]
-                            - Jaccard Lexical Near-Duplicate Suppression (0.75)
-                            - Neutral Mass Noise Discounting (0.70)
-                            - Stance Disparity: Distinct i != j, e_i >= 0.35, c_j >= 0.50
-                            - Joint Premise De-weighting under Disparity (w = 0.40 vs 1.20)
-                            - Conflict Ratio: 2 * min(E, C) / (E + C) >= 0.45
-                            - Informative Mass Gate: total_mass >= 0.10
-                                                  |
-                                                  v
-                                   [Four-Class Synthesized Logits]
-                            [z_TRUE, z_FALSE, z_CONFLICTING, z_INSUFFICIENT]
-                                                  |
-                                                  v
-                                [Multiclass Temperature Calibrator]
-                                   p = softmax(z / T),  T = 4.1039
-                                (Fitted strictly on validation split N=255)
-                                                  |
-                                                  v
-                                   [Selective Abstention Engine]
-                                   - Max probability < 0.320?
-                                   - Normalized Shannon Entropy > 0.940?
-                                                  |
-                                  +---------------+---------------+
-                                  |                               |
-                           Retained (94.5%)               Abstained (5.5%)
-                                  |                               |
-                                  v                               v
-                        [Categorical Assertion]        [Referred to Human Review]
-                       (TRUE, FALSE, CONF, INSUF)      (Selective Deferral Option)
+  [Stage 1: Input & Sanitization]      --> Unicode NFC, URL/mention preservation, control char strip
+  [Stage 2: Linguistic Analysis]       --> Multilingual tokenization, POS tags, Named Entity Recognition
+  [Stage 3: Spelling Correction]       --> Domain-aware SymSpell, entity protection, frequency weighting
+  [Stage 4: Grammar & Syntax]          --> Universal Dependency parsing, Head-Dependent relations
+  [Stage 5: Claim Extraction]          --> Subject-Predicate-Object decomposition, temporal/negation flags
+  [Stage 6: Safety Guardrails]         --> Meaning preservation, edit distance gates, safe fallback
+  [Stage 7: Evidence Retrieval]        --> Sparse BM25 + Dense Multilingual E5 + Reciprocal Rank Fusion (k=60)
+  [Stage 8: NLI Verification]          --> MoritzLaurer/DeBERTa-v3-base-mnli-fever-anli cross-encoder
+  [Stage 9: Stance Disparity]          --> Cross-passage conflict detection, near-duplicate suppression
+  [Stage 10: Calibration ($T=4.1039$)] --> Temperature scaling: p = softmax(z / 4.1039)
+  [Stage 11: Final Adjudication]       --> 4-Class veracity verdict + Selective Abstention Gate
 ```
+
+1. **Stage 1 — Input & Sanitization (`src/veritas/nlp/sanitizer.py`)**:
+   Standardizes input via Unicode NFC normalization, strips invisible control characters and zero-width spaces, and isolates entities such as URLs, email addresses, and hashtags from corruption.
+2. **Stage 2 — Linguistic Analysis (`src/veritas/nlp/linguistics.py`)**:
+   Performs multilingual tokenization, part-of-speech (POS) tagging, and named entity recognition (NER) across English, Hindi, Bengali, and code-mixed scripts.
+3. **Stage 3 — Spelling Correction (`src/veritas/nlp/spelling.py`)**:
+   Applies domain-aware SymSpell normalization with strict entity protection (scientific names, proper nouns, dates, numbers, and URLs are never altered). Returns candidate rankings with edit distance, frequency scores, and confidence metrics.
+4. **Stage 4 — Grammar & Syntax (`src/veritas/nlp/linguistics.py`)**:
+   Builds syntactic dependency trees capturing subject-verb-object relationships, nominal modifiers, and clause structures.
+5. **Stage 5 — Claim Extraction (`src/veritas/nlp/claim_extractor.py`)**:
+   Extracts canonical propositions into structured `(subject, predicate, object)` triples, tagging polarity (affirmative vs. negated) and temporal anchors.
+6. **Stage 6 — Safety Guardrails (`src/veritas/nlp/guardrails.py`)**:
+   Computes semantic preservation scores between raw and corrected text. If the correction alters meaning or exceeds edit-distance thresholds, the engine rolls back safely to raw input.
+7. **Stage 7 — Evidence Retrieval (`src/veritas/retrieval/`)**:
+   Executes hybrid search across the local verified corpus (1,047 passages) and optional live web citations via:
+   - Multilingual Okapi BM25 with strict zero-score document filtering.
+   - Dense multilingual E5 (`intfloat/multilingual-e5-small`) with FAISS index search.
+   - Reciprocal Rank Fusion ($k = 60$) to combine sparse and dense rankings.
+8. **Stage 8 — NLI Verification (`src/veritas/verification/nli_model.py`)**:
+   Evaluates premise-hypothesis pairs using `MoritzLaurer/DeBERTa-v3-base-mnli-fever-anli`, producing entailment, contradiction, and neutral logits. Also computes concatenated multi-premise joint inference.
+9. **Stage 9 — Stance Disparity (`src/veritas/verification/evidence_aggregator.py`)**:
+   Detects genuine evidentiary conflicts by requiring distinct, non-duplicate passages taking opposing stances ($e_i \ge 0.35, c_j \ge 0.50, i \ne j$). Suppresses duplicate passages via Jaccard lexical similarity ($\ge 0.75$) and discounts neutral noise.
+10. **Stage 10 — Calibration (`src/veritas/verification/calibrator.py`)**:
+    Applies frozen multiclass temperature scaling ($\hat{p} = \text{softmax}(\mathbf{z} / 4.1039)$), transforming overconfident neural outputs into well-calibrated probabilities.
+11. **Stage 11 — Final Adjudication (`src/veritas/verification/engine.py`)**:
+    Synthesizes calibrated probabilities into one of four domain classes (`VERIFIED_TRUE`, `VERIFIED_FALSE`, `CONFLICTING_OR_CHERRYPICKED`, `INSUFFICIENT_EVIDENCE`) and evaluates the selective abstention gate ($g(x) = 0$ if $\max p < 0.32$ or normalized Shannon entropy $> 0.94$).
 
 ---
 
@@ -146,238 +128,123 @@ VERITAS-X enforces an unambiguous distinction between substantive domain classes
 1. **`VERIFIED_TRUE`**: Retrieved evidence factually entails and substantiates the claim.
 2. **`VERIFIED_FALSE`**: Retrieved evidence directly refutes or contradicts the claim.
 3. **`CONFLICTING_OR_CHERRYPICKED`**: Independent, distinct evidence passages present contradictory stances, or selective quoting conceals critical counter-evidence. Requires active cross-passage disparity ($\tau_E \ge 0.35, \tau_C \ge 0.50, i \ne j$).
-4. **`INSUFFICIENT_EVIDENCE`**: The retrieved evidence lacks sufficient informative mass ($< 0.10$), is dominated by neutral text, or contains no answer to intermediate questions.
-5. **Selective Abstention (`ABSTAIN`)**: A meta-level decision ($g(x) \in \{0, 1\}$) triggered when the model's prediction confidence is $< 0.32$ or normalized Shannon entropy is $> 0.94$. Abstained claims are deferred to human review and are **not** silently conflated with the domain class `INSUFFICIENT_EVIDENCE`.
+4. **`INSUFFICIENT_EVIDENCE`**: Retrieved evidence lacks sufficient informative mass ($< 0.10$), is dominated by neutral text, or contains no answers to intermediate questions.
+5. **Selective Abstention (`ABSTAIN`)**: A meta-level decision ($g(x) \in \{0, 1\}$) triggered when prediction confidence is $< 0.32$ or normalized Shannon entropy is $> 0.94$. Abstained claims are deferred to human review and are **not** conflated with `INSUFFICIENT_EVIDENCE`.
 
 ---
 
-## 4. One-Click Startup & Quickstart
+## 4. Quickstart: One-Click Windows Launch
 
-### The One-Click Windows Launcher (`START_VERITAS_X.bat`)
+### Starting the Platform (`START_VERITAS_X.bat`)
 
-VERITAS-X provides a root-level one-click launcher for Windows:
+Double-click `START_VERITAS_X.bat` in the repository root:
 
+```cmd
+START_VERITAS_X.bat
 ```
-Double-click: START_VERITAS_X.bat
-```
 
-When launched, `START_VERITAS_X.bat`:
-1. **Resolves the Project Root**: Determines the root directory using `%~dp0` regardless of invocation context or working directory.
-2. **Detects Environment**: Automatically verifies the local Python virtual environment (`.venv\Scripts\python.exe`) and Node.js (`node`, `npm`).
-3. **Preflight Port Conflict Detection**: Executes `scripts/launcher_helper.py preflight` to ensure ports `8000` (API) and `5173` (Frontend) are not in use.
-4. **Launches Background Services**:
-   - Starts the Python inference API (`python -m api.server --port 8000 --lazy`) in a dedicated terminal window.
-   - Starts the React/Vite frontend (`npm run dev`) in a dedicated terminal window.
-5. **Polls Genuine Readiness**: Waits for the HTTP health check (`http://127.0.0.1:8000/api/health`) and the Vite frontend (`http://127.0.0.1:5173`) using `scripts/launcher_helper.py wait-ready`.
-6. **Launches Browser**: Automatically opens the default web browser to `http://127.0.0.1:5173`.
-7. **Graceful Error Visibility**: Keeps terminal windows open with clear diagnostic instructions if Python, Node, or dependencies are missing.
+What the launcher does automatically:
+1. **Resolves Environment**: Detects Python in `.venv\Scripts\python.exe` (or system PATH) and Node.js (`node`, `npm`).
+2. **Installs UI Dependencies**: Runs `npm install` automatically if `ui/veritas-x-advanced-ui/node_modules/` is missing.
+3. **Port Conflict Preflight**: Checks whether ports `8011` (Backend API) and `5173` (Frontend UI) are free using `scripts/launcher_helper.py`.
+4. **Starts Backend API**: Launches `python -m api.server --port 8011 --background-warmup` in a dedicated terminal window (instant socket binding + background model pre-warming).
+5. **Starts Frontend Dashboard**: Launches `npm run dev` in a dedicated terminal window.
+6. **Monitors Readiness**: Polls `http://127.0.0.1:8011/api/health` and `http://127.0.0.1:5173/` until both are fully ready.
+7. **Launches Web Browser**: Automatically opens default browser to `http://127.0.0.1:5173`.
 
-### Safe Application Shutdown (`STOP_VERITAS_X.bat`)
+### Stopping the Platform (`STOP_VERITAS_X.bat`)
 
-To cleanly shut down the running application without terminating unrelated Python or Node processes:
+To cleanly shut down all VERITAS-X services without terminating unrelated Python or Node processes:
 
-```
-Double-click: STOP_VERITAS_X.bat
+```cmd
+STOP_VERITAS_X.bat
 ```
 
 Alternatively, run:
 ```powershell
 python scripts/launcher_helper.py stop
 ```
-This utility inspects active TCP listeners on ports `8000` and `5173`, identifies the specific PIDs (`python.exe` and `node.exe`), and safely terminates only the VERITAS-X processes. You may also press `Ctrl+C` in the respective server terminal windows.
 
 ---
 
-### Important: Why `file://` Direct Launch Does Not Work
+## 5. Manual Startup (Cross-Platform)
 
-Directly opening `ui/veritas-x-advanced-ui/index.html` via `file://` in a web browser will fail because:
-1. **ES Module Security (CORS)**: Modern React and Vite applications rely on native ES module syntax (`<script type="module" src="/src/main.jsx">`). Modern web browsers enforce Cross-Origin Resource Sharing (CORS) and strictly prohibit loading ES modules from the local filesystem (`file://`) origin.
-2. **Dynamic REST API Networking**: The frontend must issue asynchronous HTTP requests (`fetch`) to the local Python verification backend (`http://127.0.0.1:8000/api/verify`). `file://` pages cannot reliably establish cross-protocol HTTP connections to local servers.
-3. **Asset Resolution**: Vite bundles and resolves assets using absolute and root-relative URLs (`/src/...`, `/assets/...`) which fail to resolve under filesystem path roots.
+If running manually from separate terminal sessions:
 
-The application must be accessed through the local HTTP server created by Vite (`http://127.0.0.1:5173`) or by serving the production build (`dist/`) via a local web server.
-
----
-
-## 5. Primary System Limitation (Honest Disclosure)
-
-### Conflicting-Class Recall on Held-Out Test Data
-While the Phase 3.2.2 stance-disparity aggregator successfully **doubled conflicting precision from 14.29% to 28.57%** (+14.29 percentage points) and reduced false positive conflict alarms by **79%** (from 24 false alarms in Phase 3.1 down to 5 in Phase 3.2.5), **conflicting-class recall dropped from 21.05% (4/19) to 10.53% (2/19)** (-10.53 percentage points). Consequently, overall full-test Macro-F1 decreased from **44.24% to 43.34%** (-0.90 percentage points).
-
-#### Root Cause:
-The cross-passage disparity rule requires two distinct, non-duplicate passages taking opposing stances ($e_i \ge 0.35, c_j \ge 0.50, i \ne j$). In real-world web evidence, conflicting facts are frequently nuanced, implicit, or co-located within a single paragraph rather than split across cleanly segmented documents. When evidence is subtle, the conservative aggregator defaults to the dominant stance (`VERIFIED_FALSE` or `INSUFFICIENT_EVIDENCE`) rather than triggering a false alarm.
-
----
-
-## 6. Verified Project Structure
-
-```
-VERITAS-X/
-├── START_VERITAS_X.bat                        # Root one-click Windows launcher (preflight, dual-server, browser launch)
-├── STOP_VERITAS_X.bat                         # Safe target-process shutdown script (ports 8000 & 5173)
-├── README.md                                  # Academic overview, architecture & quickstart
-├── LICENSE                                    # MIT License specification
-├── requirements.txt                           # Core Python dependencies (PyTorch, Transformers, FAISS)
-├── .gitignore                                 # Production repository exclusion rules
-├── .env.example                               # Unified environment configuration template
-├── api/
-│   ├── __init__.py                            # API package initialization
-│   ├── adapter.py                             # Thin live API adapter (contract adherence & CORS)
-│   └── server.py                              # Threading HTTP server (POST /api/verify, GET /api/health)
-├── ui/veritas-x-advanced-ui/                  # Sole active React 19 / Vite 6 Forensic Dashboard
-│   ├── package.json                           # Frontend scripts and dependencies
-│   ├── package-lock.json                      # Authoritative npm lockfile
-│   ├── vite.config.js                         # Vite development and bundle configuration
-│   ├── index.html                             # Single-page application root
-│   ├── backend_contract.md                    # Exact REST payload contract specification
-│   ├── .env.example                           # Frontend environment defaults
-│   ├── .gitignore                             # Node & Vite build exclusions
-│   ├── dist/                                  # Verified production build bundle
-│   ├── tests/
-│   │   └── ui_contract_and_voice.test.js      # Response normalization & voice briefing unit tests
-│   └── src/
-│       ├── main.jsx                           # Application bootstrap
-│       ├── App.jsx                            # Forensic workspace orchestration (5 primary pages)
-│       ├── styles.css                         # Unified midnight graphite design system
-│       ├── lib/
-│       │   ├── api.js                         # REST adapter & canonical response normalizer
-│       │   └── narrator.js                    # Web Speech API script generator
-│       └── components/
-│           ├── ForensicReport.jsx             # 6-section forensic adjudication dossier
-│           ├── InvestigationProgress.jsx      # Indeterminate pipeline radar & execution path
-│           ├── VoiceNarrator.jsx              # Native Web Speech API voice briefing controller
-│           ├── EvidenceGraph.jsx              # Consensus network & topology visualization
-│           ├── ConfusionMatrix.jsx            # Audited Phase 3.2.5 confusion matrix explorer
-│           ├── OrbitHero.jsx                  # Interactive orbital telemetry visualization
-│           └── Icons.jsx                      # Forensic SVG icon library
-├── src/veritas/
-│   ├── data/                                  # Canonical schema, AVeriTeC/FEVER loaders, preprocessors
-│   ├── retrieval/                             # Multilingual tokenizer, BM25 (zero-match filtered), Dense E5, FAISS, Hybrid RRF
-│   └── verification/                          # CrossEncoderNLI wrapper, EvidenceAggregator, Calibrator, Engine (multi-premise)
-├── scripts/
-│   ├── launcher_helper.py                     # Cross-platform preflight, health polling, and safe process manager
-│   ├── run_demo_claims.py                     # Live HTTP end-to-end demo verification runner
-│   ├── demo_claim.py                          # Single-claim CLI & interactive demonstration
-│   ├── evaluate_heldout_test.py               # Frozen one-shot evaluation on held-out test split (DO NOT RERUN)
-│   ├── evaluate_verification.py               # End-to-end verification and calibration evaluator
-│   ├── evaluate_retrieval.py                  # Retrieval benchmark evaluation (BM25 vs Dense vs Hybrid)
-│   ├── calibrate_and_abstain.py               # Validation calibration & selective abstention evaluation
-│   ├── tune_thresholds.py                     # Validation-only hyperparameter grid search (decoupled coverage)
-│   ├── process_canonical_dataset.py           # Canonical benchmark dataset harmonization pipeline
-│   ├── download_samples.py                    # Sample dataset acquisition runner
-│   ├── verify_live_api_and_workspaces.py      # Automated 8-workspace and live API verification
-│   └── verify_live_comprehensive.py           # End-to-end multi-category regression and claim verification
-├── tests/
-│   ├── test_api_adapter.py                    # Adapter mapping, contract, and regression tests (16 tests)
-│   ├── test_live_smoke.py                     # HTTP server health, CORS, and smoke tests (4 tests)
-│   ├── test_calibrator.py                     # Temperature scaling and selective abstention tests
-│   ├── test_evidence_aggregator.py            # Stance disparity, deduplication, and aggregation tests
-│   ├── test_threshold_tuner.py                # Hyperparameter constraint and grid search tests (4 tests)
-│   ├── test_nli_wrapper.py                    # Cross-encoder label mapping and device fallback tests
-│   ├── test_retrieval.py                      # BM25 zero-filtering, dense FAISS, and hybrid RRF tests
-│   ├── test_data_foundation.py                # Dataset schema normalization and split tests
-│   └── test_diagnose_checkpointing.py         # Checkpointing and diagnostic evaluation tests
-└── data/processed/
-    ├── canonical_claims.jsonl                 # 1,111 harmonized canonical claims
-    ├── evidence_corpus.jsonl                  # 1,047 unique, verified ground-truth evidence passages
-    ├── validation_model_comparison.json       # Phase 3.1 validation comparison cache (untouched)
-    ├── test_model_evaluation.json             # Phase 3.1 held-out test evaluation baseline (untouched)
-    ├── threshold_tuning_results.json          # Phase 3.2.3 tuning artifact (untouched)
-    ├── calibration_and_abstention_results.json# Phase 3.2.4 calibration artifact (untouched)
-    └── final_test_evaluation_phase_3_2_5.json # Phase 3.2.5 final test evaluation report (frozen benchmark)
-```
-
----
-
-## 7. Manual Startup, API Contracts & Testing
-
-## 7. Manual Startup, API Contracts & Testing
-
-### One-Click Quickstart (Recommended)
-
-Double-click `START_VERITAS_X.bat` in the repository root. This:
-1. Validates Python `.venv` and Node.js environment prerequisites.
-2. Checks port availability (`8000` for Python API, `5173` for React UI) via `scripts/launcher_helper.py preflight`.
-3. Binds HTTP port 8000 immediately and starts background model warming via `--background-warmup`.
-4. Starts the Vite frontend on `http://127.0.0.1:5173`.
-5. Monitors `/api/health` until `model_ready: true` is confirmed before launching the default browser.
-6. To cleanly stop all services, run `STOP_VERITAS_X.bat` or press Ctrl+C.
-
-### Manual Fallback Startup Commands
-
-If launching manually from terminal sessions:
-
-#### Terminal 1 — Backend API Server
+### Terminal 1 — Backend API Server
 ```powershell
 # From project root:
-.\.venv\Scripts\Activate.ps1
-python -m api.server --host 127.0.0.1 --port 8000 --background-warmup
+.\.venv\Scripts\Activate.ps1   # On Linux/macOS: source .venv/bin/activate
+python -m api.server --host 127.0.0.1 --port 8011 --background-warmup
 ```
-- `--background-warmup` (default): Binds port 8000 immediately (<15 ms) and preloads DeBERTa-v3 and FAISS indices in a background thread, eliminating first-request latency.
-- `--lazy`: Defers model loading until the first user verification request.
-- Default local binding: `127.0.0.1:8000` (loopback only, private to host machine).
+- Available at `http://127.0.0.1:8011/api/health`.
+- Options:
+  - `--background-warmup` (default): Binds port 8011 immediately and loads PyTorch/DeBERTa/FAISS in a background thread.
+  - `--lazy`: Defers model loading until the first verification request.
 
-#### Terminal 2 — Frontend UI
+### Terminal 2 — Frontend UI
 ```powershell
 # From project root:
-cd ui\veritas-x-advanced-ui
+cd ui/veritas-x-advanced-ui
 npm install
 npm run dev
 ```
 - Available at `http://127.0.0.1:5173`.
 
+> [!IMPORTANT]
+> **Why `file://` Direct Launch Does Not Work**:
+> Opening `index.html` directly via `file://` fails because modern browsers enforce CORS security policies blocking ES modules (`<script type="module">`) from the filesystem. Additionally, dynamic HTTP API requests (`fetch("http://127.0.0.1:8011/api/verify")`) require an HTTP origin. The application must be accessed through Vite dev server or a local static file server.
+
 ---
 
-### API Endpoint Specification
+## 6. Fresh Environment Installation
 
-#### 1. `POST /api/verify`
-Submits a natural language claim for end-to-end evidence retrieval, NLI stance scoring, cross-passage disparity aggregation, and calibrated adjudication.
+### System Prerequisites
+- **Python**: 3.10, 3.11, 3.12, or 3.13
+- **Node.js**: v18.0.0 or later (with `npm` 9+)
+- **OS**: Windows 10/11, Linux (Ubuntu 20.04+), or macOS
+- **Hardware**: CUDA-compatible GPU (4GB+ VRAM recommended, e.g., RTX 2050/3060) or CPU (automatic fallback)
 
-**Request Payload:**
-```json
-{
-  "claim": "A thermonuclear bomb was detonated on the Moon during the Apollo 11 mission in July 1969.",
-  "user_evidence": []
-}
+### Step 1: Clone and Configure Environment
+```bash
+git clone https://github.com/<your-org>/VERITAS-X.git
+cd VERITAS-X
+
+# Copy environment configuration
+cp .env.example .env
 ```
 
-**Response Payload (`200 OK`, 11 Canonical Keys):**
-```json
-{
-  "claim_id": "VX-001",
-  "claim": "A thermonuclear bomb was detonated on the Moon during the Apollo 11 mission in July 1969.",
-  "verdict": "VERIFIED_FALSE",
-  "confidence": 0.3508,
-  "probabilities": {
-    "VERIFIED_TRUE": 0.2215,
-    "VERIFIED_FALSE": 0.3508,
-    "CONFLICTING_OR_CHERRYPICKED": 0.1240,
-    "INSUFFICIENT_EVIDENCE": 0.3037
-  },
-  "has_cross_passage_disparity": false,
-  "abstained": false,
-  "reason": "The model assigned plurality probability to VERIFIED_FALSE with low calibrated confidence (35.1%), but no individual retrieved passage directly refutes the proposition (5 neutral/uninformative passage(s)). The claim lacks direct documentary refutation in the retrieved corpus.",
-  "evidence": [
-    {
-      "id": "E-01",
-      "source": "Local Evidence Corpus",
-      "text": "Apollo 11 landed on the lunar surface on July 20, 1969...",
-      "stance": "neutral",
-      "score": 0.9421,
-      "entailment_prob": 0.0210,
-      "contradiction_prob": 0.0369,
-      "neutral_prob": 0.9421,
-      "is_informative": false,
-      "doc_id": "doc_104"
-    }
-  ],
-  "device": "cuda",
-  "latency_ms": 128.4
-}
+### Step 2: Python Backend Virtual Environment
+```powershell
+# Create and activate virtual environment
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1    # Linux/macOS: source .venv/bin/activate
+
+# Install all Python dependencies (includes PyTorch, Transformers, FAISS, SymSpellPy, etc.)
+pip install --upgrade pip
+pip install -r requirements.txt
 ```
 
-#### 2. `GET /api/health`
-Lightweight readiness and model liveness probe distinguishing HTTP socket binding from AI model readiness.
+### Step 3: Frontend Client Setup
+```bash
+cd ui/veritas-x-advanced-ui
+npm install
+cd ../..
+```
+
+### Step 4: Verify Offline Model Cache (Optional)
+The pre-downloaded Hugging Face checkpoints are stored in `.cache/huggingface`:
+- `MoritzLaurer/DeBERTa-v3-base-mnli-fever-anli`
+- `intfloat/multilingual-e5-small`
+
+The backend automatically sets `HF_HUB_OFFLINE=1` and `TRANSFORMERS_OFFLINE=1` when loading from `.cache/huggingface`, ensuring offline operation without external API calls.
+
+---
+
+## 7. API Reference Specification
+
+### 1. `GET /api/health`
+Lightweight readiness and model liveness probe.
 
 **Response (`200 OK`):**
 ```json
@@ -393,75 +260,336 @@ Lightweight readiness and model liveness probe distinguishing HTTP socket bindin
 }
 ```
 
----
+### 2. `POST /api/verify`
+Submits a natural language claim for end-to-end evidence retrieval, NLI stance scoring, cross-passage disparity aggregation, calibrated adjudication, and NLP telemetry.
 
-### Running Automated Test Suites
+**Request Payload:**
+```json
+{
+  "claim": "Pur watur frezes at 0 C",
+  "evidence": [],
+  "mode": "local",
+  "include_processing_trace": true
+}
+```
 
-```powershell
-# 1. Full Python Unit & Regression Test Suite (171 passed in ~30s)
-.\.venv\Scripts\python.exe -m unittest discover -s tests -p "test_*.py"
-
-# 2. Reasoning Regression Verification (5/5 targeted scenarios passed)
-.\.venv\Scripts\python.exe scratch/test_reasoning_regressions.py
-
-# 3. Frontend Unit & Contract Tests (17 passed in ~94ms)
-cd ui\veritas-x-advanced-ui
-npm test
-
-# 4. Frontend Production Build Verification (Vite v6.3.5)
-npm run build
+**Response Payload (`200 OK`):**
+```json
+{
+  "claim_id": "VX-20261026-001",
+  "claim": "Pur watur frezes at 0 C",
+  "normalized_claim": "Pure water freezes at 0 C",
+  "verdict": "VERIFIED_TRUE",
+  "confidence": 0.9412,
+  "probabilities": {
+    "VERIFIED_TRUE": 0.9412,
+    "VERIFIED_FALSE": 0.0210,
+    "CONFLICTING_OR_CHERRYPICKED": 0.0150,
+    "INSUFFICIENT_EVIDENCE": 0.0228
+  },
+  "has_cross_passage_disparity": false,
+  "abstained": false,
+  "reason": "Retrieved evidence directly substantiates the claim proposition under standard physical conditions.",
+  "evidence": [
+    {
+      "id": "E-01",
+      "source": "Local Evidence Corpus",
+      "text": "Pure water freezes at 0 degrees Celsius (32 degrees Fahrenheit) at standard atmospheric pressure.",
+      "stance": "support",
+      "score": 0.9412,
+      "entailment_prob": 0.9412,
+      "contradiction_prob": 0.0210,
+      "neutral_prob": 0.0378,
+      "is_informative": true,
+      "doc_id": "doc_412"
+    }
+  ],
+  "normalization_status": "CORRECTED",
+  "normalization_corrections": [
+    {
+      "original_word": "Pur",
+      "normalized_word": "Pure",
+      "edit_distance": 1,
+      "confidence": 0.95,
+      "candidate_source": "symspell"
+    },
+    {
+      "original_word": "watur",
+      "normalized_word": "water",
+      "edit_distance": 1,
+      "confidence": 0.98,
+      "candidate_source": "symspell"
+    },
+    {
+      "original_word": "frezes",
+      "normalized_word": "freezes",
+      "edit_distance": 1,
+      "confidence": 0.97,
+      "candidate_source": "symspell"
+    }
+  ],
+  "processing_trace_version": "1.0",
+  "processing_trace": [
+    {
+      "stage": "input_received",
+      "status": "completed",
+      "summary": "Received raw user input.",
+      "duration_ms": 0.04
+    },
+    {
+      "stage": "sanitization",
+      "status": "completed",
+      "summary": "Unicode NFC normalization complete. No control characters found.",
+      "duration_ms": 0.07
+    },
+    {
+      "stage": "spelling_normalization",
+      "status": "completed",
+      "summary": "Applied 3 spelling correction(s). Meaning preservation score: 0.96.",
+      "duration_ms": 4.45
+    },
+    {
+      "stage": "meaning_preservation",
+      "status": "completed",
+      "summary": "Safety guardrails accepted correction safely.",
+      "duration_ms": 0.38
+    },
+    {
+      "stage": "tokenization",
+      "status": "completed",
+      "summary": "Tokenized into 6 tokens and 1 named entity.",
+      "duration_ms": 0.06
+    },
+    {
+      "stage": "linguistic_analysis",
+      "status": "completed",
+      "summary": "POS tagging and Universal Dependency syntax tree constructed.",
+      "duration_ms": 0.12
+    },
+    {
+      "stage": "claim_extraction",
+      "status": "completed",
+      "summary": "Extracted subject 'Pure water', predicate 'freezes', object 'at 0 C'.",
+      "duration_ms": 0.11
+    },
+    {
+      "stage": "retrieval",
+      "status": "completed",
+      "summary": "Hybrid BM25 + Dense E5 retrieval retrieved 5 evidence passages.",
+      "duration_ms": 34.74
+    },
+    {
+      "stage": "evidence_processing",
+      "status": "completed",
+      "summary": "Suppressed duplicates and evaluated topical relevance.",
+      "duration_ms": 0.08
+    },
+    {
+      "stage": "nli_verification",
+      "status": "completed",
+      "summary": "Cross-encoder DeBERTa-v3 evaluated stance across all passages.",
+      "duration_ms": 142.24
+    },
+    {
+      "stage": "final_result",
+      "status": "completed",
+      "summary": "Final adjudication complete: VERIFIED_TRUE (Confidence: 94.1%).",
+      "duration_ms": 0.50
+    }
+  ],
+  "device": "cuda",
+  "latency_ms": 218.4
+}
 ```
 
 ---
 
-## 8. Multi-Mode Evidence Retrieval & Free-Tier Cost Controls
+## 8. Automated Testing & Quality Verification
 
-VERITAS-X supports three runtime evidence modes:
-- **Local Corpus (`mode="local"`)**: Fully offline verification against the pre-indexed 1,047 verified passages (BM25 + Dense Multilingual E5 + FAISS + RRF). Requires zero credentials or internet access.
-- **Live Web (`mode="web"`)**: Real-time web search citations retrieved via official Tavily Basic Search API, normalized into candidate evidence passages, and passed through DeBERTa-v3 NLI inference.
-- **Hybrid (`mode="hybrid"`)**: Merged local corpus and web evidence with URL/hash deduplication to prevent double-counting.
+```powershell
+# 1. Frontend Unit & Telemetry Test Suite (45 tests across 8 suites - 100% PASS)
+cd ui/veritas-x-advanced-ui
+npm test
 
-### Free-Tier Cost Safeguards
-- **Basic Search Only**: Advanced crawling and deep extraction disabled to strictly conserve credits (1 credit/search).
-- **Persistent Ledger**: Hard application-side cap of **800 monthly credits** tracked atomically in `data/tavily_usage.json`.
-- **Zero Retries**: Network timeouts or provider errors fail gracefully to prevent credit burn loops.
-- **Permanent Lockout**: Automatic current-month freeze upon HTTP 402/429 billing errors.
+# 2. Frontend Production Bundle Compilation (Vite 6 - 100% clean build)
+npm run build
+cd ../..
 
-For detailed data flow and deployment guides, see:
-- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md): Complete data flow and pipeline specification.
-- [docs/FINAL_RUN_GUIDE.md](docs/FINAL_RUN_GUIDE.md): Windows setup, startup/shutdown, and API configuration.
-- [docs/EVALUATION_REPORT.md](docs/EVALUATION_REPORT.md): Empirical benchmarks, reasoning regressions, and limitations.
+# 3. Core NLP, Telemetry, Adapter & Live Smoke Suites (72 tests - 100% PASS)
+.\.venv\Scripts\python.exe -m unittest tests/test_nlp_spelling_normalization.py tests/test_nlp_linguistics_guardrails.py tests/test_api_nlp_integration_telemetry.py tests/test_api_adapter.py tests/test_live_smoke.py
+
+# 4. Full Backend Test Discovery (328 tests: 325 pass, 3 frozen multi-hop edge cases)
+.\.venv\Scripts\python.exe -m unittest discover -s tests -p "test_*.py"
+```
 
 ---
 
-## 9. Limitations & Forensic Disclosures
+## 9. Final Architecture Tree
+
+```
+VERITAS-X/
+├── START_VERITAS_X.bat                  # One-click Windows launcher (preflight, dual-server, browser launch)
+├── STOP_VERITAS_X.bat                   # Safe target-process shutdown script (ports 8011 & 5173)
+├── README.md                            # Authoritative academic overview, architecture & operational guide
+├── LICENSE                              # MIT License
+├── requirements.txt                     # Core Python dependencies (PyTorch, Transformers, FAISS, SymSpellPy)
+├── .gitignore                           # Production git exclusion rules
+├── .env.example                         # Environment configuration template
+│
+├── api/                                 # HTTP REST API Layer
+│   ├── __init__.py                      # Package initialization
+│   ├── adapter.py                       # VeritasAPIAdapter (NLP integration, calibration, CORS, schema contract)
+│   └── server.py                        # Threading HTTP Server (POST /api/verify, GET /api/health)
+│
+├── src/veritas/                         # Core Machine Learning & NLP Engine
+│   ├── __init__.py                      # Root package initialization
+│   ├── nlp/                             # Phase 4 NLP Pipeline Modules
+│   │   ├── __init__.py                  # NLP package initialization
+│   │   ├── sanitizer.py                 # Stage 1: Unicode NFC, control char stripping, entity shielding
+│   │   ├── linguistics.py               # Stages 2 & 4: Multilingual tokenization, POS tagging, dependency parsing
+│   │   ├── spelling.py                  # Stage 3: Domain-aware SymSpell spelling normalization
+│   │   ├── claim_extractor.py           # Stage 5: Semantic claim structure & proposition extraction
+│   │   ├── guardrails.py                # Stage 6: Meaning preservation scoring & safety guardrails
+│   │   └── telemetry.py                 # Structured telemetry accumulator for UI animation playback
+│   ├── retrieval/                       # Stage 7: Evidence Retrieval System
+│   │   ├── __init__.py                  # Retrieval package initialization
+│   │   ├── bm25_retriever.py            # Multilingual Okapi BM25 (zero-score filtered)
+│   │   ├── dense_retriever.py           # Dense Multilingual E5 embedding retriever
+│   │   ├── hybrid_retriever.py          # Reciprocal Rank Fusion (RRF, k=60)
+│   │   ├── evidence_corpus.py           # FAISS index loader and passage metadata manager
+│   │   ├── tavily_provider.py           # Live web search integration with credit limits
+│   │   ├── tokenizer.py                 # Custom multilingual lexical tokenizer
+│   │   └── evaluation.py                # Retrieval recall and MRR evaluation
+│   ├── verification/                    # Stages 8-11: Adjudication Engine
+│   │   ├── __init__.py                  # Verification package initialization
+│   │   ├── nli_model.py                 # CrossEncoderNLI wrapper (MoritzLaurer/DeBERTa-v3)
+│   │   ├── evidence_aggregator.py       # Stance disparity aggregator & neutral mass discounting
+│   │   ├── calibrator.py                # TemperatureCalibrator (T = 4.1039) & selective abstention
+│   │   ├── engine.py                    # End-to-end VerificationEngine orchestrator
+│   │   ├── evaluation.py                # Multiclass evaluation metrics (NLL, ECE, Brier, F1)
+│   │   └── temporal_analyzer.py         # Date delta audit and temporal anachronism detection
+│   ├── data/                            # Benchmark Data Foundation
+│   │   ├── __init__.py                  # Data package initialization
+│   │   ├── schema.py                    # Canonical dataclasses & CanonicalVeracity taxonomy
+│   │   ├── preprocessor.py              # Text cleaning, NFC normalization, script detection
+│   │   ├── averitec_loader.py           # AVeriTeC JSONL parser and evidence extractor
+│   │   ├── fever_loader.py              # FEVER dataset parser
+│   │   ├── multilingual_loader.py       # Indic (Hindi, Bengali) and Hinglish loader
+│   │   └── pipeline.py                  # End-to-end dataset builder pipeline
+│   ├── graph/                           # Evidence Consensus Topology
+│   │   ├── __init__.py                  # Graph package initialization
+│   │   └── graph_builder.py             # Knowledge and consensus graph builder
+│   ├── reasoning/                       # Multi-Hop Reasoning Modules
+│   │   ├── __init__.py                  # Reasoning package initialization
+│   │   ├── decomposer.py                # Complex claim sub-question decomposer
+│   │   ├── multihop_verifier.py         # Multi-hop bridge reasoning verifier
+│   │   └── types.py                     # Decomposition data structures
+│   └── temporal/                        # Temporal Intelligence
+│       ├── __init__.py                  # Temporal package initialization
+│       └── temporal_analyzer.py         # Regex/ISO-8601 temporal parser and drift detector
+│
+├── ui/veritas-x-advanced-ui/            # Sole Active React 19 / Vite 6 Forensic Dashboard
+│   ├── package.json                     # Frontend dependencies and npm scripts
+│   ├── package-lock.json                # Authoritative npm lockfile
+│   ├── vite.config.js                   # Vite configuration
+│   ├── index.html                       # Application HTML root
+│   ├── backend_contract.md              # Exact REST API payload contract specification
+│   ├── README.md                        # UI architecture and component documentation
+│   ├── dist/                            # Production build bundle (Vite 6 compiled)
+│   ├── public/                          # Static assets (favicon.svg, veritas-symbol.svg)
+│   ├── tests/                           # Frontend Jest/Testing-Library unit tests
+│   │   ├── nlp_visualization_telemetry.test.js  # Telemetry parsing & stage rendering tests
+│   │   └── ui_contract_and_voice.test.js       # Contract normalization & narrator tests
+│   └── src/                             # React Source Code
+│       ├── main.jsx                     # Application bootstrap
+│       ├── App.jsx                      # Main workspace orchestration & page routing
+│       ├── styles.css                   # Phase 4C natural, integrated light-theme design system
+│       ├── lib/                         # Client Utility Libraries
+│       │   ├── api.js                   # REST client & response normalizer
+│       │   └── narrator.js              # Web Speech API briefing narrator
+│       └── components/                  # UI Components
+│           ├── ClaimStructureView.jsx   # Stage 5: Subject-Predicate-Object triple visualization
+│           ├── ConfusionMatrix.jsx      # Interactive Phase 3.2.5 confusion matrix explorer
+│           ├── EvidenceFlowView.jsx     # Stage 7 & 8: Evidence card flow & stance indicators
+│           ├── EvidenceGraph.jsx        # Consensus network graph visualization
+│           ├── ForensicReport.jsx       # 6-section forensic adjudication dossier
+│           ├── Icons.jsx                # Light-theme SVG icon library
+│           ├── InvestigationProgress.jsx# Radar telemetry progress & execution path
+│           ├── MeaningPreservationPanel.jsx # Stage 6: Safety guardrail score gauges
+│           ├── NLPVisualization.jsx     # Main 11-stage interactive animation coordinator
+│           ├── OrbitHero.jsx            # Interactive orbital telemetry hero
+│           ├── PlaybackControls.jsx     # Play/pause/step/speed animation toolbar
+│           ├── ProcessingTimeline.jsx   # 11-stage progress tracker and stage navigator
+│           ├── StageDetailsModal.jsx    # Deep-dive inspector modal for each stage
+│           ├── SyntaxRelationshipView.jsx # Stage 4: Syntactic dependency tree viewer
+│           ├── TokenInspector.jsx       # Stage 2: POS tag & token chip inspector
+│           ├── VerificationReveal.jsx   # Stage 10 & 11: Calibrated verdict reveal
+│           ├── VoiceNarrator.jsx        # Voice briefing controller
+│           └── WordCorrectionAnimation.jsx # Stage 3: Animated spelling correction cards
+│
+├── scripts/                             # Utility & Benchmarking Scripts
+│   ├── launcher_helper.py               # Runtime preflight, health polling, PID manager for .bat files
+│   ├── demo_claim.py                    # Single-claim CLI demonstration runner
+│   ├── run_demo_claims.py               # Batch live HTTP verification runner
+│   ├── evaluate_heldout_test.py         # Frozen Phase 3.2.5 held-out test evaluation runner
+│   ├── evaluate_verification.py         # End-to-end verification and calibration evaluator
+│   ├── evaluate_retrieval.py            # Retrieval benchmark evaluation runner (BM25 vs Dense vs Hybrid)
+│   ├── calibrate_and_abstain.py         # Validation calibration & selective abstention evaluator
+│   ├── tune_thresholds.py               # Hyperparameter threshold tuner
+│   ├── process_canonical_dataset.py     # Canonical dataset harmonization pipeline
+│   ├── download_samples.py              # Sample dataset acquisition runner
+│   ├── verify_live_api_and_workspaces.py # Live API workspace verification runner
+│   ├── verify_live_comprehensive.py     # Multi-category regression verification runner
+│   └── diagnose_and_improve.py          # Error profiling & diagnostic script
+│
+├── tests/                               # Comprehensive Automated Test Suites (25 test files)
+│   ├── test_api_adapter.py              # Adapter mapping, contract, and regression tests (30 tests)
+│   ├── test_api_nlp_integration_telemetry.py # Pipeline integration & telemetry tests (9 tests)
+│   ├── test_nlp_spelling_normalization.py   # SymSpell, entity protection, Hinglish tests (22 tests)
+│   ├── test_nlp_linguistics_guardrails.py    # Linguistics, claim extraction, guardrails tests (21 tests)
+│   ├── test_live_smoke.py               # HTTP server health, CORS, and smoke tests (4 tests)
+│   ├── test_calibrator.py               # Temperature scaling & selective abstention tests
+│   ├── test_evidence_aggregator.py      # Stance disparity, deduplication, aggregation tests
+│   ├── test_threshold_tuner.py          # Hyperparameter grid search tests
+│   ├── test_nli_wrapper.py              # Cross-encoder label mapping & device fallback tests
+│   ├── test_retrieval.py                # BM25 zero-filtering, dense FAISS, hybrid RRF tests
+│   ├── test_data_foundation.py          # Dataset schema normalization & split tests
+│   ├── test_general_evidence_reasoning.py # Multi-evidence reasoning tests
+│   ├── test_systemic_root_cause_regressions.py # Edge case and bridge reasoning tests
+│   ├── test_tavily_provider.py          # Web search provider & cost limit tests
+│   └── ...                              # Remaining domain and regression test suites
+│
+├── docs/                                # Authoritative Documentation
+│   ├── ARCHITECTURE.md                  # Comprehensive pipeline architecture & data flow
+│   ├── data_dictionary.md               # Data dictionary for benchmark datasets & schemas
+│   └── reproducibility.md               # Exact audit trail, commands, and seeds for Phase 3.2.5
+│
+└── data/processed/                      # Active Ground-Truth Datasets & Frozen Evaluation Baselines
+    ├── canonical_claims.jsonl           # 1,111 harmonized canonical claims
+    ├── evidence_corpus.jsonl            # 1,047 unique, verified ground-truth evidence passages
+    ├── evidence_corpus.faiss            # FAISS index for dense multilingual E5 search
+    ├── evidence_corpus_faiss_meta.json  # FAISS index metadata and doc_id mappings
+    ├── validation_model_comparison.json # Phase 3.1 validation comparison cache (frozen)
+    ├── test_model_evaluation.json       # Phase 3.1 held-out test baseline (frozen)
+    ├── threshold_tuning_results.json    # Phase 3.2.3 hyperparameter tuning artifact (frozen)
+    ├── calibration_and_abstention_results.json # Phase 3.2.4 calibration artifact (frozen)
+    └── final_test_evaluation_phase_3_2_5.json  # Phase 3.2.5 final audited benchmark report (frozen)
+```
+
+---
+
+## 10. Limitations & Forensic Disclosures
 
 1. **Conflicting-Evidence Recall Trade-Off:**
-   In Phase 3.2.5 held-out evaluations, conflicting-class recall is 10.53% (2/19 claims detected). Conservative thresholds were chosen to prevent false-alarm conflict declarations (precision doubled to 28.57%).
-2. **Domain Boundaries & External World Knowledge:**
-   Textual NLI models verify lexical and semantic entailment from documentary text. Unstated physical equivalences (e.g., equating "standard atmospheric pressure" to "sea level") are treated strictly as `NEUTRAL` without domain-specific bridging text.
-3. **Calibrated Confidence vs. Ground Truth:**
-   Confidence scores represent evidence alignment under post-hoc temperature scaling ($T=4.1039$). They quantify consistency with available citations, not an unconditional guarantee of real-world factuality.
-
-### Core Defect Remediations & Engineering Upgrades
-
-During productization, three verified runtime and tuning defects were resolved:
-
-1. **Priority A — BM25 Zero-Score Document Filtering (`src/veritas/retrieval/bm25_retriever.py`)**:
-   - *Previous Defect*: Out-of-vocabulary or zero-overlap queries returned arbitrary documents with 0.0 BM25 scores simply because they occupied top array indices.
-   - *Remediation*: Added `if score > 0.0` filtering. Zero-match queries now return empty result sets (`[]`), preventing noisy false-positive passages from entering the Reciprocal Rank Fusion (RRF) pool.
-2. **Priority B — Multi-Premise Joint Inference Parity (`src/veritas/verification/engine.py`)**:
-   - *Previous Defect*: Multi-premise cross-encoder inference was evaluated in historical research experiments but omitted from the live verification engine loop.
-   - *Remediation*: When multiple candidate evidence passages are retrieved, the engine builds a concatenated joint premise and evaluates it via a unified batch NLI pass, supplying `joint_nli_prediction` to `EvidenceAggregator`.
-3. **Priority C — Decoupling Insufficient Evidence from Abstention (`scripts/tune_thresholds.py`)**:
-   - *Previous Defect*: The hyperparameter tuning script conflated the domain verdict `INSUFFICIENT_EVIDENCE` with the meta-level decision to abstain ($g(x)=0$), artificially miscounting coverage.
-   - *Remediation*: Coverage calculation was decoupled to reflect operational deferral criteria ($\max p < \tau_{\text{conf}}$ or $H_{\text{norm}} > \tau_{\text{ent}}$), with configurable coverage constraints (`min_coverage_threshold`).
-4. **Offline Hugging Face Startup (`api/adapter.py`)**:
-   - *Optimization*: Configured `HF_HUB_OFFLINE = 1` and `TRANSFORMERS_OFFLINE = 1` to prevent unauthenticated network polling to `huggingface.co`, ensuring instant local startup from `.cache/huggingface`.
+   In Phase 3.2.5 held-out evaluations, conflicting-class recall is 10.53% (2/19 claims detected). Conservative thresholds were chosen to double precision to 28.57% and cut false alarms by 79%. Subtle or co-located conflicting claims default safely to `VERIFIED_FALSE` or `INSUFFICIENT_EVIDENCE`.
+2. **Domain Boundaries & World Knowledge:**
+   Textual NLI evaluates semantic entailment from documentary text. Unstated physical equivalences (e.g., equating "standard atmospheric pressure" to "sea level") are treated as `NEUTRAL` without domain-specific bridging text.
+3. **Calibrated Confidence Semantics:**
+   Confidence scores represent evidence alignment under post-hoc temperature scaling ($T=4.1039$). They quantify consistency with available citations, not an unconditional guarantee of real-world truth.
 
 ---
 
-## 10. Dataset Attribution & Academic Citations
+## 11. Dataset Attribution & Academic Citations
 
 ```bibtex
 @inproceedings{schoch2023averitec,
@@ -513,6 +641,6 @@ During productization, three verified runtime and tuning defects were resolved:
 
 ---
 
-## 11. License
+## 12. License
 
-The VERITAS-X codebase is licensed under the [MIT License](LICENSE). Third-party datasets and pre-trained weights remain governed by their respective upstream licenses (AVeriTeC: CC BY 4.0; FEVER: CC BY-SA 3.0; HuggingFace model checkpoints: MIT / Apache 2.0).
+The VERITAS-X codebase is licensed under the [MIT License](LICENSE). Third-party datasets and pre-trained model weights remain governed by their respective upstream licenses (AVeriTeC: CC BY 4.0; FEVER: CC BY-SA 3.0; HuggingFace model checkpoints: MIT / Apache 2.0).

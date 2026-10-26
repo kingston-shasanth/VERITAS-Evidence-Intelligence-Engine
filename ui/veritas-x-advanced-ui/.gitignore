@@ -6,7 +6,8 @@ dist-ssr/
 
 # Environment & logs
 .env
-.env.local
+.env.*
+!.env.example
 *.log
 
 # OS & Editor

@@ -733,7 +733,9 @@ class TestEvidenceIntegrityAndRationale(TestCase):
         mock_engine = MagicMock()
         mock_engine.verify_claim.return_value = make_dummy_verdict(was_abstained=True)
 
-        with patch.dict(os.environ, {}, clear=True):
+        env_copy = dict(os.environ)
+        env_copy.pop("TAVILY_API_KEY", None)
+        with patch.dict(os.environ, {"TAVILY_API_KEY": ""}):
             adapter = VeritasAPIAdapter(engine=mock_engine, lazy_init=True)
             adapter.tavily_provider.api_key = ""
             res = adapter.verify(claim="Test claim for web mode", mode="web")

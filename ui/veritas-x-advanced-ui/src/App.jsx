@@ -12,6 +12,7 @@ import { TimelineView } from './components/TimelineView.jsx';
 import { MultiHopInspector } from './components/MultiHopInspector.jsx';
 import { ModelPerformanceLab } from './components/ModelPerformanceLab.jsx';
 import { SystemTelemetry } from './components/SystemTelemetry.jsx';
+import { NLPVisualization } from './components/NLPVisualization.jsx';
 
 const LABELS = ['VERIFIED_TRUE', 'VERIFIED_FALSE', 'CONFLICTING_OR_CHERRYPICKED', 'INSUFFICIENT_EVIDENCE'];
 
@@ -165,7 +166,314 @@ const FIXTURE_CASES = [
       { id: 'E-07', source: 'Municipal Incident Registry', stance: 'neutral', score: 0.22, entailment_prob: 0.08, contradiction_prob: 0.14, neutral_prob: 0.78, is_informative: false, text: 'No municipal records, aviation telemetry, or verified journalistic reports document unconfirmed aerial landings in the city plaza.' },
     ],
   },
+  {
+    id: 'VX-DEMO-055',
+    claim: 'incognitio mdoe dont stops websits traking me',
+    original_claim: 'incognitio mdoe dont stops websits traking me',
+    sanitized_claim: 'incognitio mdoe dont stops websits traking me',
+    normalized_claim: 'incognito mode does not stop websites tracking me',
+    normalization_status: 'accepted',
+    normalization_corrections: [
+      { original: 'incognitio', replacement: 'incognito', category: 'typo', confidence: 0.96, start_char: 0, end_char: 10, edit_distance: 1 },
+      { original: 'mdoe', replacement: 'mode', category: 'typo', confidence: 0.98, start_char: 11, end_char: 15, edit_distance: 1 },
+      { original: 'dont', replacement: 'does not', category: 'contraction', confidence: 0.99, start_char: 16, end_char: 20, edit_distance: 1 },
+      { original: 'stops', replacement: 'stop', category: 'agreement', confidence: 0.94, start_char: 21, end_char: 26, edit_distance: 1 },
+      { original: 'websits', replacement: 'websites', category: 'typo', confidence: 0.97, start_char: 27, end_char: 34, edit_distance: 1 },
+      { original: 'traking', replacement: 'tracking', category: 'typo', confidence: 0.98, start_char: 35, end_char: 42, edit_distance: 1 },
+    ],
+    structured_claim: {
+      subject: 'incognito mode',
+      predicate: 'stop',
+      object: 'websites tracking me',
+      modality: 'certain',
+      is_negated: true,
+      negation_scope: 'dont stops websits traking me',
+      named_entities: [],
+      numeric_entities: [],
+    },
+    retrieval_query_used: 'incognito mode does not stop websites tracking me',
+    nli_hypothesis_used: 'incognitio mdoe dont stops websits traking me',
+    verdict: 'VERIFIED_TRUE',
+    confidence: 0.92,
+    probs: { VERIFIED_TRUE: 0.92, VERIFIED_FALSE: 0.03, CONFLICTING_OR_CHERRYPICKED: 0.01, INSUFFICIENT_EVIDENCE: 0.04 },
+    summary: 'Private browsing and incognito mode prevent local browsing history and cookies from persisting after a session ends, but do not prevent external websites or network providers from tracking user IP addresses or fingerprinting.',
+    disparity: false,
+    abstained: false,
+    subclaims: [
+      { subclaim_id: 'SC-01', text: 'Incognito mode does not prevent external websites from tracking users', status: 'SUPPORTED', confidence: 0.93, stance_distribution: { support: 2, refute: 0, neutral: 0 }, relation_to_parent: 'conjunct', explanation: 'Directly confirmed by browser security specifications.' },
+    ],
+    temporal: {
+      temporal_scope: 'CURRENT',
+      temporal_status: 'CONSISTENT',
+      explanation: 'Modern browser network architecture is standard and current.',
+      timeline_events: [
+        { evidence_id: 'E-10', date: '2023-01-15', date_type: 'publication', stance: 'support', text: 'Private browsing and incognito mode prevent local browsing history and cookies from persisting after a session ends, but do not prevent external websites or network providers from tracking the user via IP addresses or browser fingerprinting.', provenance: 'Browser Privacy Whitepaper' },
+        { evidence_id: 'E-11', date: '2023-08-20', date_type: 'publication', stance: 'support', text: 'Incognito mode is designed strictly for local device privacy; it does not cloak user activity from web servers, analytics trackers, or ISPs.', provenance: 'Electronic Privacy Information Center' },
+      ],
+    },
+    uncertainty: {
+      shannon_entropy: 0.31,
+      top_margin: 0.88,
+      coverage_ratio: 1.0,
+      is_abstained: false,
+    },
+    evidence: [
+      { id: 'E-10', source: 'Browser Privacy Whitepaper', stance: 'support', score: 0.93, entailment_prob: 0.93, contradiction_prob: 0.02, neutral_prob: 0.05, is_informative: true, text: 'Private browsing and incognito mode prevent local browsing history and cookies from persisting after a session ends, but do not prevent external websites or network providers from tracking the user via IP addresses or browser fingerprinting.' },
+      { id: 'E-11', source: 'Electronic Privacy Information Center', stance: 'support', score: 0.89, entailment_prob: 0.89, contradiction_prob: 0.03, neutral_prob: 0.08, is_informative: true, text: 'Incognito mode is designed strictly for local device privacy; it does not cloak user activity from web servers, analytics trackers, or ISPs.' },
+    ],
+  },
 ];
+
+function buildFixtureTrace(c) {
+  const original = c.original_claim || c.claim || '';
+  const sanitized = c.sanitized_claim || original;
+  const normalized = c.normalized_claim || sanitized;
+  const normStatus = c.normalization_status || 'accepted';
+  const corrections = c.normalization_corrections || [];
+  const struct = c.structured_claim || {
+    subject: c.subclaims?.[0]?.text?.split(' ')?.[0] || 'Subject',
+    predicate: 'asserts',
+    object: c.subclaims?.[0]?.text || c.claim,
+    modality: 'certain',
+    is_negated: false,
+    named_entities: [],
+    numeric_entities: [],
+  };
+
+  const words = sanitized.split(/\s+/).filter(Boolean);
+
+  return [
+    {
+      sequence: 1,
+      stage: 'input_received',
+      status: 'completed',
+      summary: `Received input claim of ${original.length} character(s).`,
+      duration_ms: 0.1,
+      input_ref: original,
+      output_ref: original,
+      details: { raw_claim: original, char_length: original.length, raw_word_count: words.length },
+    },
+    {
+      sequence: 2,
+      stage: 'sanitization',
+      status: 'completed',
+      summary: 'Sanitized input text: normalized Unicode, collapsed whitespace.',
+      duration_ms: 0.2,
+      input_ref: original,
+      output_ref: sanitized,
+      details: {
+        sanitized_claim: sanitized,
+        transformations: [{ name: 'whitespace_collapse', description: 'Normalized redundant spacing' }],
+        is_question: sanitized.trim().endsWith('?'),
+        has_negation: Boolean(struct.is_negated),
+      },
+    },
+    {
+      sequence: 3,
+      stage: 'spelling_normalization',
+      status: normStatus === 'accepted' ? 'completed' : normStatus === 'uncertain' ? 'uncertain' : 'fallback',
+      summary: `Spelling normalization identified ${corrections.length} word correction(s).`,
+      duration_ms: 0.8,
+      input_ref: sanitized,
+      output_ref: normalized,
+      details: {
+        normalized_claim: normalized,
+        corrections: corrections,
+        word_correction_events: corrections.map((cr) => ({
+          original: cr.original,
+          replacement: cr.replacement,
+          status: cr.status || 'accepted',
+          category: cr.category || 'typo',
+          confidence: cr.confidence || 0.95,
+          edit_distance: cr.edit_distance || 1,
+          start_char: cr.start_char || 0,
+          end_char: cr.end_char || cr.original.length,
+          reason: cr.reason || null,
+          candidates: cr.candidates || [cr.replacement],
+        })),
+        warnings: c.normalization_warnings || [],
+        has_ambiguous_corrections: normStatus === 'uncertain',
+      },
+    },
+    {
+      sequence: 4,
+      stage: 'meaning_preservation',
+      status: normStatus === 'accepted' ? 'completed' : 'fallback',
+      summary: normStatus === 'accepted'
+        ? 'Meaning preservation guardrails verified: all 8 semantic invariants preserved.'
+        : 'Meaning preservation guardrails enforced safety fallback.',
+      duration_ms: 0.4,
+      input_ref: normalized,
+      output_ref: normStatus === 'accepted' ? normalized : sanitized,
+      details: {
+        is_safe: normStatus === 'accepted',
+        decision: normStatus === 'accepted' ? 'USE_NORMALIZED' : 'REVERT_TO_ORIGINAL',
+        invariants_passed: {
+          negation_and_polarity: true,
+          quantifier_and_scope: true,
+          question_versus_assertion: true,
+          entities_numbers_and_units: true,
+          modality_and_uncertainty: true,
+          causality_and_conditionals: true,
+          proposition_count_and_relations: true,
+          ambiguity_and_references: normStatus !== 'uncertain',
+        },
+        violations: normStatus === 'reverted' ? ['Potential entity modification detected'] : [],
+        warnings: normStatus === 'uncertain' ? ['Ambiguous correction candidate ranking'] : [],
+        rationale: 'Guardrail evaluated meaning invariance between original and proposed normalized claim.',
+      },
+    },
+    {
+      sequence: 5,
+      stage: 'tokenization',
+      status: 'completed',
+      summary: `Tokenized canonical claim into ${words.length} token(s) with boundary offsets.`,
+      duration_ms: 0.3,
+      input_ref: sanitized,
+      output_ref: `${words.length} tokens`,
+      details: {
+        token_count: words.length,
+        tokens: words.map((w, idx) => {
+          const start = sanitized.indexOf(w);
+          const end = start >= 0 ? start + w.length : (idx * 6) + w.length;
+          const upos = idx === 0 ? 'NOUN' : idx === 1 ? 'VERB' : idx === 2 ? 'PART' : 'NOUN';
+          return {
+            text: w,
+            lemma: w.toLowerCase().replace(/s$/, ''),
+            pos: upos === 'VERB' ? 'VBZ' : upos === 'PART' ? 'RB' : 'NN',
+            upos: upos,
+            start_char: start >= 0 ? start : idx * 6,
+            end_char: end,
+          };
+        }),
+      },
+    },
+    {
+      sequence: 6,
+      stage: 'linguistic_analysis',
+      status: 'completed',
+      summary: 'Linguistic analysis: type=assertion, 1 clause(s), passive=false.',
+      duration_ms: 0.3,
+      input_ref: sanitized,
+      output_ref: 'type:assertion',
+      details: {
+        sentence_type: 'assertion',
+        is_question: sanitized.trim().endsWith('?'),
+        is_passive: false,
+        subject_candidate: struct.subject,
+        predicate_candidate: struct.predicate,
+        object_candidate: struct.object,
+        clauses: [
+          {
+            text: sanitized,
+            clause_type: 'independent',
+            subject: struct.subject,
+            predicate: struct.predicate,
+            object: struct.object,
+            is_negated: struct.is_negated,
+            modality: struct.modality || 'certain',
+          },
+        ],
+        parser_engine: 'shallow_syntactic_rule_parser',
+      },
+    },
+    {
+      sequence: 7,
+      stage: 'claim_extraction',
+      status: 'completed',
+      summary: `Extracted claim structure: S='${struct.subject}', P='${struct.predicate}', O='${struct.object}'.`,
+      duration_ms: 0.3,
+      input_ref: sanitized,
+      output_ref: `Modality:${struct.modality || 'certain'}`,
+      details: {
+        structured_claim: struct,
+        has_negation: struct.is_negated,
+        negation_scope: struct.negation_scope || null,
+        modality: struct.modality || 'certain',
+        is_conditional: false,
+        is_causal: false,
+        quantifiers: [],
+        named_entities: struct.named_entities || [],
+        numeric_entities: struct.numeric_entities || [],
+      },
+    },
+    {
+      sequence: 8,
+      stage: 'retrieval',
+      status: 'completed',
+      summary: `Retrieved ${c.evidence?.length || 2} evidence passage(s) via local_corpus.`,
+      duration_ms: 4.2,
+      input_ref: normStatus === 'accepted' ? normalized : sanitized,
+      output_ref: `${c.evidence?.length || 2} passages`,
+      details: {
+        retrieval_query: normStatus === 'accepted' ? normalized : sanitized,
+        query_variant: normStatus === 'accepted' ? 'normalized' : 'sanitized_fallback',
+        normalization_status: normStatus,
+        retrieval_mode: 'local',
+        provider: 'local_corpus',
+        systems_run: ['bm25', 'dense'],
+        results_count: c.evidence?.length || 2,
+        duration_ms: 4.2,
+        status: 'success',
+        error: null,
+      },
+    },
+    {
+      sequence: 9,
+      stage: 'evidence_processing',
+      status: 'completed',
+      summary: `Prepared ${c.evidence?.length || 2} candidate passage(s) for cross-encoder inference.`,
+      duration_ms: 0.2,
+      input_ref: `${c.evidence?.length || 2} candidates`,
+      output_ref: `${c.evidence?.length || 2} ready`,
+      details: { candidate_passages_count: c.evidence?.length || 2, retrieval_mode: 'local' },
+    },
+    {
+      sequence: 10,
+      stage: 'nli_verification',
+      status: 'completed',
+      summary: `NLI cross-encoder evaluated hypothesis against ${c.evidence?.length || 2} evidence passage(s).`,
+      duration_ms: 8.5,
+      input_ref: `hypothesis: '${sanitized}'`,
+      output_ref: `raw_verdict: ${c.verdict}`,
+      details: {
+        hypothesis_used: sanitized,
+        hypothesis_source: 'canonical_sanitized_user_claim',
+        model: 'MoritzLaurer/DeBERTa-v3-base-mnli-fever-anli',
+        device: 'cpu',
+        calibration_temperature: 4.1039,
+        candidate_count: c.evidence?.length || 2,
+        inference_ms: 8.5,
+        raw_prediction: c.verdict,
+      },
+    },
+    {
+      sequence: 11,
+      stage: 'final_result',
+      status: 'completed',
+      summary: `Final adjudication complete: ${c.verdict} (Confidence: ${(c.confidence * 100).toFixed(1)}%).`,
+      duration_ms: 0.5,
+      input_ref: `raw_prediction:${c.verdict}`,
+      output_ref: c.verdict,
+      details: {
+        verdict: c.verdict,
+        confidence: c.confidence,
+        probabilities: c.probs,
+        abstained: Boolean(c.abstained),
+        abstention_reason: c.uncertainty?.abstention_reason || '',
+        has_cross_passage_disparity: Boolean(c.disparity),
+        evidence_counts: {
+          total: c.evidence?.length || 2,
+          eligible_supporting: c.evidence?.filter((e) => e.stance === 'support').length || 0,
+          eligible_refuting: c.evidence?.filter((e) => e.stance === 'refute').length || 0,
+          relevant_neutral: c.evidence?.filter((e) => e.stance === 'neutral').length || 0,
+          off_topic: 0,
+          duplicates: 0,
+        },
+      },
+    },
+  ];
+}
 
 function formatPct(num) {
   return `${(Number(num || 0) * 100).toFixed(1)}%`;
@@ -352,7 +660,8 @@ export default function App() {
       if (mode === 'demo') {
         const lower = value.toLowerCase();
         let fixture = selectedFixture;
-        if (lower.includes('moon') || lower.includes('star')) fixture = FIXTURE_CASES[1];
+        if (lower.includes('incognito') || lower.includes('incognitio') || lower.includes('mdoe') || lower.includes('traking') || lower.includes('websits')) fixture = FIXTURE_CASES[4];
+        else if (lower.includes('moon') || lower.includes('star')) fixture = FIXTURE_CASES[1];
         else if (lower.includes('bridge') || lower.includes('traffic') || lower.includes('closed')) fixture = FIXTURE_CASES[2];
         else if (lower.includes('alien') || lower.includes('spacecraft') || lower.includes('plaza')) fixture = FIXTURE_CASES[3];
         else if (lower.includes('water') || lower.includes('freeze') || lower.includes('celsius')) fixture = FIXTURE_CASES[0];
@@ -360,7 +669,21 @@ export default function App() {
         await new Promise((r) => setTimeout(r, 600));
 
         const elapsed = Math.round(performance.now() - startTime);
-        const demonstration = { ...fixture, claim: value, fixture: true };
+        const demonstration = {
+          ...fixture,
+          claim: value,
+          original_claim: fixture.original_claim || value,
+          sanitized_claim: fixture.sanitized_claim || value,
+          normalized_claim: fixture.normalized_claim || value,
+          normalization_status: fixture.normalization_status || 'accepted',
+          normalization_corrections: fixture.normalization_corrections || [],
+          normalization_warnings: fixture.normalization_warnings || [],
+          structured_claim: fixture.structured_claim || {},
+          retrieval_query_used: fixture.retrieval_query_used || fixture.normalized_claim || value,
+          nli_hypothesis_used: fixture.nli_hypothesis_used || fixture.sanitized_claim || value,
+          processing_trace: fixture.processing_trace || buildFixtureTrace(fixture),
+          fixture: true,
+        };
         setRoundTripMs(elapsed);
         setResult(demonstration);
         setHistory((old) => [
@@ -993,14 +1316,21 @@ export default function App() {
               {/* Forensic Investigation Report: Rendered IMMEDIATELY when results are ready */}
               <div ref={resultsRef}>
                 {result && !busy && (
-                  <ForensicReport
-                    result={result}
-                    roundTripMs={roundTripMs}
-                    onInvestigateRelated={(newClaim) => {
-                      setClaim(newClaim);
-                      scrollToTarget(progressRef);
-                    }}
-                  />
+                  <>
+                    {/* Cinematic Live NLP Understanding Interface (Phase 4B) */}
+                    <NLPVisualization
+                      result={result}
+                    />
+
+                    <ForensicReport
+                      result={result}
+                      roundTripMs={roundTripMs}
+                      onInvestigateRelated={(newClaim) => {
+                        setClaim(newClaim);
+                        scrollToTarget(progressRef);
+                      }}
+                    />
+                  </>
                 )}
               </div>
             </div>

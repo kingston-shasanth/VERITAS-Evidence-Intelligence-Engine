@@ -173,6 +173,7 @@ class VeritasRequestHandler(BaseHTTPRequestHandler):
         # Execute verification via thin adapter
         try:
             include_research = bool(body.get("include_research", True))
+            include_processing_trace = bool(body.get("include_processing_trace", True))
             result = self.adapter.verify(
                 claim=claim.strip(),
                 user_evidence=evidence if evidence else None,
@@ -180,6 +181,7 @@ class VeritasRequestHandler(BaseHTTPRequestHandler):
                 mode=mode,
                 include_timings=True,
                 include_research=include_research,
+                include_processing_trace=include_processing_trace,
             )
             self.send_json(200, result, origin)
         except ValueError as ve:

@@ -34,6 +34,18 @@ export function normalizeResponse(raw, claimText) {
     mode: raw.mode || 'local',
     retrieval_status: raw.retrieval_status || null,
     evidence_counts: raw.evidence_counts || null,
+    // Phase 4A Live NLP & Telemetry Fields
+    original_claim: raw.original_claim || raw.claim || claimText,
+    sanitized_claim: raw.sanitized_claim || raw.claim || claimText,
+    normalized_claim: raw.normalized_claim || raw.claim || claimText,
+    normalization_status: raw.normalization_status || 'accepted',
+    normalization_corrections: Array.isArray(raw.normalization_corrections) ? raw.normalization_corrections : [],
+    normalization_warnings: Array.isArray(raw.normalization_warnings) ? raw.normalization_warnings : [],
+    structured_claim: raw.structured_claim && typeof raw.structured_claim === 'object' ? raw.structured_claim : null,
+    retrieval_query_used: raw.retrieval_query_used || raw.claim || claimText,
+    nli_hypothesis_used: raw.nli_hypothesis_used || raw.sanitized_claim || raw.claim || claimText,
+    processing_trace: Array.isArray(raw.processing_trace) ? raw.processing_trace : [],
+    processing_trace_version: raw.processing_trace_version || 1,
     evidence: (raw.evidence || raw.retrieved_evidence || []).map((item, i) => {
       // Determine provenance strictly adhering to raw.mode and item.source_type
       let itemSourceType = 'local';
@@ -92,7 +104,13 @@ export async function verifyClaim(claim, evidence = [], mode = 'local') {
   const response = await fetch(`${API_BASE}/api/verify`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ claim, evidence, mode }),
+    body: JSON.stringify({
+      claim,
+      evidence,
+      mode,
+      include_research: true,
+      include_processing_trace: true,
+    }),
   });
   if (!response.ok) {
     const message = await response.text().catch(() => 'Unknown API error');

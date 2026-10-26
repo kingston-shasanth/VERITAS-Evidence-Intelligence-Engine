@@ -234,6 +234,48 @@ export function Icon({ name, size = 18, className = '' }) {
         <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
       </>
     ),
+    play: (
+      <polygon points="6 4 20 12 6 20 6 4" fill="currentColor" stroke="none" />
+    ),
+    pause: (
+      <>
+        <rect x="6" y="4" width="4" height="16" rx="1" fill="currentColor" stroke="none" />
+        <rect x="14" y="4" width="4" height="16" rx="1" fill="currentColor" stroke="none" />
+      </>
+    ),
+    chevronLeft: (
+      <polyline points="15 18 9 12 15 6" />
+    ),
+    rotate: (
+      <>
+        <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.8 1.03 6.44 2.7L21 8" />
+        <polyline points="21 3 21 8 16 8" />
+      </>
+    ),
+    fastForward: (
+      <>
+        <polygon points="13 19 22 12 13 5 13 19" fill="currentColor" stroke="none" />
+        <polygon points="2 19 11 12 2 5 2 19" fill="currentColor" stroke="none" />
+      </>
+    ),
+    sparkles: (
+      <>
+        <path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3L12 3Z" />
+      </>
+    ),
+    checkCircle: (
+      <>
+        <circle cx="12" cy="12" r="10" />
+        <polyline points="9 12 11 14 15 10" />
+      </>
+    ),
+    xCircle: (
+      <>
+        <circle cx="12" cy="12" r="10" />
+        <line x1="15" y1="9" x2="9" y2="15" />
+        <line x1="9" y1="9" x2="15" y2="15" />
+      </>
+    ),
   };
 
   return (
