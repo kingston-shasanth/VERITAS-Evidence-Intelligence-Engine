@@ -289,7 +289,24 @@ SUBORDINATING_CONJUNCTIONS: Set[str] = {
 COMMON_PREPOSITIONS: Set[str] = {
     "in", "on", "at", "by", "for", "with", "about", "against", "between",
     "into", "through", "during", "before", "after", "above", "below", "to",
-    "from", "up", "down", "over", "under", "within", "without", "towards", "upon"
+    "from", "up", "down", "over", "under", "within", "without", "towards", "upon",
+    "of", "off", "across", "along", "behind", "beyond", "near", "despite",
+    "including", "throughout", "among"
+}
+
+# Common base (lemma) verbs frequent in factual assertions
+COMMON_BASE_VERBS: Set[str] = {
+    "use", "have", "make", "take", "need", "cause", "produce", "contain", "hold",
+    "form", "show", "give", "know", "find", "see", "think", "come", "go", "get",
+    "say", "help", "work", "live", "call", "play", "run", "move", "lead", "stop",
+    "allow", "create", "provide", "include", "eat", "drink", "sleep", "breathe",
+    "kill", "die", "reach", "remain", "exist", "grow", "fall", "appear", "seem",
+    "feel", "become", "leave", "put", "bring", "begin", "keep", "write", "stand",
+    "hear", "let", "mean", "set", "meet", "sit", "speak", "lie", "read", "send",
+    "build", "understand", "spend", "cut", "rise", "drive", "buy", "wear", "choose",
+    "occur", "lack", "possess", "absorb", "emit", "resemble", "control", "require",
+    "develop", "affect", "involve", "support", "serve", "carry", "store", "generate",
+    "experience", "operate", "maintain", "display", "reflect", "survive", "function"
 }
 
 # Quantifier tokens
@@ -678,6 +695,26 @@ class LinguisticAnalyzer:
                 t.confidence = 0.98
                 continue
 
+            # J2. Common Base Verbs (e.g. "Humans use only 10%...", "Plants need sunlight...")
+            if low in COMMON_BASE_VERBS:
+                is_in_noun_phrase = bool(prev_t and prev_t.pos in ("DT", "PRP$", "JJ", "JJR", "JJS"))
+                if not is_in_noun_phrase:
+                    is_subj_context = bool(prev_t and prev_t.pos in ("PRP", "NNS", "NN", "NNP", "CC", "RB"))
+                    is_clause_initial = (i == 0 or (prev_t and prev_t.pos in (".", ",", ";", "CC")))
+                    has_following_complement = bool(
+                        next_t and (
+                            next_t.pos in ("DT", "JJ", "NN", "NNS", "CD", "RB", "IN", "PRP$") or
+                            next_t.upos in ("NOUN", "PROPN", "NUM", "DET", "ADV", "ADP")
+                        )
+                    )
+                    if is_subj_context or is_clause_initial or has_following_complement:
+                        t.pos = "VBP"
+                        t.upos = "VERB"
+                        t.lemma = low
+                        t.morphology = Morphology(tense="Pres", number="Plur")
+                        t.confidence = 0.90
+                        continue
+
             # K. Proper Nouns (Capitalized tokens inside sentence)
             is_sentence_initial = (i == 0 or (prev_t and prev_t.pos == "."))
             if raw[0].isupper() and len(raw) >= 2 and not is_sentence_initial:
@@ -694,6 +731,24 @@ class LinguisticAnalyzer:
                 t.upos = "PROPN"
                 t.lemma = raw
                 t.morphology = Morphology(number="Sing")
+                t.confidence = 0.92
+                continue
+
+            # L0. Common Degree / Qualifying Adverbs
+            if low in ("very", "too", "quite", "extremely", "really", "just", "almost", "nearly", "well", "pretty", "already", "still", "even", "also"):
+                t.pos = "RB"
+                t.upos = "ADV"
+                t.lemma = low
+                t.confidence = 0.95
+                continue
+
+            # L1. Contextual Adjective (preceded by degree adverb e.g. "very fast cars", "too cold")
+            if prev_t and prev_t.pos == "RB" and next_t and (
+                next_t.pos in ("NN", "NNS", "NNP") or next_t.upos in ("NOUN", "PROPN") or (next_t.text and next_t.text.endswith("s"))
+            ):
+                t.pos = "JJ"
+                t.upos = "ADJ"
+                t.lemma = low
                 t.confidence = 0.92
                 continue
 

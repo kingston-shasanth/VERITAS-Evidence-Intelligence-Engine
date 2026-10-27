@@ -3,9 +3,18 @@ Phase 1: Core Verification Integrity & NLP Regression Test Suite.
 Validates all data-flow, spelling normalization, linguistics, verdict-evidence consistency,
 and multi-hop reasoning requirements defined in Phase 1.
 """
+import os
+import sys
 import unittest
 from unittest.mock import MagicMock
 import numpy as np
+
+# Ensure repo root and src/ are on sys.path
+_REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+_SRC_DIR = os.path.join(_REPO_ROOT, "src")
+for p in (_REPO_ROOT, _SRC_DIR):
+    if p not in sys.path:
+        sys.path.insert(0, p)
 
 from veritas.data.schema import CanonicalVeracity
 from veritas.verification.engine import VerificationEngine, ForensicVerdict

@@ -479,17 +479,26 @@ class CrossEncoderNLI:
             s_stripped = orig_text.strip()
             is_pure_question = s_stripped.endswith("?") or (s_stripped.count("?") > 0 and s_stripped.count(".") == 0)
             has_myth_prefix = bool(re.match(r'^(myth|claim|rumor|question|allegation)\s*:', s_stripped, re.IGNORECASE))
+            has_myth_framing = bool(re.search(r'\b(medical\s+myth|popular\s+myth|common\s+myth|common\s+misconception|urban\s+legend|false\s+belief|cling\s+to\s+the\s+(?:idea|belief|notion)|popular\s+misconception)\b', s_stripped, re.IGNORECASE))
 
             if is_pure_question:
                 e = min(e, 0.15)
                 n = max(n, 0.80)
-            elif has_myth_prefix:
-                if re.search(r'\b(false|myth|untrue|debunk|incorrect|wrong|fiction|disproven)\b', s_stripped, re.IGNORECASE):
-                    c = max(c, e)
-                    e = min(e, 0.10)
+            elif has_myth_prefix or has_myth_framing:
+                if re.search(r'\b(false|myth|untrue|debunk|incorrect|wrong|fiction|disproven|no\s+evidence|not\s+true|no\s+truth|doesn\'t\s+mean)\b', s_stripped, re.IGNORECASE):
+                    c = max(c, 0.85)
+                    e = min(e, 0.05)
+                    n = max(0.0, 1.0 - (c + e))
+                else:
+                    e = min(e, 0.15)
             elif _is_generalized_scope_mismatch(hypothesis, s_stripped) and c < 0.40:
                 e = min(e, 0.15)
                 n = max(n, 0.80)
+
+            # Re-normalize snippet probabilities onto valid simplex
+            s_total = e + c + n
+            if s_total > 0:
+                e, c, n = e / s_total, c / s_total, n / s_total
 
             adjusted_snippets.append({
                 "text": orig_text,
@@ -516,13 +525,20 @@ class CrossEncoderNLI:
         max_c = max((sp["contradiction"] for sp in contradiction_candidates), default=0.0)
         max_e = max((sp["entailment"] for sp in entailment_candidates), default=0.0)
 
+        # If whole passage is already a decisive contradiction, preserve it
+        if base_result.get("predicted_label") == "CONTRADICTION" and base_result.get("contradiction", 0.0) >= 0.75:
+            return base_result
+
         # Case 1: Constituent snippet exhibits decisive contradiction (>= 0.70) with genuine refutation
         if contradiction_candidates:
+            best_cand = max(contradiction_candidates, key=lambda sp: sp["contradiction"])
             if max_c >= max_e or max_e < 0.70:
-                max_c_val = max_c
-                c_val = float(max_c_val)
-                e_val = float(min(sp["entailment"] for sp in adjusted_snippets))
-                n_val = float(max(0.0, 1.0 - (c_val + e_val)))
+                c_val = float(best_cand["contradiction"])
+                e_val = float(best_cand["entailment"])
+                n_val = float(best_cand["neutral"])
+                total = c_val + e_val + n_val
+                if total > 0:
+                    c_val, e_val, n_val = c_val / total, e_val / total, n_val / total
                 return {
                     "contradiction": c_val,
                     "entailment": e_val,
@@ -531,17 +547,20 @@ class CrossEncoderNLI:
                     "predicted_label": "CONTRADICTION",
                 }
             else:
-                # Both strong contradiction and strong entailment exist in the same passage:
-                # Mixed/internal conflicting context -> cap entailment so it cannot become an active supporter
-                c_val = float(max_c)
-                e_val = float(min(max_e, 0.35))
+                # Both strong contradiction and strong entailment exist in different snippets:
+                # Internal tension in passage -> cap entailment so it cannot become an active supporter
+                c_val = float(best_cand["contradiction"])
+                e_val = float(min(max_e, 0.20))
                 n_val = float(max(0.0, 1.0 - (c_val + e_val)))
+                total = c_val + e_val + n_val
+                if total > 0:
+                    c_val, e_val, n_val = c_val / total, e_val / total, n_val / total
                 return {
                     "contradiction": c_val,
                     "entailment": e_val,
                     "neutral": n_val,
                     "logits": base_result.get("logits", [0.0, 0.0, 0.0]),
-                    "predicted_label": "CONTRADICTION" if c_val > e_val else "NEUTRAL",
+                    "predicted_label": "CONTRADICTION" if c_val > 0.5 else "NEUTRAL",
                 }
 
         # Case 2: Constituent snippet exhibits decisive entailment (>= 0.70) without a decisive refutation
@@ -555,9 +574,13 @@ class CrossEncoderNLI:
                 base_result.get("contradiction", 0.0) > base_result.get("entailment", 0.0)
                 and base_result.get("contradiction", 0.0) < 0.75
             ):
-                e_val = float(max_e)
-                c_val = float(min(sp["contradiction"] for sp in adjusted_snippets))
-                n_val = float(max(0.0, 1.0 - (e_val + c_val)))
+                best_cand = max(entailment_candidates, key=lambda sp: sp["entailment"])
+                c_val = float(best_cand["contradiction"])
+                e_val = float(best_cand["entailment"])
+                n_val = float(best_cand["neutral"])
+                total = c_val + e_val + n_val
+                if total > 0:
+                    c_val, e_val, n_val = c_val / total, e_val / total, n_val / total
                 return {
                     "contradiction": c_val,
                     "entailment": e_val,

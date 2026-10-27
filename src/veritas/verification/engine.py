@@ -66,7 +66,7 @@ _BRIDGE_STOP_WORDS = {
 }
 
 _AUX_OR_MODAL_REGEX = re.compile(
-    r"\b(is|was|are|were|been|being|has|have|had|will|would|shall|should|can|could|may|might|must|did|does|do|cannot)\b",
+    r"\b(is|was|are|were|been|being|has|have|had|will|would|shall|should|can|could|may|might|must|did|does|do|cannot|can't|won't|wouldn't|shouldn't|couldn't|isn't|aren't|wasn't|weren't|hasn't|haven't|hadn't|doesn't|don't|didn't)\b",
     re.IGNORECASE
 )
 
