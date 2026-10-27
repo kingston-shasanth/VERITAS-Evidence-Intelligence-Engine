@@ -48,6 +48,7 @@ export function CommandCenterHero({
         {/* Main Mission Briefing Column */}
         <div className="command-hero-briefing">
           <div className="hero-kicker-row">
+            <img src="/veritas-x-logo.png" alt="VERITAS-X" style={{ width: '22px', height: '22px', borderRadius: '5px', objectFit: 'cover', verticalAlign: 'middle' }} />
             <span className="hero-kicker-tag">Automated Fact Verification</span>
             <span className="hero-version-pill">Veritas-X 2.0</span>
           </div>
