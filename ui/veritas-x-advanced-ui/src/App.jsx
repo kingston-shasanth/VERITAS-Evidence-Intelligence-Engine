@@ -507,6 +507,22 @@ export default function App() {
   const progressRef = useRef(null);
   const resultsRef = useRef(null);
   const errorRef = useRef(null);
+  const abortControllerRef = useRef(null);
+  const requestIdRef = useRef(0);
+
+  function handleNewInvestigation() {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
+    requestIdRef.current += 1;
+    setClaim('');
+    setEvidenceText('');
+    setResult(null);
+    setError('');
+    setBusy(false);
+    navigate('investigate');
+  }
 
   function scrollToTarget(ref) {
     if (!ref || !ref.current) return;
@@ -643,7 +659,15 @@ export default function App() {
       return;
     }
 
-    if (busy) return;
+    // Abort previous in-flight request if any
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
+
+    const currentRequestId = ++requestIdRef.current;
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
 
     setError('');
     setBusy(true);
@@ -667,6 +691,11 @@ export default function App() {
         else if (lower.includes('water') || lower.includes('freeze') || lower.includes('celsius')) fixture = FIXTURE_CASES[0];
 
         await new Promise((r) => setTimeout(r, 600));
+
+        // Check if this request was superseded while waiting
+        if (currentRequestId !== requestIdRef.current || controller.signal.aborted) {
+          return;
+        }
 
         const elapsed = Math.round(performance.now() - startTime);
         const demonstration = {
@@ -697,9 +726,14 @@ export default function App() {
       } else {
         const providedEvidence = currentEvidence.split('\n').map((s) => s.trim()).filter(Boolean);
         const tFetchStart = performance.now();
-        const raw = await verifyClaim(value, providedEvidence, evidenceMode);
+        const raw = await verifyClaim(value, providedEvidence, evidenceMode, controller.signal);
         const tFetchEnd = performance.now();
         const clientApiWait = Math.round(tFetchEnd - tFetchStart);
+
+        // Check if this request was superseded while fetching
+        if (currentRequestId !== requestIdRef.current || controller.signal.aborted) {
+          return;
+        }
 
         const normalized = normalizeResponse(raw, value);
         if (!normalized.verdict) {
@@ -729,13 +763,19 @@ export default function App() {
         }, 120);
       }
     } catch (e) {
+      if (e.name === 'AbortError' || controller.signal.aborted) {
+        // Superseded by newer request, silently exit
+        return;
+      }
       setResult(null); // CRITICAL: Ensure previous verdict is never left displayed on error
       setError(`${e.message}. Live engine connection failed. Please ensure the backend server is running on http://127.0.0.1:8011.`);
       setTimeout(() => {
         scrollToTarget(errorRef);
       }, 80);
     } finally {
-      setBusy(false);
+      if (currentRequestId === requestIdRef.current) {
+        setBusy(false);
+      }
     }
   }
 
@@ -759,7 +799,7 @@ export default function App() {
           <button
             className="primary-action-btn"
             style={{ width: '100%', justifyContent: 'center', gap: '0.5rem', padding: '0.65rem 1rem' }}
-            onClick={() => { setClaim(''); setResult(null); setError(''); navigate('investigate'); }}
+            onClick={handleNewInvestigation}
             id="sidebar-new-claim-btn"
           >
             <Icon name="plus" size={15} />

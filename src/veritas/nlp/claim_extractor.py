@@ -349,8 +349,12 @@ class ClaimExtractor:
                 neg_tokens.append(t.text)
 
         if not neg_tokens:
-            # Check raw regex fallback (e.g. w/o)
-            m = re.findall(r"\b(w/o|no|none)\b", raw_text, re.IGNORECASE)
+            # Check raw regex fallback (e.g. w/o, unpunctuated contractions, typos)
+            m = re.findall(
+                r"\b(w/o|no|none|dont|doesnt|dosent|didnt|cant|wont|isnt|arent|wasnt|werent|hasnt|havent|hadnt|wouldnt|shouldnt|couldnt|noot)\b|n't\b",
+                raw_text,
+                re.IGNORECASE,
+            )
             if m:
                 neg_tokens.extend(m)
 
@@ -363,7 +367,14 @@ class ClaimExtractor:
             scope = "existential"  # "not all" = some are not
         elif re.search(r"\b(?:no|none|neither)\b", low):
             scope = "universal"    # "no X does Y" = for all X, not Y
-        elif any(t in ("not", "n't", "never", "cannot") for t in neg_tokens):
+        elif any(
+            t.lower() in (
+                "not", "n't", "never", "cannot", "dont", "doesnt", "dosent", "didnt",
+                "cant", "wont", "isnt", "arent", "wasnt", "werent", "hasnt", "havent",
+                "hadnt", "wouldnt", "shouldnt", "couldnt", "noot"
+            )
+            for t in neg_tokens
+        ):
             scope = "predicate"    # "does not prevent" = negates the predicate
         else:
             scope = "entire_proposition"

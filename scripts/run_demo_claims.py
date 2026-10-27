@@ -48,9 +48,11 @@ DEMO_CASES = [
 
 
 def run_demo():
+    port = os.getenv("VERITAS_API_PORT", "8011")
+    target_url = f"http://127.0.0.1:{port}/api/verify"
     print("=" * 80)
     print("LIVE END-TO-END VERIFICATION RUN ACROSS 5 DEMONSTRATION CASES")
-    print("Server Target: http://127.0.0.1:8000/api/verify")
+    print(f"Server Target: {target_url}")
     print("=" * 80)
 
     results = []
@@ -59,7 +61,7 @@ def run_demo():
         print("Claim:", case["claim"])
         payload = json.dumps({"claim": case["claim"], "evidence": case["evidence"]}).encode("utf-8")
         req = urllib.request.Request(
-            "http://127.0.0.1:8000/api/verify",
+            target_url,
             data=payload,
             headers={"Content-Type": "application/json", "Origin": "http://127.0.0.1:5173"},
             method="POST"

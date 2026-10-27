@@ -451,6 +451,7 @@ class VeritasAPIAdapter:
 
         # NLI Hypothesis: Canonical hypothesis STRICTLY preserves original sanitized text
         nli_hypothesis = sanitized_claim
+        nli_hypothesis_variant = "sanitized_canonical"
 
         # Stage 5: tokenization
         collector.start_stage(ProcessingStage.TOKENIZATION)

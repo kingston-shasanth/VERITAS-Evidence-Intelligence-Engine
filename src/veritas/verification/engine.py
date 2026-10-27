@@ -55,6 +55,16 @@ _TOPICAL_STOP_WORDS = {
     'whom', 'why', 'will', 'with', 'would', 'better', 'worse', 'good', 'bad', 'best', 'worst',
 }
 
+_BRIDGE_STOP_WORDS = {
+    'the', 'a', 'an', 'is', 'was', 'were', 'are', 'been', 'be', 'being',
+    'in', 'on', 'at', 'of', 'to', 'for', 'and', 'or', 'as', 'by', 'with',
+    'that', 'this', 'these', 'those', 'from', 'it', 'its', 'they', 'them',
+    'their', 'who', 'whom', 'whose', 'which', 'part', 'also', 'has', 'had',
+    'have', 'having', 'said', 'stated', 'reported', 'one', 'two', 'first',
+    'second', 'new', 'time', 'year', 'years', 'day', 'days', 'after', 'before',
+    'over', 'under', 'between', 'both', 'all', 'some', 'any', 'not', 'no'
+}
+
 _AUX_OR_MODAL_REGEX = re.compile(
     r"\b(is|was|are|were|been|being|has|have|had|will|would|shall|should|can|could|may|might|must|did|does|do|cannot)\b",
     re.IGNORECASE
@@ -1027,6 +1037,64 @@ class VerificationEngine:
         return True
 
     @staticmethod
+    def detect_valid_bridge(
+        claim_text: str,
+        p1: Dict[str, Any],
+        p2: Dict[str, Any],
+    ) -> Tuple[bool, Set[str]]:
+        """
+        Evaluates candidate bridge relationships between two passages.
+        Permits joint reasoning only when the passages establish a defensible chain of entities and relations.
+        Requirements:
+        1. Both passages are informative and non-figurative.
+        2. One passage covers the subject/entity (or subject component), and the other covers the predicate/relation/property.
+        3. The passages share at least one substantive, non-stopword entity/role/noun bridge token (length > 2)
+           that establishes an identity or relational link between them.
+        4. Rejects invalid bridges (e.g. swapped entities like Hemingway for Orwell, or unrelated passages).
+        """
+        if not claim_text:
+            return False, set()
+        t1 = (p1.get("text") or "").strip()
+        t2 = (p2.get("text") or "").strip()
+        if not t1 or not t2:
+            return False, set()
+        if p1.get("is_figurative", False) or p2.get("is_figurative", False):
+            return False, set()
+        if not p1.get("is_informative", True) or not p2.get("is_informative", True):
+            return False, set()
+
+        p1_subj = bool(p1.get("is_relevant", False) or "Subject / Entity" in p1.get("claim_components_covered", []))
+        p2_subj = bool(p2.get("is_relevant", False) or "Subject / Entity" in p2.get("claim_components_covered", []))
+        p1_pred = bool(p1.get("is_claim_aligned", False) or any(
+            c in p1.get("claim_components_covered", [])
+            for c in ("Action / Status", "Attribute / Property", "Temporal / Date", "Venue / Location", "Condition / Qualifier")
+        ))
+        p2_pred = bool(p2.get("is_claim_aligned", False) or any(
+            c in p2.get("claim_components_covered", [])
+            for c in ("Action / Status", "Attribute / Property", "Temporal / Date", "Venue / Location", "Condition / Qualifier")
+        ))
+
+        has_complementary = (p1_subj and p2_pred) or (p2_subj and p1_pred)
+        if not has_complementary:
+            return False, set()
+
+        tokens1 = {w.lower() for w in MultilingualTokenizer.tokenize(t1)}
+        tokens2 = {w.lower() for w in MultilingualTokenizer.tokenize(t2)}
+
+        shared = {
+            w for w in (tokens1 & tokens2)
+            if len(w) > 2
+            and w not in _BRIDGE_STOP_WORDS
+            and w not in _TOPICAL_STOP_WORDS
+            and w not in _COMMON_ENGLISH_WORDS_2LETTER
+            and not w.isdigit()
+        }
+        if not shared:
+            return False, set()
+
+        return True, shared
+
+    @staticmethod
     def check_evidence_grounding(
         evidence_breakdown: List[Dict[str, Any]],
         joint_nli_prediction: Optional[Dict[str, Any]] = None,
@@ -1070,7 +1138,12 @@ class VerificationEngine:
             for item in evidence_breakdown
             if not item.get("is_joint", False)
         )
-        has_joint_grounding = has_any_eligible or (has_subject_coverage and has_predicate_coverage)
+        has_valid_bridge = any(
+            item.get("has_valid_bridge", False)
+            for item in evidence_breakdown
+            if not item.get("is_joint", False)
+        )
+        has_joint_grounding = has_any_eligible or (has_subject_coverage and has_predicate_coverage) or has_valid_bridge
 
         if has_joint_grounding and joint_nli_prediction is not None:
             j_e = float(joint_nli_prediction.get("entailment", 0.0))
@@ -1279,6 +1352,16 @@ class VerificationEngine:
                     and p["is_claim_aligned"]
                     and not p.get("is_figurative", False)
                 )
+
+        # Pairwise evaluation for defensible multi-hop bridge relationships
+        for i in range(len(candidate_passages)):
+            for j in range(i + 1, len(candidate_passages)):
+                is_br, br_tokens = self.detect_valid_bridge(claim_text, candidate_passages[i], candidate_passages[j])
+                if is_br:
+                    candidate_passages[i]["has_valid_bridge"] = True
+                    candidate_passages[j]["has_valid_bridge"] = True
+                    candidate_passages[i].setdefault("bridge_tokens", []).extend(list(br_tokens))
+                    candidate_passages[j].setdefault("bridge_tokens", []).extend(list(br_tokens))
 
         return candidate_passages
 
@@ -1564,9 +1647,15 @@ class VerificationEngine:
                 and not item.get("is_joint", False)
                 for item in agg_verdict.evidence_breakdown
             )
+            has_valid_bridge = any(
+                p.get("has_valid_bridge", False) for p in candidate_passages
+            )
             has_complementary_coverage = (
-                len([p for p in candidate_passages if p.get("is_decision_eligible", False)]) >= 2
-                and any(p.get("claim_coverage") == "partial" for p in candidate_passages if p.get("is_decision_eligible", False))
+                (
+                    len([p for p in candidate_passages if p.get("is_decision_eligible", False)]) >= 2
+                    and any(p.get("claim_coverage") == "partial" for p in candidate_passages if p.get("is_decision_eligible", False))
+                )
+                or has_valid_bridge
             )
             has_joint_support = (
                 joint_pred is not None
@@ -1703,6 +1792,38 @@ class VerificationEngine:
 
         conf_pct = final_conf * 100.0
 
+        # Section 5: Final Verdict–Evidence Consistency Validator
+        has_valid_bridge = any(p.get("has_valid_bridge", False) for p in candidate_passages)
+        has_decisive_joint = (
+            has_valid_bridge
+            and joint_pred is not None
+            and float(joint_pred.get("entailment", 0.0)) >= 0.50
+            and float(joint_pred.get("entailment", 0.0)) > float(joint_pred.get("contradiction", 0.0))
+        )
+        has_constituent_refutation = bool([e for e in policy_resolution.get("subclaim_evals", []) if e.get("status") == "refuted"])
+
+        if final_verdict == CanonicalVeracity.VERIFIED_TRUE:
+            if sup_count == 0 and not has_decisive_joint:
+                final_verdict = CanonicalVeracity.INSUFFICIENT_EVIDENCE
+                was_abstained = True
+                final_abstain_reason = "Consistency violation: VERIFIED_TRUE requires eligible supporting documentary evidence or a verified interlocking bridge."
+        elif final_verdict == CanonicalVeracity.VERIFIED_FALSE:
+            if ref_count == 0 and not has_constituent_refutation:
+                final_verdict = CanonicalVeracity.INSUFFICIENT_EVIDENCE
+                was_abstained = True
+                final_abstain_reason = "Consistency violation: VERIFIED_FALSE requires eligible refuting documentary evidence or refuted constituent proposition."
+        elif final_verdict == CanonicalVeracity.CONFLICTING_OR_CHERRYPICKED:
+            if sup_count == 0 or ref_count == 0:
+                has_subclaim_conflict = bool([e for e in policy_resolution.get("subclaim_evals", []) if e.get("status") == "conflicting"])
+                has_any_opposing = (
+                    any(p.get("stance") == "support" for p in candidate_passages)
+                    and any(p.get("stance") == "refute" for p in candidate_passages)
+                )
+                if not has_subclaim_conflict and not has_any_opposing:
+                    final_verdict = CanonicalVeracity.INSUFFICIENT_EVIDENCE
+                    was_abstained = True
+                    final_abstain_reason = "Consistency violation: CONFLICTING requires documented opposing stances across eligible evidence."
+
         # Construct canonical reasoning
         if final_verdict == CanonicalVeracity.CONFLICTING_OR_CHERRYPICKED:
             if sup_count > 0 and ref_count > 0:
@@ -1717,7 +1838,13 @@ class VerificationEngine:
             else:
                 canonical_reason = final_abstain_reason or f"Insufficient informative evidence mass retrieved to adjudicate this claim ({neut_count} of {total_ev} passage(s) neutral or uninformative)."
         elif final_verdict == CanonicalVeracity.VERIFIED_TRUE:
-            canonical_reason = f"Evidence supports the claim with {sup_count} supporting passage(s) (calibrated confidence {conf_pct:.1f}%)."
+            if sup_count > 0:
+                canonical_reason = f"Evidence supports the claim with {sup_count} supporting passage(s) (calibrated confidence {conf_pct:.1f}%)."
+            elif has_decisive_joint:
+                bridge_count = len([p for p in candidate_passages if p.get("has_valid_bridge")])
+                canonical_reason = f"Evidence jointly supports the claim via {bridge_count} interlocking bridge passages (calibrated confidence {conf_pct:.1f}%)."
+            else:
+                canonical_reason = f"Evidence supports the claim (calibrated confidence {conf_pct:.1f}%)."
         elif final_verdict == CanonicalVeracity.VERIFIED_FALSE:
             if ref_count > 0:
                 canonical_reason = f"Evidence refutes the claim with {ref_count} refuting passage(s) (calibrated confidence {conf_pct:.1f}%)."

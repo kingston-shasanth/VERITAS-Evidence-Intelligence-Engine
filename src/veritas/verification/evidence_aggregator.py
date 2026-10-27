@@ -269,8 +269,9 @@ class EvidenceAggregator:
             and len(subj_coverage_indices | pred_coverage_indices) >= 2
             and (subj_coverage_indices - pred_coverage_indices or pred_coverage_indices - subj_coverage_indices)
         )
+        has_valid_bridge_any = any(candidate_passages[i].get("has_valid_bridge", False) for i in filtered_indices)
         can_use_joint = bool(joint_nli_prediction) and (
-            len(eligible_non_joint_indices) >= 2 or distinct_multihop
+            len(eligible_non_joint_indices) >= 2 or distinct_multihop or has_valid_bridge_any
         )
 
         rank = 1
@@ -336,6 +337,8 @@ class EvidenceAggregator:
                 "is_informative": is_inf,
                 "is_claim_aligned": is_aligned,
                 "is_decision_eligible": is_eligible,
+                "has_valid_bridge": bool(cand.get("has_valid_bridge", False)),
+                "bridge_tokens": cand.get("bridge_tokens", []),
                 "is_duplicate": False,
                 "is_figurative": bool(cand.get("is_figurative", False)),
                 "claim_coverage": cand.get("claim_coverage", "full"),

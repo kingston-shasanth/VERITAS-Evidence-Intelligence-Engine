@@ -282,7 +282,7 @@ COORDINATING_CONJUNCTIONS: Set[str] = {"and", "but", "or", "nor", "for", "yet", 
 SUBORDINATING_CONJUNCTIONS: Set[str] = {
     "because", "although", "though", "even", "while", "whereas", "since",
     "unless", "if", "whether", "after", "before", "until", "when", "whenever",
-    "where", "wherever", "as"
+    "where", "wherever", "as", "that"
 }
 
 # Prepositions (IN)
@@ -570,6 +570,16 @@ class LinguisticAnalyzer:
 
             # C. Determiners
             if low in DETERMINERS:
+                if low == "that":
+                    # Disambiguate complementizer vs determiner:
+                    # If preceded by a verb or verbal noun (e.g. confirmed that, said that, found that) -> SCONJ
+                    prev_is_verb = (i > 0 and (tokens[i - 1].upos in ("VERB", "AUX", "ADJ") or tokens[i - 1].pos in ("VBD", "VBZ", "VBN", "VBP", "VB", "JJ")))
+                    if prev_is_verb:
+                        t.pos = "IN"
+                        t.upos = "SCONJ"
+                        t.lemma = "that"
+                        t.confidence = 0.95
+                        continue
                 t.pos = "DT"
                 t.upos = "DET"
                 t.lemma = low
@@ -829,20 +839,22 @@ class LinguisticAnalyzer:
                 (t.pos == "CC" and i > 2 and tokens[i - 1].pos in (",", ";")) or
                 (t.pos == "." and t.text == ";")
             )
-            # Check for subordinating conjunction: e.g. "because", "although", "while", "since"
-            is_subord = (t.pos == "IN" and low in SUBORDINATING_CONJUNCTIONS)
+            # Check for subordinating conjunction: e.g. "because", "although", "while", "since", "that"
+            is_subord = (t.upos == "SCONJ" or (t.pos == "IN" and low in SUBORDINATING_CONJUNCTIONS))
             # Check for conditional: e.g. "if", "unless"
             is_cond = (low in ("if", "unless") and t.pos in ("IN", "SCONJ"))
 
             if (is_coord or is_subord or is_cond) and len(cur_clause_tokens) >= 2:
                 # Close current clause
                 c_text = " ".join(tk.text for tk in cur_clause_tokens)
+                c_neg = any(tk.dep_rel == "neg" or tk.normalized_text in ("not", "never", "n't", "no", "cannot", "without") for tk in cur_clause_tokens)
                 clauses.append(Clause(
                     clause_id=f"{sent_id}_C{clause_counter}",
                     clause_type=cur_clause_type,
                     text=c_text,
                     tokens=list(cur_clause_tokens),
                     connective=cur_connective,
+                    is_negated=c_neg,
                 ))
                 clause_counter += 1
                 cur_clause_tokens = []
@@ -861,12 +873,14 @@ class LinguisticAnalyzer:
 
         if cur_clause_tokens:
             c_text = " ".join(tk.text for tk in cur_clause_tokens)
+            c_neg = any(tk.dep_rel == "neg" or tk.normalized_text in ("not", "never", "n't", "no", "cannot", "without") for tk in cur_clause_tokens)
             clauses.append(Clause(
                 clause_id=f"{sent_id}_C{clause_counter}",
                 clause_type=cur_clause_type,
                 text=c_text,
                 tokens=list(cur_clause_tokens),
                 connective=cur_connective,
+                is_negated=c_neg,
             ))
 
         return clauses
@@ -968,17 +982,19 @@ class LinguisticAnalyzer:
                     t.dep_rel = "neg"
                 else:
                     t.dep_rel = "advmod"
-                t.head_index = root_idx
+                next_verb = next((j for j in range(i + 1, len(tokens)) if tokens[j].pos in ("VB", "VBZ", "VBD", "VBP", "VBN")), -1)
+                t.head_index = next_verb if next_verb != -1 and i > root_idx else root_idx
                 continue
 
             # Auxiliary verbs
             if t.upos == "AUX" or t.pos == "MD" or (t.lemma in ("do", "be", "have") and i != root_idx):
                 t.dep_rel = "aux"
-                t.head_index = root_idx
+                next_verb = next((j for j in range(i + 1, len(tokens)) if tokens[j].pos in ("VB", "VBZ", "VBD", "VBP", "VBN")), -1)
+                t.head_index = next_verb if next_verb != -1 and i > root_idx else root_idx
                 continue
 
-            # Subject Assignment (nominal before root, skipping sentence-initial question auxiliaries)
-            if root_idx != -1 and i < root_idx and t.upos in ("NOUN", "PROPN", "PRON"):
+            # Subject Assignment (nominal or gerund before root, skipping sentence-initial question auxiliaries)
+            if root_idx != -1 and i < root_idx and (t.upos in ("NOUN", "PROPN", "PRON") or t.pos == "VBG" or (t.upos == "VERB" and t.text.lower().endswith("ing"))):
                 if is_passive:
                     t.dep_rel = "nsubjpass"
                 else:
@@ -1052,19 +1068,29 @@ class LinguisticAnalyzer:
             subject_span = " ".join(t.text for t in tokens[min_i:max_i + 1])
 
         # Predicate span: collect all auxiliary verbs, negations, and the root verb
-        root_tokens = [t for t in tokens if t.dep_rel in ("root", "aux", "auxpass", "neg")]
+        # Only collect auxiliaries and negations that attach directly to the root verb
+        root_idx = next((i for i, t in enumerate(tokens) if t.dep_rel == "root"), -1)
+        root_tokens = [
+            t for i, t in enumerate(tokens)
+            if i == root_idx or (t.dep_rel in ("aux", "auxpass", "neg") and t.head_index == root_idx)
+        ]
         if root_tokens:
             predicate_span = " ".join(t.text for t in root_tokens)
 
-        # Object span: direct object or oblique prepositional object
-        obj_indices = [i for i, t in enumerate(tokens) if t.dep_rel in ("dobj", "obl")]
-        if obj_indices:
-            min_i = obj_indices[0]
-            max_i = obj_indices[0]
-            while min_i > 0 and tokens[min_i - 1].dep_rel in ("det", "amod", "compound"):
-                min_i -= 1
-            while max_i + 1 < len(tokens) and tokens[max_i + 1].dep_rel in ("compound", "dobj", "obl") and tokens[max_i + 1].upos in ("NOUN", "PROPN"):
-                max_i += 1
-            object_span = " ".join(t.text for t in tokens[min_i:max_i + 1])
+        # Object span: direct object or oblique prepositional object, or clausal complement
+        sconj_indices = [i for i, t in enumerate(tokens) if i > root_idx and t.upos == "SCONJ"]
+        if sconj_indices:
+            ccomp_start = sconj_indices[0]
+            object_span = " ".join(t.text for t in tokens[ccomp_start:])
+        else:
+            obj_indices = [i for i, t in enumerate(tokens) if t.dep_rel in ("dobj", "obl")]
+            if obj_indices:
+                min_i = obj_indices[0]
+                max_i = obj_indices[0]
+                while min_i > 0 and tokens[min_i - 1].dep_rel in ("det", "amod", "compound"):
+                    min_i -= 1
+                while max_i + 1 < len(tokens) and tokens[max_i + 1].dep_rel in ("compound", "dobj", "obl") and tokens[max_i + 1].upos in ("NOUN", "PROPN"):
+                    max_i += 1
+                object_span = " ".join(t.text for t in tokens[min_i:max_i + 1])
 
         return sent_type, is_question, is_incomplete, subject_span, predicate_span, object_span, is_passive

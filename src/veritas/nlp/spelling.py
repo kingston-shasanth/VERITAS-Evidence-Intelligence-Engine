@@ -88,7 +88,7 @@ CONTRACTIONS_MAP: Dict[str, str] = {
     "hasn't": "has not", "haven't": "have not", "hadn't": "had not",
     "wouldn't": "would not", "shouldn't": "should not", "couldn't": "could not",
     # Unpunctuated common typos for negated auxiliaries
-    "dont": "do not", "doesnt": "does not", "didnt": "did not",
+    "dont": "do not", "doesnt": "does not", "dosent": "does not", "didnt": "did not",
     "cant": "cannot", "wont": "will not",
     "isnt": "is not", "arent": "are not", "wasnt": "was not", "werent": "were not",
     "hasnt": "has not", "havent": "have not", "hadnt": "had not",
@@ -171,6 +171,23 @@ CRITICAL_INVARIANT_WORDS: Set[str] = {
     "all", "every", "each", "some", "any", "few", "many", "several",
     # Causality
     "causes", "caused", "causing", "cause",
+}
+
+# Protected scientific and metric units that must never be altered
+PROTECTED_UNITS: Set[str] = {
+    "km/s", "km/h", "m/s", "cm/s", "ft/s", "mph", "fps", "rpm",
+    "km", "kg", "mg", "cm", "mm", "g", "m", "s", "ms",
+    "hz", "khz", "mhz", "ghz", "k", "c", "f", "atm", "pa", "kpa", "mpa", "bar", "psi",
+    "deg", "mol", "cd", "n", "j", "kj", "w", "kw", "mw", "v", "mv", "kv", "a", "ma",
+    "db", "gb", "tb", "mb", "kb", "bps", "kbps", "mbps", "gbps",
+}
+
+# Standard titles and honorifics that must never be altered
+HONORIFIC_TITLES: Set[str] = {
+    "dr", "dr.", "mr", "mr.", "mrs", "mrs.", "ms", "ms.",
+    "prof", "prof.", "sr", "sr.", "jr", "jr.", "rev", "rev.",
+    "rep", "rep.", "sen", "sen.", "gov", "gov.", "gen", "gen.",
+    "col", "col.", "capt", "capt.", "lt", "lt.", "sgt", "sgt."
 }
 
 
@@ -287,6 +304,23 @@ class SpellingNormalizer:
         sanitized = sanitized_res.sanitized_text
         corrections: List[CorrectionItem] = []
         warnings: List[str] = []
+
+        # Multilingual / Non-English text check: bypass English dictionary correction
+        has_non_english_chars = bool(re.search(r"[àâäéèêëîïôöùûüçœæÀÂÄÉÈÊËÎÏÔÖÙÛÜÇñÑáéíóúÁÉÍÓÚ¿¡ß]", raw))
+        foreign_tokens = {"l'eau", "d'un", "gèle", "degré", "nicht", "und", "der", "die", "das", "avec", "dans", "pour"}
+        raw_words = {w.lower().strip(".,!?:;\"'()[]") for w in raw.split()}
+        if has_non_english_chars or (raw_words & foreign_tokens):
+            dt_ms = (time.perf_counter() - t0) * 1000.0
+            return NormalizationResult(
+                raw_text=raw,
+                sanitized_text=sanitized,
+                normalized_text=sanitized,
+                corrections=[],
+                warnings=["Multilingual or non-English text detected; English dictionary spelling correction bypassed to prevent corruption."],
+                normalization_version="2.0.0",
+                processing_time_ms=dt_ms,
+                meaning_preservation_passed=True,
+            )
 
         # -------------------------------------------------------------
         # Step 2: Contraction & Abbreviation Normalization
@@ -566,8 +600,11 @@ class SpellingNormalizer:
                 # A misspelled word must not become a critical negation/quantifier word
                 # unless the typo was explicitly a known near-miss of that term
                 if term in CRITICAL_INVARIANT_WORDS and token_lower not in {
-                    "nt", "noo", "nevr", "som", "al", "evry"
+                    "nt", "noo", "noot", "nevr", "som", "al", "evry"
                 }:
+                    continue
+                # Never silently convert a negation near-miss into an affirmative ordinary word (e.g. noot -> noon)
+                if token_lower in {"noot", "nt", "nevr"} and term not in CRITICAL_INVARIANT_WORDS:
                     continue
                 valid_candidates.append(cand)
 
@@ -641,12 +678,32 @@ class SpellingNormalizer:
         if tl in CRITICAL_INVARIANT_WORDS:
             return True
 
+        # Titles and honorifics (e.g. Dr., Mr., Prof., Smith)
+        if tl in HONORIFIC_TITLES or (token.strip(".").lower() in HONORIFIC_TITLES and token[0].isupper()):
+            return True
+
         # Number, percentage, or currency
         if re.match(r"^[+-]?\d+(?:,\d+)*(?:\.\d+)?%?$", token) or token.isdigit():
             return True
 
+        # Scientific notation (e.g. 3.84e5, 1.5e-3)
+        if re.match(r"^[+-]?\d+(?:\.\d+)?e[+-]?\d+$", token, re.IGNORECASE):
+            return True
+
+        # Ordinals (e.g. 1st, 2nd, 3rd, 45th)
+        if re.match(r"^\d+(?:st|nd|rd|th)$", token, re.IGNORECASE):
+            return True
+
         # Temperature / degree units (e.g. 0°C, 100°F)
         if re.match(r"^\d+(?:°[cCfFkK]|\s*deg(?:rees?)?)$", token, re.IGNORECASE):
+            return True
+
+        # Scientific units (e.g. km/s, km/h, kg, mg, cm, mm)
+        if tl in PROTECTED_UNITS:
+            return True
+
+        # Number concatenated with unit (e.g. 300,000km/s, 100km/h, 50kg)
+        if re.match(r"^[+-]?\d+(?:,\d+)*(?:\.\d+)?(?:e[+-]?\d+)?(?:km/s|km/h|m/s|cm/s|ft/s|mph|fps|rpm|km|kg|mg|cm|mm|g|m|s|ms|hz|khz|mhz|ghz|k|c|f|atm|pa|kpa|mpa|bar|psi|deg)$", tl):
             return True
 
         # Standard scientific / chemical notation (e.g. H2O, CO2, NaCl)
@@ -835,7 +892,7 @@ class SpellingNormalizer:
         norm_negations = set(re.findall(r"\b(not|never|no|neither|nor|none|without|cannot)\b", normalized_text.lower()))
 
         # Note: Contractions like "don't" expand to "do not", which is affirmative preservation of negation
-        negated_pattern = r"\b(?:not|never|no|neither|nor|none|without|cannot|dont|doesnt|didnt|cant|wont|isnt|arent|wasnt|werent|shant|hadnt|hasnt|havent|wouldnt|shouldnt|couldnt)\b|n't\b|\bw/o\b"
+        negated_pattern = r"\b(?:not|never|no|neither|nor|none|without|cannot|dont|doesnt|dosent|didnt|cant|wont|isnt|arent|wasnt|werent|shant|hadnt|hasnt|havent|wouldnt|shouldnt|couldnt|noot)\b|n't\b|\bw/o\b"
         had_orig_negation = bool(orig_negations) or bool(
             re.search(negated_pattern, original_text.lower())
         )

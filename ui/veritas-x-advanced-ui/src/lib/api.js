@@ -100,8 +100,8 @@ export function normalizeResponse(raw, claimText) {
  * The existing engine's precise result schema must be mapped in the backend adapter.
  * Expected response keys are documented in backend_contract.md.
  */
-export async function verifyClaim(claim, evidence = [], mode = 'local') {
-  const response = await fetch(`${API_BASE}/api/verify`, {
+export async function verifyClaim(claim, evidence = [], mode = 'local', signal = null) {
+  const fetchOptions = {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -111,7 +111,11 @@ export async function verifyClaim(claim, evidence = [], mode = 'local') {
       include_research: true,
       include_processing_trace: true,
     }),
-  });
+  };
+  if (signal) {
+    fetchOptions.signal = signal;
+  }
+  const response = await fetch(`${API_BASE}/api/verify`, fetchOptions);
   if (!response.ok) {
     const message = await response.text().catch(() => 'Unknown API error');
     throw new Error(`Verification API returned ${response.status}: ${message.slice(0, 220)}`);
