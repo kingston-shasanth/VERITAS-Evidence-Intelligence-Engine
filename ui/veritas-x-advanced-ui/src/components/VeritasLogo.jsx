@@ -4,8 +4,8 @@ import React from 'react';
  * VERITAS-X — Brand Identity & Minimal Geometric Mark
  *
  * Distinctive geometric emblem:
- * Interlocking precision verification chevron (V) and cross-examination vector (X)
- * rendered in refined indigo (#4F46E5) with crisp slate (#0F172A).
+ * Interlocking precision verification chevron (V) and analytical cross-examination vector (X)
+ * anchored on documentary evidence planes, rendered in signature indigo (#4F46E5) with cyan accents (#38BDF8).
  */
 export function VeritasSymbol({
   size = 32,
@@ -15,43 +15,71 @@ export function VeritasSymbol({
 }) {
   const isMono = theme === 'monochrome';
   const primaryIndigo = isMono ? 'currentColor' : '#4F46E5';
-  const lightIndigo = isMono ? 'currentColor' : '#EEF2FF';
-  const accentIndigo = isMono ? 'currentColor' : '#A5B4FC';
+  const darkIndigo = isMono ? 'currentColor' : '#312E81';
+  const borderIndigo = isMono ? 'currentColor' : '#6366F1';
+  const docLineColor = isMono ? 'currentColor' : '#C7D2FE';
+  const cyanAccent = isMono ? 'currentColor' : '#38BDF8';
+  const whiteStroke = isMono ? 'currentColor' : '#FFFFFF';
+  const nexusDot = isMono ? 'currentColor' : '#0284C7';
 
   return (
     <svg
       width={size}
       height={size}
-      viewBox="0 0 36 36"
+      viewBox="0 0 64 64"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={`veritas-symbol ${className}`}
       role="img"
       aria-label={ariaLabel}
     >
-      {/* Refined rounded base in signature indigo */}
-      <rect width="36" height="36" rx="9" fill={primaryIndigo} />
+      <defs>
+        {!isMono && (
+          <linearGradient id="symBgGrad" x1="4" y1="4" x2="60" y2="60" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stopColor={primaryIndigo} />
+            <stop offset="100%" stopColor={darkIndigo} />
+          </linearGradient>
+        )}
+      </defs>
 
-      {/* Downward verification chevron (V) */}
+      {/* Signature Squircle Base */}
+      <rect
+        x="2"
+        y="2"
+        width="60"
+        height="60"
+        rx="15"
+        fill={isMono ? 'none' : 'url(#symBgGrad)'}
+        stroke={borderIndigo}
+        strokeWidth={isMono ? 3 : 1.2}
+        strokeOpacity={isMono ? 1 : 0.5}
+      />
+
+      {/* Documentary Evidence Guidelines */}
+      <line x1="16" y1="16" x2="34" y2="16" stroke={docLineColor} strokeWidth="2.2" strokeLinecap="round" opacity="0.55" />
+      <line x1="39" y1="16" x2="48" y2="16" stroke={docLineColor} strokeWidth="2.2" strokeLinecap="round" opacity="0.35" />
+      <line x1="16" y1="22" x2="26" y2="22" stroke={docLineColor} strokeWidth="2" strokeLinecap="round" opacity="0.4" />
+
+      {/* Analytical Cross-Examination Vector (X) */}
       <path
-        d="M9.5 11.5L18 24.5L26.5 11.5"
-        stroke={lightIndigo}
-        strokeWidth="2.75"
+        d="M19 44 L45 22"
+        stroke={cyanAccent}
+        strokeWidth="3.2"
+        strokeLinecap="round"
+      />
+
+      {/* Primary Verification Chevron (V) */}
+      <path
+        d="M17 28 L29.5 45 L47 18"
+        stroke={whiteStroke}
+        strokeWidth="4.2"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
 
-      {/* Crossing analytical vector creating the iconic V-X intersection */}
-      <path
-        d="M25 24.5L18 14.5L11 24.5"
-        stroke={accentIndigo}
-        strokeWidth="2.25"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-
-      {/* Center verification nexus focal node */}
-      <circle cx="18" cy="19.5" r="1.8" fill="#FFFFFF" />
+      {/* Precision Evidentiary Nexus Node */}
+      <circle cx="32" cy="33.5" r="3.2" fill={whiteStroke} />
+      <circle cx="32" cy="33.5" r="1.6" fill={nexusDot} />
     </svg>
   );
 }
@@ -61,7 +89,7 @@ export function VeritasSymbol({
  */
 export function VeritasWordmark({
   size = 'md', // 'sm' | 'md' | 'lg'
-  tagline = 'Explainable AI Fact Verification',
+  tagline = 'Evidence-Grounded Claim Verification',
   showTagline = true,
   theme = 'indigo',
   className = '',
@@ -108,11 +136,12 @@ export function VeritasWordmark({
           <div
             style={{
               fontFamily: 'var(--font-body, "Inter", sans-serif)',
-              fontWeight: 500,
+              fontWeight: 600,
               fontSize: currentScale.tagSize,
-              letterSpacing: '0.01em',
+              letterSpacing: '0.04em',
               color: tagColor,
               marginTop: '0.2rem',
+              textTransform: 'uppercase',
             }}
           >
             {tagline}

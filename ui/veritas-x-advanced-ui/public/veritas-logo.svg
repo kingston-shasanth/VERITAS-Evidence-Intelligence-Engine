@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 72" width="360" height="72" fill="none">
+  <defs>
+    <linearGradient id="logoBgGrad" x1="0" y1="0" x2="56" y2="56" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#4F46E5" />
+      <stop offset="100%" stop-color="#312E81" />
+    </linearGradient>
+    <linearGradient id="logoCyanGrad" x1="16" y1="39" x2="40" y2="19" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#38BDF8" />
+      <stop offset="100%" stop-color="#06B6D4" />
+    </linearGradient>
+  </defs>
+
+  <!-- Left Symbol Lockup (56x56 scaled to 8,8) -->
+  <g transform="translate(8, 8)">
+    <rect width="56" height="56" rx="14" fill="url(#logoBgGrad)" />
+    <rect width="56" height="56" rx="14" stroke="#6366F1" stroke-width="1.2" stroke-opacity="0.4" />
+
+    <!-- Documentary Lines -->
+    <line x1="14" y1="14" x2="30" y2="14" stroke="#C7D2FE" stroke-width="2" stroke-linecap="round" opacity="0.55" />
+    <line x1="34" y1="14" x2="42" y2="14" stroke="#C7D2FE" stroke-width="2" stroke-linecap="round" opacity="0.35" />
+    <line x1="14" y1="19" x2="23" y2="19" stroke="#C7D2FE" stroke-width="1.8" stroke-linecap="round" opacity="0.4" />
+
+    <!-- Analytical Cross Vector (X) -->
+    <path d="M16 39 L40 19" stroke="url(#logoCyanGrad)" stroke-width="2.8" stroke-linecap="round" />
+
+    <!-- Verification Chevron (V) -->
+    <path d="M15 25 L26 40 L41 16" stroke="#FFFFFF" stroke-width="3.8" stroke-linecap="round" stroke-linejoin="round" />
+
+    <!-- Nexus Node -->
+    <circle cx="28" cy="29.5" r="2.8" fill="#FFFFFF" />
+    <circle cx="28" cy="29.5" r="1.4" fill="#0284C7" />
+  </g>
+
+  <!-- Wordmark & Subtitle -->
+  <g transform="translate(78, 14)">
+    <!-- Primary Brand Wordmark -->
+    <text x="0" y="27" font-family="'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif" font-weight="800" font-size="26" letter-spacing="0.02em" fill="#0F172A">
+      VERITAS<tspan fill="#4F46E5" font-weight="900">-X</tspan>
+    </text>
+
+    <!-- Subtitle: Evidence-Grounded Claim Verification -->
+    <text x="1" y="44" font-family="'Inter', -apple-system, sans-serif" font-weight="600" font-size="9.5" letter-spacing="0.08em" fill="#64748B">
+      EVIDENCE-GROUNDED CLAIM VERIFICATION
+    </text>
+  </g>
+</svg>

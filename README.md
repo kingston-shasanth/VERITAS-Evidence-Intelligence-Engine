@@ -3,13 +3,11 @@
 <!-- ============================================================================== -->
 
 <p align="center">
-  <img src="ui/veritas-x-advanced-ui/public/veritas-symbol.svg" width="96" height="96" alt="VERITAS-X Symbol" />
+  <img src="ui/veritas-x-advanced-ui/public/veritas-logo.svg" width="360" alt="VERITAS-X — Evidence-Grounded Claim Verification" />
 </p>
 
-<h1 align="center">VERITAS-X</h1>
-
 <p align="center">
-  <strong>Multilingual Evidentiary Fact Verification, Stance Disparity & Interactive NLP Telemetry</strong>
+  <strong>Evidence-Grounded Claim Verification</strong>
 </p>
 
 <p align="center">
@@ -494,7 +492,7 @@ D:\VERITAS-X
 │   └── ...                              # Remaining 20 domain and unit test suites
 │
 └── ui/veritas-x-advanced-ui/            # Production React 18 / Vite 6 Forensic Dashboard
-    ├── public/                          # Static brand SVGs (favicon.svg, veritas-symbol.svg)
+    ├── public/                          # Static brand SVGs (favicon.svg, veritas-symbol.svg, veritas-logo.svg)
     ├── src/
     │   ├── components/                  # 17 focused UI components
     │   ├── lib/                         # API client, Speech narrator, 6-phase stages config

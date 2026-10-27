@@ -784,7 +784,7 @@ export default function App() {
       {/* Main Forensic Sidebar */}
       <aside className={`sidebar ${mobileNavOpen ? 'sidebar-open' : ''}`}>
         <div className="brand-header">
-          <VeritasWordmark size="md" theme="indigo" tagline="Explainable AI Fact Verification" />
+          <VeritasWordmark size="md" theme="indigo" tagline="Evidence-Grounded Claim Verification" />
           <button
             className="mobile-close"
             onClick={() => setMobileNavOpen(false)}
