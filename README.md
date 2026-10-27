@@ -21,7 +21,7 @@
   <a href="https://huggingface.co/MoritzLaurer/DeBERTa-v3-base-mnli-fever-anli"><img src="https://img.shields.io/badge/NLI-DeBERTa--v3--base-FFD21E?style=flat-square&logo=huggingface&logoColor=black" alt="DeBERTa-v3 NLI" /></a>
   <a href="https://github.com/facebookresearch/faiss"><img src="https://img.shields.io/badge/Retrieval-FAISS%20%2B%20BM25-008080?style=flat-square" alt="Hybrid Retrieval" /></a>
   <a href="ui/veritas-x-advanced-ui/"><img src="https://img.shields.io/badge/Frontend-React%2018%20%2F%20Vite%206-61DAFB?style=flat-square&logo=react&logoColor=black" alt="React 18 / Vite 6" /></a>
-  <a href="#-verification--testing"><img src="https://img.shields.io/badge/Tests-346%20Backend%20%7C%2052%20UI%20Pass-brightgreen?style=flat-square" alt="Tests 100% Pass" /></a>
+  <a href="#-verification--testing"><img src="https://img.shields.io/badge/Tests-364%20Backend%20%7C%2052%20UI%20Pass-brightgreen?style=flat-square" alt="Tests 100% Pass" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square" alt="MIT License" /></a>
 </p>
 
@@ -408,18 +408,23 @@ The repository contains an exhaustive suite of automated unit, integration, and 
 $env:PYTHONPATH="src;."; $env:PYTHONDONTWRITEBYTECODE="1"
 D:\VERITAS-X\.venv\Scripts\python.exe -m unittest discover -s tests -p "test_*.py"
 
-# 2. Phase 1 Forensic Integrity Regression Suite (18 tests - 100% PASS)
+# 2. Comprehensive 25-Category Reliability Engineering Regression Suite (25 tests - 100% PASS)
+D:\VERITAS-X\.venv\Scripts\python.exe -m unittest tests/test_reliability_engineering.py
+
+# 3. Phase 1 Forensic Integrity Regression Suite (18 tests - 100% PASS)
 D:\VERITAS-X\.venv\Scripts\python.exe -m unittest tests/test_phase1_integrity_regressions.py
 
-# 3. Frontend Unit & Telemetry Test Suite (52 tests across 9 suites - 100% PASS)
+# 4. Frontend Unit & Telemetry Test Suite (52 tests across 9 suites - 100% PASS)
 cd ui/veritas-x-advanced-ui
 npm test
+cd ../..
 
-# 4. Frontend Production Build Verification (Vite 6 - 100% clean compilation)
+# 5. Frontend Production Build Verification (Vite 6 - 100% clean compilation)
+cd ui/veritas-x-advanced-ui
 npm run build
 cd ../..
 
-# 5. Live Batch Claim Verification (targets port 8011)
+# 6. Live Batch Claim Verification (targets port 8011)
 python scripts/run_demo_claims.py
 ```
 
@@ -482,14 +487,16 @@ D:\VERITAS-X
 │   ├── temporal/                        # Temporal anchor analyzer
 │   └── verification/                    # DeBERTa NLI cross-encoder, calibrator, aggregator
 │
-├── tests/                               # Comprehensive Automated Test Suites (26 files, 346 tests)
+├── tests/                               # Comprehensive Automated Test Suites (27 files, 364 tests)
+│   ├── test_reliability_engineering.py  # 25-category reliability engineering suite (25 tests)
 │   ├── test_phase1_integrity_regressions.py # Phase 1 forensic regression test suite (18 tests)
 │   ├── test_api_adapter.py              # Adapter mapping, contract, and regression tests (30 tests)
-│   ├── test_api_nlp_integration_telemetry.py # Pipeline integration & telemetry tests (9 tests)
-│   ├── test_nlp_spelling_normalization.py   # SymSpell, entity protection, Hinglish tests (22 tests)
+│   ├── test_api_nlp_integration_telemetry.py # Pipeline integration & telemetry tests (22 tests)
+│   ├── test_nlp_spelling_normalization.py   # SymSpell, entity protection, Hinglish tests (15 tests)
 │   ├── test_nlp_linguistics_guardrails.py    # Linguistics, claim extraction, guardrails tests (21 tests)
+│   ├── test_targeted_evidence_stance_regression.py # Targeted stance polarity regressions (10 tests)
 │   ├── test_live_smoke.py               # HTTP server health, CORS, and smoke tests (4 tests)
-│   └── ...                              # Remaining 20 domain and unit test suites
+│   └── ...                              # Remaining 19 domain and unit test suites
 │
 └── ui/veritas-x-advanced-ui/            # Production React 18 / Vite 6 Forensic Dashboard
     ├── public/                          # Static brand assets (favicon.svg, veritas-x-logo.png)

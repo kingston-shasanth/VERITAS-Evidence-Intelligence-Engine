@@ -179,11 +179,20 @@ class ClaimDecomposer:
         return None
 
     def _extract_subject(self, text: str) -> Optional[str]:
-        """Extracts the leading noun phrase subject from a clause."""
+        """Extracts the leading noun phrase subject from a clause, unwrapping reporting frames."""
+        for rep in ("say that", "said that", "state that", "stated that", "report that", "reported that", "claim that", "claimed that", "show that", "showed that", "found that"):
+            pattern = re.compile(rf"\b{rep}\b", re.IGNORECASE)
+            m = pattern.search(text)
+            if m:
+                after = text[m.end():].strip()
+                sub = self._extract_subject(after)
+                if sub:
+                    return sub
+
         tokens = text.strip().split()
         if not tokens:
             return None
-        auxiliaries = {"was", "were", "is", "are", "has", "had", "will", "would", "can", "could", "should"}
+        auxiliaries = {"was", "were", "is", "are", "has", "had", "will", "would", "can", "could", "should", "does", "do", "did", "cannot"}
         subj_tokens = []
         for t in tokens:
             if t.lower() in auxiliaries:
@@ -207,6 +216,10 @@ class ClaimDecomposer:
         if not antecedent_subject or self._is_pronoun(antecedent_subject):
             return prop_text
 
+        # If prop_text already begins with the antecedent subject, never prepend or duplicate
+        if prop_text.lower().startswith(antecedent_subject.lower()):
+            return prop_text
+
         words = prop_text.split()
         if not words:
             return prop_text
@@ -218,7 +231,12 @@ class ClaimDecomposer:
             return f"{subj} {' '.join(words[1:])}"
 
         # If clause begins with an elided verb predicate (e.g. "reopened on Tuesday" or "causes higher intelligence")
-        if first_word.endswith(("ed", "es", "s")) or first_word in ("was", "were", "is", "are", "became", "has", "had"):
+        if first_word.endswith(("ed", "es")) or (
+            first_word.endswith("s")
+            and not first_word.endswith("ss")
+            and len(words) >= 2
+            and first_word not in ("this", "is", "as", "yes", "always", "scientists", "officials", "experts")
+        ) or first_word in ("was", "were", "is", "are", "became", "has", "had"):
             subj = antecedent_subject[0].upper() + antecedent_subject[1:]
             return f"{subj} {prop_text}"
 

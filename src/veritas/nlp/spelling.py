@@ -88,7 +88,7 @@ CONTRACTIONS_MAP: Dict[str, str] = {
     "hasn't": "has not", "haven't": "have not", "hadn't": "had not",
     "wouldn't": "would not", "shouldn't": "should not", "couldn't": "could not",
     # Unpunctuated common typos for negated auxiliaries
-    "dont": "do not", "doesnt": "does not", "dosent": "does not", "didnt": "did not",
+    "dont": "do not", "doesnt": "does not", "dosent": "does not", "dosnt": "does not", "didnt": "did not",
     "cant": "cannot", "wont": "will not",
     "isnt": "is not", "arent": "are not", "wasnt": "was not", "werent": "were not",
     "hasnt": "has not", "havent": "have not", "hadnt": "had not",
@@ -809,6 +809,16 @@ class SpellingNormalizer:
             elif token.endswith("ed") and term.endswith("ed"):
                 score += 2.5
 
+            # Coda / terminal consonant preservation (e.g. 'ther' -> 'their' / 'other' vs dropping coda to 'the')
+            if len(token) >= 3 and len(term) >= 3 and token[-1] == term[-1]:
+                score += 2.0
+            elif len(token) >= 4 and len(term) < len(token) and not token.endswith(("s", "e")):
+                score -= 2.0
+
+            # Character subset preservation (all distinctive letters in token are present in candidate)
+            if set(token).issubset(set(term)):
+                score += 1.5
+
             # Domain boost for factual verification vocabulary
             if term in DOMAIN_FACTUAL_TERMS:
                 score += 4.0
@@ -892,7 +902,7 @@ class SpellingNormalizer:
         norm_negations = set(re.findall(r"\b(not|never|no|neither|nor|none|without|cannot)\b", normalized_text.lower()))
 
         # Note: Contractions like "don't" expand to "do not", which is affirmative preservation of negation
-        negated_pattern = r"\b(?:not|never|no|neither|nor|none|without|cannot|dont|doesnt|dosent|didnt|cant|wont|isnt|arent|wasnt|werent|shant|hadnt|hasnt|havent|wouldnt|shouldnt|couldnt|noot)\b|n't\b|\bw/o\b"
+        negated_pattern = r"\b(?:not|never|no|neither|nor|none|without|cannot|dont|doesnt|dosent|dosnt|didnt|cant|wont|isnt|arent|wasnt|werent|shant|hadnt|hasnt|havent|wouldnt|shouldnt|couldnt|noot)\b|n't\b|\bw/o\b"
         had_orig_negation = bool(orig_negations) or bool(
             re.search(negated_pattern, original_text.lower())
         )

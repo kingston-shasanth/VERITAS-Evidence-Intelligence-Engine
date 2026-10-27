@@ -245,6 +245,16 @@ class VeritasAPIAdapter:
             self._init_engine()
         return self._engine
 
+    @staticmethod
+    def normalize_mode(mode: Any) -> str:
+        """Normalizes user-supplied mode string into canonical 'local', 'web', or 'hybrid'."""
+        m = str(mode or "local").lower().strip()
+        if m in ("web", "online"):
+            return "web"
+        if m in ("hybrid", "combined", "both"):
+            return "hybrid"
+        return "local"
+
     def verify(
         self,
         claim: str,
@@ -281,11 +291,7 @@ class VeritasAPIAdapter:
         cid = claim_id or generate_claim_id(claim_trimmed)
 
         # Normalize mode
-        normalized_mode = str(mode or "local").lower().strip()
-        if normalized_mode in ("web", "online"):
-            normalized_mode = "web"
-        elif normalized_mode not in ("local", "web", "hybrid"):
-            normalized_mode = "local"
+        normalized_mode = self.normalize_mode(mode)
 
         # Stage 1: input_received
         collector.start_stage(ProcessingStage.INPUT_RECEIVED)

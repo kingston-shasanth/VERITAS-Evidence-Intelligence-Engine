@@ -479,18 +479,12 @@ class CrossEncoderNLI:
             s_stripped = orig_text.strip()
             is_pure_question = s_stripped.endswith("?") or (s_stripped.count("?") > 0 and s_stripped.count(".") == 0)
             has_myth_prefix = bool(re.match(r'^(myth|claim|rumor|question|allegation)\s*:', s_stripped, re.IGNORECASE))
-            has_myth_framing = bool(re.search(r'\b(medical\s+myth|popular\s+myth|common\s+myth|common\s+misconception|urban\s+legend|false\s+belief|cling\s+to\s+the\s+(?:idea|belief|notion)|popular\s+misconception)\b', s_stripped, re.IGNORECASE))
 
-            if is_pure_question:
+            if is_pure_question or has_myth_prefix:
+                # Rhetorical question or section header (e.g. "Myth: X") is topic-framing, not an affirmative assertion
                 e = min(e, 0.15)
+                c = min(c, 0.15)
                 n = max(n, 0.80)
-            elif has_myth_prefix or has_myth_framing:
-                if re.search(r'\b(false|myth|untrue|debunk|incorrect|wrong|fiction|disproven|no\s+evidence|not\s+true|no\s+truth|doesn\'t\s+mean)\b', s_stripped, re.IGNORECASE):
-                    c = max(c, 0.85)
-                    e = min(e, 0.05)
-                    n = max(0.0, 1.0 - (c + e))
-                else:
-                    e = min(e, 0.15)
             elif _is_generalized_scope_mismatch(hypothesis, s_stripped) and c < 0.40:
                 e = min(e, 0.15)
                 n = max(n, 0.80)
@@ -525,7 +519,7 @@ class CrossEncoderNLI:
         max_c = max((sp["contradiction"] for sp in contradiction_candidates), default=0.0)
         max_e = max((sp["entailment"] for sp in entailment_candidates), default=0.0)
 
-        # If whole passage is already a decisive contradiction, preserve it
+        # If whole passage is already a decisive contradiction (>= 0.75), preserve it
         if base_result.get("predicted_label") == "CONTRADICTION" and base_result.get("contradiction", 0.0) >= 0.75:
             return base_result
 
